@@ -45,7 +45,7 @@ public class Localized
 	private static final String ELEMENT_LOC = "loc"; //$NON-NLS-1$
 	private static final String ATTRIBUTE_LANGUAGE = "language"; //$NON-NLS-1$
 
-	/** used to produce names based on element name when the {@value #ATTRIBUTE_DEFAULTNAME} is missing */
+	/** used to produce names based on element name when the ATTRIBUTE_DEFAULTNAME is missing */
 	private static Map<String, Integer> unnamedCount = new HashMap<String, Integer>();
 
 	/** This is the default string of the node */
@@ -70,7 +70,7 @@ public class Localized
 	}
 
 	/**
-	 * Use a name based on the element name if no {@value #ATTRIBUTE_DEFAULTNAME} is defined.
+	 * Use a name based on the element name if no ATTRIBUTE_DEFAULTNAME is defined.
 	 * @param element
 	 */
 	public Localized(Element element)
