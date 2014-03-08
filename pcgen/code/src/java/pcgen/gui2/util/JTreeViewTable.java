@@ -135,7 +135,7 @@ public class JTreeViewTable<T> extends JTreeTable
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * @param dataView
 	 */
 	protected <TM> TreeViewTableModel<TM> createDefaultTreeViewTableModel(DataView<TM> dataView)
 	{

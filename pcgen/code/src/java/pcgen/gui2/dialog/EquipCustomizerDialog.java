@@ -65,7 +65,7 @@ public class EquipCustomizerDialog extends JDialog
 	private boolean cancelled;
 
 	/**
-	 * Create a new instance of KitSelectionDialog
+	 * Create a new instance of KitSelectionDialog.
 	 * @param frame The parent frame we are displaying over.
 	 * @param character The character being displayed.
 	 */
@@ -126,7 +126,7 @@ public class EquipCustomizerDialog extends JDialog
 	}
 
 	/**
-	 * @return
+	 * @return true if the equipment was purchased
 	 */
 	public boolean isPurchase()
 	{

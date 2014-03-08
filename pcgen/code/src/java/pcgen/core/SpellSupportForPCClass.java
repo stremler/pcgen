@@ -128,7 +128,7 @@ public class SpellSupportForPCClass
 	}
 
 	/**
-	 * @Deprecated canCastSpells should be used to get an accurate answer for a character.
+	 * @deprecated {@link #canCastSpells} should be used to get an accurate answer for a character.
 	 */
 	@Deprecated
 	public boolean zeroCastSpells()

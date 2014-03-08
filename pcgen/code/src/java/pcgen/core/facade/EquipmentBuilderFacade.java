@@ -45,7 +45,7 @@ public interface EquipmentBuilderFacade
 		PRIMARY, SECONDARY;
 
 		/**
-		 * @return
+		 * @return true if this is the primary head of the weapon.
 		 */
 		public boolean isPrimary()
 		{
@@ -102,22 +102,22 @@ public interface EquipmentBuilderFacade
 
 	/**
 	 * @param newValue
-	 * @return
+	 * @return false if the parameter is empty
 	 */
-	boolean setDamage(String newValue);
+	public boolean setDamage(String newValue);
 
 	/**
-	 * @return
+	 * @return the name of the base equipment
 	 */
 	public String getBaseItemName();
 
 	/**
-	 * @return
+	 * @return true if the piece of custom equipment is a weapon.
 	 */
 	public boolean isWeapon();
 
 	/**
-	 * @return
+	 * @return the damage done by the equipment.
 	 */
 	public String getDamage();
 
