@@ -49,15 +49,12 @@ import pcgen.cdom.base.Loadable;
  * 
  * @param <T>
  *            The Class of object this ReferenceManufacturer can manufacture
- * @param <RT>
- *            The Class of Single Reference that this ReferenceManufacturer will
- *            produce
  */
 public interface ReferenceManufacturer<T extends Loadable> extends SelectionCreator<T>
 {
 	/**
 	 * Constructs a new CDOMObject of the Class or Class/Category represented by
-	 * this ReferenceManufacturer
+	 * this ReferenceManufacturer.
 	 * 
 	 * Implementation Note: At this point, the "key" provided is likely to be
 	 * the "display name" of an object, not the actual "KEY". This is due to the

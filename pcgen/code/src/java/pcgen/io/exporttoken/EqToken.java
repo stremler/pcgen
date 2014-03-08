@@ -872,7 +872,6 @@ public class EqToken extends Token
 
 	/**
 	 * Get Equipment Slot Token
-	 * @param pc
 	 * @param eq
 	 * @return Equipment Slot Token
 	 */

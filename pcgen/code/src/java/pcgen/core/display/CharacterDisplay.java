@@ -1661,7 +1661,6 @@ public class CharacterDisplay
 	/**
 	 * Get the value of the weight token in format WEIGHT.X
 	 * @param type Encumbrance type 
-	 * @param pc The character to retrieve the value for.
 	 * @return The value of the weight token.
 	 */
 	public double getLoadToken(String type)
@@ -1675,16 +1674,25 @@ public class CharacterDisplay
 		return 0.0;
 	}
 
+	/**
+	 * 
+	 */
 	public String getCharacterHeightInchPart()
 	{
 		return Integer.toString(getHeight() % 12);
 	}
 
+	/**
+	 * 
+	 */
 	public String getCharacterHeightFootPart()
 	{
 		return Integer.toString(getHeight() / 12);
 	}
 
+	/**
+	 * 
+	 */
 	public String getHeightString()
 	{
 		String retString;
@@ -1705,6 +1713,9 @@ public class CharacterDisplay
 		return retString;
 	}
 
+	/**
+	 * 
+	 */
 	public String getAlignmentDisplayString()
 	{
 		if (Globals.getGameModeAlignmentText().length() == 0)

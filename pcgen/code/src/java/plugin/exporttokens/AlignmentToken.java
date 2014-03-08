@@ -72,7 +72,7 @@ public class AlignmentToken extends AbstractExportToken
 
 	/**
 	 * Get Alignment Short Token
-	 * @param pc
+	 * @param display
 	 * @return Alignment Short Token
 	 */
 	public static String getShortToken(CharacterDisplay display)

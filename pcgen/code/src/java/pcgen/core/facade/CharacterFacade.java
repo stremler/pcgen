@@ -291,7 +291,7 @@ public interface CharacterFacade extends CompanionFacade
 
 	/**
 	 * Is the user allowed to remove this language currently? 
-	 * e.g Automatic languages may not be removed.  
+	 * e.g., Automatic languages may not be removed.  
 	 * @param language The language to be checked.
 	 * @return true if the language can be removed.
 	 */
@@ -510,29 +510,29 @@ public interface CharacterFacade extends CompanionFacade
 
 	/**
 	 * Set the character's XP table.
-	 * *
+	 *
 	 * @param xpTableName The name of the XP table to be set
 	 */
 	public void setXPTable(final String xpTableName);
 
 	/**
 	 * Set the character's character type.
-	 * *
+	 *
 	 * @param characterType The character type to be set
 	 */
 	public void setCharacterType(String characterType);
 
 	/**
 	 * Set the character's associated preview sheet
-	 * *
+	 *
 	 * @param previewSheet The preview sheet to be set
 	 */
 	public void setPreviewSheet(String previewSheet);
 
 	/**
 	 * Set the character's display filter for skills
-	 * *
-	 * @param previewSheet The skill filter to be set
+	 *
+	 * @param filter The skill filter to be set
 	 */
 	public void setSkillFilter(SkillFilter filter);
 

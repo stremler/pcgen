@@ -688,7 +688,7 @@ public final class Globals
 	}
 
 	/**
-	 * Get spell map
+	 * Get read-only global spell map.
 	 * @return spell map
 	 */
 	public static Map<String, Spell> getSpellMap()
@@ -700,7 +700,7 @@ public final class Globals
 	 * Add spell to the spell map.
 	 * 
 	 * @param key The key the object is associated with.
-	 * @param anObject The object to be added to the map.
+	 * @param spell The spell to be added to the global map of spells.
 	 */
 	public static void addToSpellMap(final String key, final Spell spell)
 	{

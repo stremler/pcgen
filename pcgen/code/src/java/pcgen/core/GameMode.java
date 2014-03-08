@@ -2971,8 +2971,9 @@ public final class GameMode implements Comparable<Object>, GameModeFacade
 	}
 
 	/**
-	 *
-	 * @param theInfoSheet the file name of the InfoSheet relative to the base pcgen directory
+     *
+	 * @param type the identifier for the output sheet being set
+	 * @param sheet the file name of the InfoSheet relative to the base pcgen directory
 	 */
 	public void setOutputSheetDefault(String type, String sheet)
 	{

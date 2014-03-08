@@ -127,7 +127,7 @@ public class HPRollToken extends Token
 
 	/**
 	 * Get the HPROLL.STAT token
-	 * @param pc
+	 * @param display
 	 * @param level
 	 * @return the HPROLL.STAT token
 	 */
