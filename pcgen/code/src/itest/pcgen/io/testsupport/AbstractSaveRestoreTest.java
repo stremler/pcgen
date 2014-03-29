@@ -21,6 +21,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.URI;
+import java.util.Collections;
 
 import junit.framework.TestCase;
 import pcgen.base.test.InequalityTester;
@@ -37,6 +38,8 @@ import pcgen.cdom.enumeration.StringKey;
 import pcgen.cdom.enumeration.VariableKey;
 import pcgen.cdom.facet.DirectAbilityFacet;
 import pcgen.cdom.facet.FacetLibrary;
+import pcgen.cdom.facet.RaceSelectionFacet;
+import pcgen.cdom.facet.TemplateSelectionFacet;
 import pcgen.cdom.facet.base.AbstractStorageFacet;
 import pcgen.cdom.facet.model.ActiveEqModFacet;
 import pcgen.cdom.facet.model.AlignmentFacet;
@@ -49,12 +52,10 @@ import pcgen.cdom.facet.model.DeityFacet;
 import pcgen.cdom.facet.model.DomainFacet;
 import pcgen.cdom.facet.model.ExpandedCampaignFacet;
 import pcgen.cdom.facet.model.LanguageFacet;
-import pcgen.cdom.facet.model.RaceSelectionFacet;
 import pcgen.cdom.facet.model.SizeFacet;
 import pcgen.cdom.facet.model.SkillFacet;
 import pcgen.cdom.facet.model.StatFacet;
 import pcgen.cdom.facet.model.TemplateFacet;
-import pcgen.cdom.facet.model.TemplateSelectionFacet;
 import pcgen.cdom.facet.model.WeaponProfFacet;
 import pcgen.core.AbilityCategory;
 import pcgen.core.GameMode;
@@ -70,7 +71,6 @@ import pcgen.gui2.facade.MockUIDelegate;
 import pcgen.io.PCGIOHandler;
 import pcgen.io.PCGVer2Creator;
 import pcgen.persistence.PersistenceLayerException;
-import pcgen.persistence.PersistenceManager;
 import pcgen.persistence.SourceFileLoader;
 import pcgen.persistence.lst.LevelLoader;
 import pcgen.rules.context.LoadContext;
@@ -167,11 +167,10 @@ public abstract class AbstractSaveRestoreTest extends TestCase
 		context.resolveDeferredTokens();
 		assertTrue(context.ref.resolveReferences(null));
 		context.resolvePostDeferredTokens();
+		context.loadCampaignFacets();
 		pc = new PlayerCharacter();
 		setBoilerplate();
-		reloadedPC =
-				new PlayerCharacter(true, PersistenceManager.getInstance()
-					.getLoadedCampaigns());
+		reloadedPC = new PlayerCharacter(true, Collections.EMPTY_LIST);
 		id = pc.getCharID();
 	}
 
@@ -366,18 +365,16 @@ public abstract class AbstractSaveRestoreTest extends TestCase
 		return align;
 	}
 
-	protected void runRoundRobin()
+	protected void runRoundRobin(Runnable preEqualityCleanup)
 	{
 		runWriteRead();
-		preEqualityCleanup();
+		if (preEqualityCleanup != null)
+		{
+			preEqualityCleanup.run();
+		}
 		checkEquality();
 	}
 
-	protected void preEqualityCleanup()
-	{
-		
-	}
-	
 	protected void checkEquality()
 	{
 		InequalityTester it = InequalityTesterInst.getInstance();

@@ -19,11 +19,12 @@ package pcgen.io;
 
 import java.util.ArrayList;
 
-import org.junit.Test;
-
 import pcgen.cdom.base.CDOMObjectUtilities;
 import pcgen.cdom.base.Loadable;
+import pcgen.cdom.content.CNAbility;
+import pcgen.cdom.enumeration.Nature;
 import pcgen.cdom.enumeration.ObjectKey;
+import pcgen.cdom.helper.CNAbilitySelection;
 import pcgen.core.Ability;
 import pcgen.core.AbilityCategory;
 import pcgen.core.AbilityUtilities;
@@ -60,11 +61,13 @@ public class AbilityTargetSaveRestoreTest extends
 	protected void applyObject(Ability obj)
 	{
 		String assoc = null;
-		if (ChooseActivation.hasChooseToken(obj))
+		if (ChooseActivation.hasNewChooseToken(obj))
 		{
 			assoc = "Granted";
 		}
-		AbilityUtilities.modAbility(pc, obj, assoc, AbilityCategory.FEAT);
+		CNAbility cna = new CNAbility(AbilityCategory.FEAT, obj, Nature.NORMAL);
+		CNAbilitySelection cnas = new CNAbilitySelection(cna, assoc);
+		AbilityUtilities.modAbility(pc, cnas);
 	}
 
 	@Override
@@ -77,11 +80,10 @@ public class AbilityTargetSaveRestoreTest extends
 	protected void remove(Object o)
 	{
 		Ability abil = (Ability) o;
-		if (ChooseActivation.hasChooseToken(abil))
+		if (ChooseActivation.hasNewChooseToken(abil))
 		{
 			ChooserUtilities.modChoices(abil, new ArrayList<String>(),
-				new ArrayList<String>(), true, reloadedPC, false,
-				AbilityCategory.FEAT);
+				new ArrayList<String>(), reloadedPC, false, AbilityCategory.FEAT);
 		}
 		//Have to do this check due to cloning...
 		abil = reloadedPC.getAbilityKeyed(AbilityCategory.FEAT, abil.getKeyName());
@@ -104,13 +106,5 @@ public class AbilityTargetSaveRestoreTest extends
 	{
 		return false;
 	}
-
-	@Override
-	@Test
-	public void testAddTemplate()
-	{
-		//CODE-2016 Ignore as known to be not symmetric yet :P
-	}
-	
 	
 }

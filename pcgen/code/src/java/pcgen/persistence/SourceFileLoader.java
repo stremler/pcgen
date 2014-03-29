@@ -37,6 +37,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
+
 import pcgen.cdom.base.Constants;
 import pcgen.cdom.enumeration.IntegerKey;
 import pcgen.cdom.enumeration.ListKey;
@@ -61,7 +62,6 @@ import pcgen.core.GameMode;
 import pcgen.core.Globals;
 import pcgen.core.Language;
 import pcgen.core.PCTemplate;
-import pcgen.core.PlayerCharacter;
 import pcgen.core.Race;
 import pcgen.core.SettingsHandler;
 import pcgen.core.ShieldProf;
@@ -457,7 +457,6 @@ public class SourceFileLoader extends PCGenTask implements Observer
 		// Unload the existing campaigns and load our selected campaign
 		Globals.emptyLists();
 		PersistenceManager pManager = PersistenceManager.getInstance();
-		pManager.clear();
 		List<URI> uris = new ArrayList<URI>();
 		for (CampaignFacade campaignFacade : selectedCampaigns)
 		{
@@ -539,8 +538,7 @@ public class SourceFileLoader extends PCGenTask implements Observer
 		sortCampaignsByRank(aSelectedCampaignsList);
 
 		// Read the campaigns
-		Collection<Campaign> loaded = readPccFiles(context,
-												   aSelectedCampaignsList, null, gamemode);
+		Collection<Campaign> loaded = readPccFiles(aSelectedCampaignsList);
 
 		// Add custom campaign files at the start of the lists
 		addCustomFilesToStartOfList();
@@ -563,15 +561,16 @@ public class SourceFileLoader extends PCGenTask implements Observer
 
 		// load weapon profs first
 		wProfLoader.loadLstFiles(context, weaponProfFileList);
-		WeaponProf wp = Globals.getContext().ref.silentlyGetConstructedCDOMObject(WeaponProf.class,
-																				  "Unarmed Strike");
+		WeaponProf wp =
+				context.ref.silentlyGetConstructedCDOMObject(WeaponProf.class,
+					"Unarmed Strike");
 		if (wp == null)
 		{
 			wp = new WeaponProf();
 			wp.setName(LanguageBundle.getString("Equipment.UnarmedStrike"));
 			wp.put(StringKey.KEY_NAME, "Unarmed Strike");
 			wp.addToListFor(ListKey.TYPE, Type.SIMPLE);
-			Globals.getContext().ref.importObject(wp);
+			context.ref.importObject(wp);
 		}
 
 		aProfLoader.loadLstFiles(context, armorProfFileList);
@@ -648,6 +647,7 @@ public class SourceFileLoader extends PCGenTask implements Observer
 		}
 		validateSingleDefaultSize();
 		context.buildTypeLists();
+		context.loadCampaignFacets();
 	}
 
 	private void validateSingleDefaultSize()
@@ -746,7 +746,7 @@ public class SourceFileLoader extends PCGenTask implements Observer
 					if (aEq != null)
 					{
 						aEq = aEq.clone();
-						aEq.setBase(null);
+						aEq.setBase();
 						aEq.load(aLine);
 						if (!aEq.isType(Constants.TYPE_CUSTOM))
 						{
@@ -877,39 +877,21 @@ public class SourceFileLoader extends PCGenTask implements Observer
 	 * @param currentPC
 	 * @param game The gamemode that the campaigns are part of.
 	 */
-	private Collection<Campaign> readPccFiles(LoadContext context,
-											  final List<Campaign> aSelectedCampaignsList,
-											  final PlayerCharacter currentPC,
-											  final GameMode game)
+	private Collection<Campaign> readPccFiles(List<Campaign> aSelectedCampaignsList)
 	{
-//		// Prime options based on currently selected preferences
-//		if (PCGenSettings.OPTIONS_CONTEXT.getBoolean(PCGenSettings.OPTION_ALLOWED_IN_SOURCES))
-//		{
-//			SettingsHandler.setOptionsProperties(currentPC);
-//		}
-
 		Set<Campaign> loadedSet = new HashSet<Campaign>();
 
 		// Create aggregate collections of source files to load
 		// along with any options required by the campaigns...
 		for (Campaign campaign : aSelectedCampaignsList)
 		{
-			Logging.debugPrint("Loading campaign " + campaign);
+			if (Logging.isDebugMode())
+			{
+				Logging.debugPrint("Loading campaign " + campaign);
+			}
 			
 			loadedCampaigns.add(campaign);
-//
-//			final URI sourceFile = campaign.getSourceURI();
-//
-//			List<URI> files = getChosenCampaignSourcefiles(game);
-//			// Update the list of chosen campaign source files
-//			if (!files.contains(sourceFile))
-//			{
-//				files.add(sourceFile);
-//				PCGenSettings.getInstance().setProperty(
-//						"pcgen.files.chosenCampaignSourcefiles." + game.getName(),
-//						StringUtil.join(files, ", "));
-//				//			CoreUtility.join(chosenCampaignSourcefiles, ','));
-//			}
+
 			List<String> copyright = campaign.getListFor(ListKey.SECTION_15);
 			if (copyright != null)
 			{
@@ -989,11 +971,7 @@ public class SourceFileLoader extends PCGenTask implements Observer
 				URI uri = fName.getURI();
 				if (PCGFile.isPCGenCampaignFile(uri))
 				{
-					Campaign subCampaign = Globals.getCampaignByURI(uri, false);
-					if (loadedSet.add(subCampaign))
-					{
-						subCampaign.applyTo(context.ref);
-					}
+					loadedSet.add(Globals.getCampaignByURI(uri, false));
 				}
 				else
 				{
@@ -1008,19 +986,6 @@ public class SourceFileLoader extends PCGenTask implements Observer
 		// sage_sam 29 Dec 2003, Bug #834834
 		stripLstExcludes();
 
-		//
-		// This was added in v1.64. Why? This will read from options.ini, replacing anything that's been changed, not
-		// just campaign-specific items. Commenting out as it breaks loading after selecting game mode on the Campaign menu.
-		// Game mode reverts back to game mode saved in options.ini
-		// - Byngl Sept 15, 2002
-		// This allows options to be set by campaign files. It doesn't read directly from options.ini,
-		// only from the properties. The setOptionsProperties call added above should prime these with
-		// the current values before we load the campaigns.
-		// - James Dempsey 09 Oct 2002
-//		if (PCGenSettings.OPTIONS_CONTEXT.getBoolean(PCGenSettings.OPTION_ALLOWED_IN_SOURCES))
-//		{
-//			SettingsHandler.getOptionsFromProperties(currentPC);
-//		}
 		return loadedSet;
 	}
 

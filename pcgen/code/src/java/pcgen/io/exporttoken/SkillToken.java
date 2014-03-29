@@ -43,10 +43,11 @@ import pcgen.core.analysis.SkillInfoUtilities;
 import pcgen.core.analysis.SkillModifier;
 import pcgen.core.analysis.SkillRankControl;
 import pcgen.core.display.SkillCostDisplay;
+import pcgen.core.display.SkillDisplay;
 import pcgen.io.ExportHandler;
 import pcgen.system.PCGenSettings;
 import pcgen.util.Logging;
-import pcgen.util.enumeration.Visibility;
+import pcgen.util.enumeration.View;
 
 /**
  * <code>SkillToken</code> is the base class for the SKILL
@@ -184,8 +185,8 @@ public class SkillToken extends Token
 		}
 		
 		final List<Skill> pcSkills =
-				pc.getSkillListInOutputOrder(pc.getDisplay()
-					.getPartialSkillList(Visibility.OUTPUT_ONLY));
+				SkillDisplay.getSkillListInOutputOrder(pc, pc.getDisplay()
+					.getPartialSkillList(View.VISIBLE_EXPORT));
 		cachedSkillList = pcSkills;
 		lastPC = pc;
 		lastPCSerial = pc.getSerial();

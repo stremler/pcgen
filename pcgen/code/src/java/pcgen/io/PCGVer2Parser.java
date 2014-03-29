@@ -30,7 +30,7 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
@@ -41,17 +41,15 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
 
-import pcgen.base.util.FixedStringList;
 import pcgen.base.util.HashMapToList;
 import pcgen.cdom.base.AssociatedPrereqObject;
-import pcgen.cdom.base.BasicChooseInformation;
 import pcgen.cdom.base.CDOMObject;
 import pcgen.cdom.base.CDOMReference;
-import pcgen.cdom.base.ChooseInformation;
 import pcgen.cdom.base.Constants;
 import pcgen.cdom.base.PersistentTransitionChoice;
 import pcgen.cdom.base.SelectableSet;
-import pcgen.cdom.choiceset.ReferenceChoiceSet;
+import pcgen.cdom.base.UserSelection;
+import pcgen.cdom.content.CNAbility;
 import pcgen.cdom.enumeration.AssociationKey;
 import pcgen.cdom.enumeration.AssociationListKey;
 import pcgen.cdom.enumeration.BiographyField;
@@ -64,13 +62,14 @@ import pcgen.cdom.enumeration.ObjectKey;
 import pcgen.cdom.enumeration.Region;
 import pcgen.cdom.enumeration.SkillFilter;
 import pcgen.cdom.enumeration.SkillsOutputOrder;
+import pcgen.cdom.enumeration.SourceFormat;
 import pcgen.cdom.enumeration.StringKey;
 import pcgen.cdom.enumeration.Type;
 import pcgen.cdom.facet.FacetLibrary;
 import pcgen.cdom.facet.input.DomainInputFacet;
 import pcgen.cdom.facet.input.RaceInputFacet;
 import pcgen.cdom.facet.input.TemplateInputFacet;
-import pcgen.cdom.helper.CategorizedAbilitySelection;
+import pcgen.cdom.helper.CNAbilitySelection;
 import pcgen.cdom.helper.ClassSource;
 import pcgen.cdom.inst.EquipmentHead;
 import pcgen.cdom.inst.PCClassLevel;
@@ -122,9 +121,9 @@ import pcgen.core.character.EquipSet;
 import pcgen.core.character.Follower;
 import pcgen.core.character.SpellBook;
 import pcgen.core.character.SpellInfo;
-import pcgen.core.chooser.CDOMChoiceManager;
 import pcgen.core.chooser.ChoiceManagerList;
 import pcgen.core.chooser.ChooserUtilities;
+import pcgen.core.display.BonusDisplay;
 import pcgen.core.facade.CampaignFacade;
 import pcgen.core.facade.SourceSelectionFacade;
 import pcgen.core.pclevelinfo.PCLevelInfo;
@@ -136,6 +135,7 @@ import pcgen.io.migration.AbilityMigration;
 import pcgen.io.migration.AbilityMigration.CategorisedKey;
 import pcgen.io.migration.EquipSetMigration;
 import pcgen.io.migration.EquipmentMigration;
+import pcgen.io.migration.RaceMigration;
 import pcgen.io.migration.SourceMigration;
 import pcgen.persistence.PersistenceLayerException;
 import pcgen.rules.context.LoadContext;
@@ -183,7 +183,6 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 	 */
 	private final List<String> warnings = new ArrayList<String>();
 	private Cache cache;
-	private final List<WeaponProf> weaponprofs = new ArrayList<WeaponProf>();
 	private PlayerCharacter thePC;
 	private final Set<String> seenStats = new HashSet<String>();
 	private final Set<Language> cachedLanguages = new HashSet<Language>();
@@ -360,6 +359,9 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 		if (sourceStr.startsWith(TAG_FEAT + '='))
 		{
 			sourceStr = sourceStr.substring(5);
+			oSource =
+					Globals.getContext().ref.silentlyGetConstructedCDOMObject(
+						Ability.class, AbilityCategory.FEAT, sourceStr);
 			oSource = thePC.getAbilityKeyed(AbilityCategory.FEAT, sourceStr);
 			if (oSource == null)
 			{
@@ -566,157 +568,6 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 		warnings.add(message);
 	}
 
-	private void parseArmorProfLine(String line)
-	{
-		final StringTokenizer stok =
-				new StringTokenizer(line.substring(TAG_ARMORPROF.length() + 1),
-					TAG_END, false);
-
-		// should be in the form ARMORPROF:objectype=name:prof:prof:prof:prof:etc.
-		final String objecttype = stok.nextToken();
-		final String objectname =
-				objecttype.substring(objecttype.indexOf('=') + 1);
-		final List<String> aList = new ArrayList<String>();
-
-		while (stok.hasMoreTokens())
-		{
-			aList.add(stok.nextToken());
-		}
-
-		if (objecttype.startsWith(TAG_DEITY))
-		{
-			if (thePC.getDeity() != null)
-			{
-				Deity deity = thePC.getDeity();
-				for (String s : aList)
-				{
-					thePC.addAssociation(deity, s);
-				}
-			}
-		}
-		else if (objecttype.startsWith(TAG_CLASS))
-		{
-			final PCClass aClass = thePC.getClassKeyed(objectname);
-
-			if (aClass != null)
-			{
-				for (String s : aList)
-				{
-					thePC.addAssociation(aClass, s);
-				}
-			}
-			else
-			{
-				Logging.errorPrintLocalised(
-					"Errors.PCGenParser.ObjectNotFound", //$NON-NLS-1$
-					line, TAG_CLASS, objectname);
-			}
-		}
-		else if (objecttype.startsWith(TAG_FEAT))
-		{
-			final Ability aFeat = thePC.getFeatNamed(objectname);
-
-			if (aFeat != null)
-			{
-				for (String s : aList)
-				{
-					thePC.addAssociation(aFeat, s);
-				}
-			}
-			else
-			{
-				Logging.errorPrintLocalised(
-					"Errors.PCGenParser.ObjectNotFound", //$NON-NLS-1$
-					line, TAG_FEAT, objectname);
-			}
-		}
-		else if (objecttype.startsWith(TAG_SKILL))
-		{
-			Skill aSkill =
-					Globals.getContext().ref.silentlyGetConstructedCDOMObject(
-						Skill.class, objectname);
-
-			if (aSkill != null && thePC.hasSkill(aSkill))
-			{
-				for (String s : aList)
-				{
-					thePC.addAssociation(aSkill, s);
-				}
-			}
-			else
-			{
-				Logging.errorPrintLocalised(
-					"Errors.PCGenParser.ObjectNotFound", //$NON-NLS-1$
-					line, TAG_SKILL, objectname);
-			}
-		}
-		else if (objecttype.startsWith(TAG_DOMAIN))
-		{
-			Domain aDomain =
-					Globals.getContext().ref.silentlyGetConstructedCDOMObject(
-						DOMAIN_CLASS, objectname);
-
-			if (aDomain != null && thePC.hasDomain(aDomain))
-			{
-				for (String s : aList)
-				{
-					thePC.addAssociation(aDomain, s);
-				}
-			}
-			else
-			{
-				Logging.errorPrintLocalised(
-					"Errors.PCGenParser.ObjectNotFound", //$NON-NLS-1$
-					line, TAG_DOMAIN, objectname);
-			}
-		}
-		else if (objecttype.startsWith(TAG_EQUIPMENT))
-		{
-			final Equipment eq = thePC.getEquipmentNamed(objectname);
-
-			if (eq != null)
-			{
-				for (String s : aList)
-				{
-					thePC.addAssociation(eq, s);
-				}
-			}
-			else
-			{
-				Logging.errorPrintLocalised(
-					"Errors.PCGenParser.ObjectNotFound", //$NON-NLS-1$
-					line, TAG_EQUIPMENT, objectname);
-			}
-		}
-		else if (objecttype.startsWith(TAG_TEMPLATE))
-		{
-			PCTemplate aTemplate =
-					Globals.getContext().ref.silentlyGetConstructedCDOMObject(
-						PCTemplate.class, objectname);
-
-			if (aTemplate != null && thePC.hasTemplate(aTemplate))
-			{
-				for (String s : aList)
-				{
-					thePC.addAssociation(aTemplate, s);
-				}
-			}
-			else
-			{
-				Logging.errorPrintLocalised(
-					"Errors.PCGenParser.ObjectNotFound", //$NON-NLS-1$
-					line, TAG_TEMPLATE, objectname);
-			}
-		}
-		else
-		{
-			Logging.errorPrintLocalised("Errors.PCGenParser.UnknownObject", //$NON-NLS-1$
-				line);
-
-			return; // no object type found
-		}
-	}
-
 	/**
 	 * Auto sort gear (Y/N)
 	 * @param line Line of saved data to be processed.
@@ -845,7 +696,7 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 		 */
 		if (cache.containsKey(TAG_CAMPAIGN))
 		{
-			parseCampaignLines(cache.get(TAG_CAMPAIGN));
+			checkDisplayListsHappy();
 		}
 
 		/*
@@ -1171,14 +1022,8 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 				parseDomainLine(line);
 			}
 		}
-
-		if (cache.containsKey(TAG_DOMAINSPELLS))
-		{
-			for (final String line : cache.get(TAG_DOMAINSPELLS))
-			{
-				parseDomainSpellsLine(line);
-			}
-		}
+		
+		//We ignore domain spells now
 
 		if (cache.containsKey(TAG_SPELLBOOK))
 		{
@@ -1309,7 +1154,7 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 			// We process the bonuses loaded so far so that natural weapons from 
 			// conditional abilities can be found. 
 			thePC.setImporting(false);
-			thePC.setCalcFollowerBonus(thePC);
+			thePC.setCalcFollowerBonus();
 			thePC.calcActiveBonuses();
 			thePC.setImporting(true);
 
@@ -1535,14 +1380,6 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 			//checkWeaponProficiencies();
 		}
 
-		if (cache.containsKey(TAG_ARMORPROF))
-		{
-			for (final String line : cache.get(TAG_ARMORPROF))
-			{
-				parseArmorProfLine(line);
-			}
-		}
-
 		/*
 		 * # Temporary Bonuses
 		 */
@@ -1597,11 +1434,8 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 	 * System Information methods
 	 * ###############################################################
 	 */
-	private void parseCampaignLines(final List<String> lines)
-		throws PCGParseException
+	private void checkDisplayListsHappy() throws PCGParseException
 	{
-		// Note: Campaigns are processed in advance by parsePCGSourceOnly now.
-		
 		if (!Globals.displayListsHappy())
 		{
 			throw new PCGParseException("parseCampaignLines", "N/A", //$NON-NLS-1$ //$NON-NLS-2$
@@ -2491,12 +2325,6 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 		}
 	}
 
-	private void parseDomainSpellsLine(@SuppressWarnings("unused")
-	String line)
-	{
-		// TODO
-	}
-
 	/**
 	 * ###############################################################
 	 * EquipSet Temp Bonuses
@@ -2797,12 +2625,15 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 
 					if (aBonus != null)
 					{
-						thePC.addBonus(aBonus, ability);
+						thePC.addSaveableBonus(aBonus, ability);
 					}
 				}
 				else
 				{
-					Logging.debugPrint("Ignoring SAVE:" + saveKey);
+					if (Logging.isDebugMode())
+					{
+						Logging.debugPrint("Ignoring SAVE:" + saveKey);
+					}
 				}
 			}
 		}
@@ -2838,50 +2669,13 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 					}
 					else
 					{
-						thePC.setAssoc(ability, AssociationKey.NEEDS_SAVING,
-							Boolean.TRUE);
+						thePC.addSavedAbility(ability);
 					}
 				}
 			}
 			for (String appliedToKey : associations)
 			{
-				if (appliedToKey.startsWith(TAG_MULTISELECT))
-				{
-					//
-					// Should be in the form:
-					// MULTISELECCT:maxcount:#chosen:choice1:choice2:...:choicen
-					//
-					final StringTokenizer sTok =
-							new StringTokenizer(appliedToKey, TAG_END, false);
-
-					if (sTok.countTokens() > 2)
-					{
-						sTok.nextToken(); // should be TAG_MULTISELECT
-
-						final int maxChoices =
-								Integer.parseInt(sTok.nextToken());
-						sTok.nextToken(); // toss this--number of choices made
-
-						final FixedStringList array =
-								new FixedStringList(maxChoices);
-						while (sTok.hasMoreTokens())
-						{
-							array.add(sTok.nextToken());
-						}
-
-						thePC.addAssociation(ability, array);
-					}
-					else
-					{
-						final String msg =
-								LanguageBundle
-									.getFormattedString(
-										"Warnings.PCGenParser.IllegalAbilityIgnored", //$NON-NLS-1$
-										line);
-						warnings.add(msg);
-					}
-				}
-				else if ((ability.getSafe(ObjectKey.MULTIPLE_ALLOWED) && ability
+				if ((ability.getSafe(ObjectKey.MULTIPLE_ALLOWED) && ability
 					.getSafe(ObjectKey.STACKS))
 					|| !thePC.containsAssociated(ability, appliedToKey))
 				{
@@ -2962,7 +2756,7 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 
 			Ability pcAbility =
 					thePC.addAbilityNeedCheck(AbilityCategory.FEAT, anAbility);
-			parseFeatsHandleAppliedToAndSaveTags(it, pcAbility, line);
+			parseFeatsHandleAppliedToAndSaveTags(it, pcAbility);
 			featsPresent = (pcAbility != anAbility);
 		}
 	}
@@ -3034,7 +2828,7 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 	}
 
 	private void parseFeatsHandleAppliedToAndSaveTags(
-		final Iterator<PCGElement> it, final Ability aFeat, final String line)
+		final Iterator<PCGElement> it, final Ability aFeat)
 	{
 		while (it.hasNext())
 		{
@@ -3046,56 +2840,28 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 				final String appliedToKey =
 						EntityEncoder.decode(element.getText());
 
-				// This will delete a perfectly valid feat.  Removed 03/26/06 boomer70
-				//				if (aFeat.getName().endsWith("Weapon Proficiency"))
-				//				{
-				//					aPC.addWeaponProf(updateProficiencyName(appliedToKey, false));
-				//
-				//					// addWeaponProf adds the feat to this
-				//					// PC's list, so don't add it again!
-				//					added = true;
-				//				}
-
-				if (appliedToKey.startsWith(TAG_MULTISELECT))
-				{
-					//
-					// Should be in the form:
-					// MULTISELECCT:maxcount:#chosen:choice1:choice2:...:choicen
-					//
-					final StringTokenizer sTok =
-							new StringTokenizer(appliedToKey, TAG_END, false);
-
-					if (sTok.countTokens() > 2)
-					{
-						sTok.nextToken(); // should be TAG_MULTISELECT
-
-						final int maxChoices =
-								Integer.parseInt(sTok.nextToken());
-						sTok.nextToken(); // toss this--number of choices made
-
-						final FixedStringList array =
-								new FixedStringList(maxChoices);
-						while (sTok.hasMoreTokens())
-						{
-							array.add(sTok.nextToken());
-						}
-
-						thePC.addAssociation(aFeat, array);
-					}
-					else
-					{
-						final String msg =
-								LanguageBundle.getFormattedString(
-									"Warnings.PCGenParser.IllegalFeatIgnored", //$NON-NLS-1$
-									line);
-						warnings.add(msg);
-					}
-				}
-				else if ((aFeat.getSafe(ObjectKey.MULTIPLE_ALLOWED) && aFeat
+				if ((aFeat.getSafe(ObjectKey.MULTIPLE_ALLOWED) && aFeat
 					.getSafe(ObjectKey.STACKS))
 					|| !thePC.containsAssociated(aFeat, appliedToKey))
 				{
-					thePC.addAssociation(aFeat, appliedToKey);
+					ChoiceManagerList<Object> controller =
+							ChooserUtilities.getConfiguredController(aFeat,
+								thePC, AbilityCategory.FEAT, new ArrayList<String>());
+					if (controller != null)
+					{
+						String[] assoc =
+								appliedToKey.split(Constants.COMMA, -1);
+						for (String string : assoc)
+						{
+							controller.restoreChoice(thePC, aFeat, string);
+						}
+					}
+					else
+					{
+						warnings
+							.add("Failed to find choose controller for Feat "
+								+ aFeat);
+					}
 				}
 			}
 			else if (TAG_SAVE.equals(tag))
@@ -3110,12 +2876,15 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 
 					if (aBonus != null)
 					{
-						thePC.addBonus(aBonus, aFeat);
+						thePC.addSaveableBonus(aBonus, aFeat);
 					}
 				}
 				else
 				{
-					Logging.debugPrint("Ignoring SAVE:" + saveKey);
+					if (Logging.isDebugMode())
+					{
+						Logging.debugPrint("Ignoring SAVE:" + saveKey);
+					}
 				}
 			}
 			else if (tag.equals(TAG_LEVELABILITY))
@@ -3867,17 +3636,21 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 	{
 		List<PCGElement> elements = new PCGTokenizer(line).getElements();
 		PCGElement raceElement = elements.get(0);
-		String race_name = EntityEncoder.decode(raceElement.getText());
+		String raceName = EntityEncoder.decode(raceElement.getText());
+		// Check for a race key that has been updated.
+		raceName =
+				RaceMigration.getNewRaceKey(raceName, pcgenVersion,
+					SettingsHandler.getGame().getName());
 		final Race aRace =
 				Globals.getContext().ref.silentlyGetConstructedCDOMObject(
-					Race.class, race_name);
+					Race.class, raceName);
 
 		if (aRace == null)
 		{
 			final String msg =
 					LanguageBundle.getFormattedString(
 						"Exceptions.PCGenParser.RaceNotFound", //$NON-NLS-1$
-						race_name);
+						raceName);
 			throw new PCGParseException("parseRaceLine", line, msg); //$NON-NLS-1$
 		}
 		String selection = null;
@@ -3934,58 +3707,6 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 		{
 			thePC.addFavoredClass(cl, thePC);
 		}
-	}
-
-	/**
-	 * Translate the string of hitpoint values into a map.
-	 * @param race_name The name of the race, for error reporting.
-	 * @param hitDice The number of hitdice expected
-	 * @param aString The original string, for error reporting
-	 * @param aTok The hit point string already tokenized
-	 * @return A map of the levels and their hitpoint values.
-	 * @throws PCGParseException If the value cannot be parsed.
-	 */
-	private HashMap<String, Integer> processHitPoints(final String race_name,
-		int hitDice, final String aString, final StringTokenizer aTok)
-		throws PCGParseException
-	{
-		int i = 0;
-		final HashMap<String, Integer> hitPointMap =
-				new HashMap<String, Integer>();
-		while (aTok.hasMoreTokens())
-		{
-			if (i >= hitDice)
-			{
-				final String msg =
-						LanguageBundle.getFormattedString(
-							"Warnings.PCGenParser.RaceFewerHD", //$NON-NLS-1$
-							race_name);
-				warnings.add(msg);
-
-				break;
-			}
-
-			try
-			{
-				hitPointMap.put(Integer.toString(i++),
-					Integer.valueOf(aTok.nextToken()));
-			}
-			catch (NumberFormatException ex)
-			{
-				throw new PCGParseException(
-					"parseRaceLine", aString, ex.getMessage()); //$NON-NLS-1$
-			}
-		}
-
-		if (i < hitDice)
-		{
-			final String msg =
-					LanguageBundle.getFormattedString(
-						"Warnings.PCGenParser.RaceMoreHD", //$NON-NLS-1$
-						race_name);
-			warnings.add(msg);
-		}
-		return hitPointMap;
 	}
 
 	/*
@@ -4936,11 +4657,10 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 										EntityEncoder.decode(mapKey), feat);
 							if (subt != null)
 							{
-								CategorizedAbilitySelection as =
-										CategorizedAbilitySelection
+								CNAbilitySelection as =
+										CNAbilitySelection
 											.getAbilitySelectionFromPersistentFormat(feat);
-								thePC.addAssoc(subt,
-									AssociationListKey.TEMPLATE_FEAT, as);
+								thePC.addTemplateFeat(subt, as);
 							}
 						}
 					}
@@ -5055,12 +4775,11 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 			anAbility =
 					AbilityUtilities.addCloneOfAbilityToVirtualListwithChoices(
 						thePC, anAbility, null, AbilityCategory.FEAT);
-			thePC
-				.setAssoc(anAbility, AssociationKey.NEEDS_SAVING, Boolean.TRUE);
+			thePC.addSavedAbility(anAbility);
 			thePC.setDirty(true);
 		}
 
-		parseFeatsHandleAppliedToAndSaveTags(it, anAbility, line);
+		parseFeatsHandleAppliedToAndSaveTags(it, anAbility);
 
 		// TODO
 		// process all additional information
@@ -5139,11 +4858,13 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 		}
 
 		CDOMObject source = null;
+		boolean hadSource = false;
 
 		for (PCGElement element : tokens.getElements())
 		{
 			if (TAG_SOURCE.equals(element.getName()))
 			{
+				hadSource = true;
 				String type = Constants.EMPTY_STRING;
 				String key = Constants.EMPTY_STRING;
 
@@ -5195,33 +4916,6 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 				{
 					source = thePC.getClassKeyed(key);
 				}
-				else if (TAG_DOMAIN.equals(type))
-				{
-					Domain domain =
-							Globals.getContext().ref
-								.silentlyGetConstructedCDOMObject(DOMAIN_CLASS,
-									key);
-					if (thePC.hasDomain(domain))
-					{
-						source = domain;
-					}
-					else
-					{
-						warnings.add("PC does not have Domain: " + key);
-					}
-				}
-				else if (TAG_DOMAIN.equals(type))
-				{
-					source = thePC.getAbilityKeyed(AbilityCategory.FEAT, key);
-				}
-				// Fix for bug 1185344
-				else if (TAG_ABILITY.equals(type))
-				{
-					source =
-							thePC.getAutomaticAbilityKeyed(
-								AbilityCategory.FEAT, key);
-				}
-				// End of Fix
 
 				if (source == null)
 				{
@@ -5236,32 +4930,33 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 
 		final PCGElement element = tokens.getElements().get(0);
 
-		if (source == null)
+		boolean processed = false;
+		if (source != null)
 		{
-			for (PCGElement child : element.getChildren())
+			List<PersistentTransitionChoice<?>> adds =
+					source.getListFor(ListKey.ADD);
+			if (adds != null)
 			{
-				weaponprofs.add(getWeaponProf(child.getText()));
-			}
-		}
-		else
-		{
-			for (PCGElement child : element.getChildren())
-			{
-				Collection<CDOMReference<WeaponProf>> wpBonus =
-						source.getListMods(WeaponProf.STARTING_LIST);
-				if (wpBonus != null)
+				for (PersistentTransitionChoice<?> ptc: adds)
 				{
-					ChooseInformation<WeaponProf> tc =
-							new BasicChooseInformation<WeaponProf>(
-								"WEAPONBONUS",
-								new ReferenceChoiceSet<WeaponProf>(wpBonus));
-					tc.setChoiceActor(WeaponProf.STARTING_ACTOR);
-					CDOMChoiceManager<WeaponProf> mgr =
-							new CDOMChoiceManager<WeaponProf>(source, tc, 1, 1);
-					mgr.conditionallyApply(thePC,
-						getWeaponProf(child.getText()));
+					if (ptc.getChoiceClass().equals(WeaponProf.class))
+					{
+						for (PCGElement child : element.getChildren())
+						{
+							WeaponProf wp = getWeaponProf(child.getText());
+							Set c = Collections.singleton(wp);
+							ptc.act(c, source, thePC);
+						}
+						processed = true;
+						break;
+					}
 				}
 			}
+		}
+		if (hadSource && !processed)
+		{
+			final String message = "Unable to apply WeaponProfs: " + line;
+			warnings.add(message);
 		}
 	}
 
@@ -5297,35 +4992,12 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 			final String message =
 					"Unable to find Weapon Proficiency in Rules Data:"
 						+ aString;
-			Logging.debugPrint(message);
-		}
-		return wp;
-	}
-
-	private void checkWeaponProficiencies()
-	{
-		for (final Iterator<WeaponProf> it = weaponprofs.iterator(); it
-			.hasNext();)
-		{
-			if (thePC.hasWeaponProf(it.next()))
+			if (Logging.isDebugMode())
 			{
-				it.remove();
+				Logging.debugPrint(message);
 			}
 		}
-
-		//
-		// For some reason, character had a proficiency that they should not have. Inform
-		// the user that they no longer have the proficiency.
-		//
-		if (weaponprofs.size() > 0)
-		{
-			String s = weaponprofs.toString();
-			s = s.substring(1, s.length() - 1);
-
-			final String message =
-					"No longer proficient with following weapon(s):" + s;
-			warnings.add(message);
-		}
+		return wp;
 	}
 
 	/**
@@ -5484,7 +5156,7 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 								head.removeListFor(ListKey.EQMOD);
 								head.removeListFor(ListKey.EQMOD_INFO);
 							}
-							aEquip.setBase(thePC);
+							aEquip.setBase();
 							aEquip.load(customProperties, "$", "=", thePC); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 						else
@@ -5514,7 +5186,7 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 										head.removeListFor(ListKey.EQMOD);
 										head.removeListFor(ListKey.EQMOD_INFO);
 									}
-									aEquip.setBase(thePC);
+									aEquip.setBase();
 									aEquip.load(customProperties,
 										"$", "=", thePC); //$NON-NLS-1$//$NON-NLS-2$
 									aEquip.remove(StringKey.OUTPUT_NAME);
@@ -5961,7 +5633,7 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 			
 			if (!active)
 			{
-				String bonusName = new BonusManager(thePC).getBonusDisplayName(newB, tempBonusInfo);
+				String bonusName = BonusDisplay.getBonusDisplayName(tempBonusInfo);
 				thePC.setTempBonusFilter(bonusName);
 			}
 		}
@@ -6442,9 +6114,7 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 
 	private void resolveLanguages()
 	{
-		Ability langbonus =
-				Globals.getContext().ref.silentlyGetConstructedCDOMObject(
-					Ability.class, AbilityCategory.LANGBONUS, "*LANGBONUS");
+		CNAbility langbonus = thePC.getBonusLanguageAbility();
 		int currentBonusLang = thePC.getDetailedAssociationCount(langbonus);
 		boolean foundLang = currentBonusLang > 0;
 
@@ -6453,12 +6123,12 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 		foundLanguages.addAll(thePC.getLanguageSet());
 		cachedLanguages.removeAll(foundLanguages);
 
-		HashMapToList<Language, Object> sources = new HashMapToList<Language, Object>();
+		HashMapToList<Language, Object> langSources = new HashMapToList<Language, Object>();
 		Map<Object, Integer> actorLimit = new IdentityHashMap<Object, Integer>();
-		Map<PersistentTransitionChoice, Ability> ptcSources = new IdentityHashMap<PersistentTransitionChoice, Ability>();
+		Map<PersistentTransitionChoice, CDOMObject> ptcSources = new IdentityHashMap<PersistentTransitionChoice, CDOMObject>();
 
-		List<Ability> abilities = thePC.getAllAbilities();
-		for (Ability a : abilities)
+		List<? extends CDOMObject> abilities = thePC.getCDOMObjectList();
+		for (CDOMObject a : abilities)
 		{
 			List<PersistentTransitionChoice<?>> addList =
 					a.getListFor(ListKey.ADD);
@@ -6476,13 +6146,16 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 						{
 							if (cachedLanguages.contains(l))
 							{
+								String source =
+										SourceFormat.getFormattedString(a,
+											Globals.getSourceDisplay(), true);
 								int choiceCount =
 										ptc.getCount()
-											.resolve(thePC, a.getSource())
+											.resolve(thePC, source)
 											.intValue();
 								if (choiceCount > 0)
 								{
-									sources.addToListFor(l, ptc);
+									langSources.addToListFor(l, ptc);
 									ptcSources.put(ptc, a);
 									actorLimit.put(ptc, choiceCount);
 								}
@@ -6495,9 +6168,6 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 		if (!foundLang)
 		{
 			Set<Language> bonusAllowed = thePC.getLanguageBonusSelectionList();
-			ChoiceManagerList<Object> controller =
-					ChooserUtilities.getConfiguredController(langbonus, thePC,
-						AbilityCategory.LANGBONUS, new ArrayList<String>());
 			int count = thePC.getBonusLanguageCount();
 			int choiceCount = count - currentBonusLang;
 			if (choiceCount > 0)
@@ -6506,8 +6176,8 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 				{
 					if (cachedLanguages.contains(l))
 					{
-						sources.addToListFor(l, controller);
-						actorLimit.put(controller, choiceCount);
+						langSources.addToListFor(l, langbonus);
+						actorLimit.put(langbonus, choiceCount);
 					}
 				}
 			}
@@ -6517,23 +6187,23 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 		while (acted)
 		{
 			acted = false;
-			for (Language l : sources.getKeySet())
+			for (Language l : langSources.getKeySet())
 			{
-				List<Object> actors = sources.getListFor(l);
+				List<Object> actors = langSources.getListFor(l);
 				if ((actors != null) && (actors.size() == 1))
 				{
 					Object actor = actors.get(0);
 					acted = true;
-					processRemoval(langbonus, sources, actorLimit, ptcSources,
+					processRemoval(langbonus, langSources, actorLimit, ptcSources,
 						l, actor);
 				}
 			}
-			if (!acted && !sources.isEmpty() && !actorLimit.isEmpty())
+			if (!acted && !langSources.isEmpty() && !actorLimit.isEmpty())
 			{
 				//pick one
-				Language l = sources.getKeySet().iterator().next();
-				Object source = sources.getListFor(l).get(0);
-				processRemoval(langbonus, sources, actorLimit, ptcSources, l, source);
+				Language l = langSources.getKeySet().iterator().next();
+				Object source = langSources.getListFor(l).get(0);
+				processRemoval(langbonus, langSources, actorLimit, ptcSources, l, source);
 				acted = true;
 			}
 		}
@@ -6545,10 +6215,10 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 		}
 	}
 
-	protected void processRemoval(Ability langbonus,
+	protected void processRemoval(CNAbility langbonus,
 		HashMapToList<Language, Object> sources,
 		Map<Object, Integer> actorLimit,
-		Map<PersistentTransitionChoice, Ability> ptcSources, Language l,
+		Map<PersistentTransitionChoice, CDOMObject> ptcSources, Language l,
 		Object actor)
 	{
 		Integer limit = actorLimit.get(actor);
@@ -6573,22 +6243,25 @@ final class PCGVer2Parser implements PCGParser, IOConstants
 		}
 	}
 
-	protected void processActor(Ability langbonus,
-		Map<PersistentTransitionChoice, Ability> ptcSources, Language l,
+	protected void processActor(CNAbility langbonus,
+		Map<PersistentTransitionChoice, CDOMObject> ptcSources, Language l,
 		Object actor)
 	{
-		if (actor instanceof ChoiceManagerList)
+		if (actor instanceof CNAbility)
 		{
-			ChoiceManagerList<Object> controller =
-					(ChoiceManagerList<Object>) actor;
-			controller.restoreChoice(thePC, langbonus,
-				l.getKeyName());
+			thePC.addAppliedAbility(new CNAbilitySelection(langbonus,
+				l.getKeyName()), UserSelection.getInstance());
 		}
 		else if (actor instanceof PersistentTransitionChoice)
 		{
 			PersistentTransitionChoice<Language> ptc =
 					(PersistentTransitionChoice<Language>) actor;
 			ptc.restoreChoice(thePC, ptcSources.get(ptc), l);
+		}
+		else
+		{
+			warnings.add("Internal Error: Language actor of "
+				+ actor.getClass() + " is not understood");
 		}
 	}
 

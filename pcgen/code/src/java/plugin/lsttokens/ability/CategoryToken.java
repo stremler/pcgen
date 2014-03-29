@@ -24,15 +24,15 @@ import pcgen.core.AbilityCategory;
 import pcgen.rules.context.LoadContext;
 import pcgen.rules.persistence.token.AbstractNonEmptyToken;
 import pcgen.rules.persistence.token.CDOMPrimaryToken;
-import pcgen.rules.persistence.token.DeferredToken;
 import pcgen.rules.persistence.token.ParseResult;
+import pcgen.rules.persistence.token.PostDeferredToken;
 import pcgen.util.Logging;
 
 /**
  * Deal with CATEGORY token
  */
 public class CategoryToken extends AbstractNonEmptyToken<Ability> implements
-		CDOMPrimaryToken<Ability>, DeferredToken<Ability>
+		CDOMPrimaryToken<Ability>, PostDeferredToken<Ability>
 {
 	private static final Class<AbilityCategory> ABILITY_CATEGORY_CLASS = AbilityCategory.class;
 
@@ -77,12 +77,21 @@ public class CategoryToken extends AbstractNonEmptyToken<Ability> implements
 	@Override
 	public boolean process(LoadContext context, Ability ability)
 	{
-		if (ability.get(ObjectKey.ABILITY_CAT) == null)
+		Category<Ability> cat = ability.get(ObjectKey.ABILITY_CAT);
+		if (cat == null)
 		{
 			Logging.log(Logging.LST_ERROR, "Ability " + ability.getKeyName()
 					+ " did not have a Category specified.  "
 					+ "A Category is required for an Ability. " 
 					+ "File was " + ability.getSourceURI());
+			return false;
+		}
+		if (cat.getParentCategory() != cat)
+		{
+			Logging.log(Logging.LST_ERROR, "Ability " + ability.getKeyName()
+				+ " did not refer to a 'parent' Category, used: " + cat
+				+ ". A Parent Category is required for an Ability. "
+				+ "File was " + ability.getSourceURI());
 			return false;
 		}
 		return true;
@@ -92,6 +101,11 @@ public class CategoryToken extends AbstractNonEmptyToken<Ability> implements
 	public Class<Ability> getDeferredTokenClass()
 	{
 		return getTokenClass();
+	}
+
+	public int getPriority()
+	{
+		return 0;
 	}
 
 }

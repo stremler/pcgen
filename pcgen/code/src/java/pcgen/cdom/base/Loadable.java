@@ -19,16 +19,12 @@ package pcgen.cdom.base;
 
 import java.net.URI;
 
-public interface Loadable
+public interface Loadable extends Identified
 {
-
-	public String getKeyName();
 
 	public String getLSTformat();
 
 	public void setName(String name);
-
-	public String getDisplayName();
 
 	public URI getSourceURI();
 

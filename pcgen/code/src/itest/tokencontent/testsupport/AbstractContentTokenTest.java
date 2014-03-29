@@ -20,9 +20,10 @@ package tokencontent.testsupport;
 import org.junit.Test;
 
 import pcgen.cdom.base.CDOMObject;
-import pcgen.cdom.content.Selection;
+import pcgen.cdom.base.UserSelection;
+import pcgen.cdom.content.CNAbility;
 import pcgen.cdom.enumeration.Nature;
-import pcgen.cdom.helper.CategorizedAbilitySelection;
+import pcgen.cdom.helper.CNAbilitySelection;
 import pcgen.cdom.helper.ClassSource;
 import pcgen.cdom.inst.PCClassLevel;
 import pcgen.core.Ability;
@@ -49,13 +50,13 @@ public abstract class AbstractContentTokenTest extends AbstractTokenModelTest
 		context.ref.reassociateCategory(AbilityCategory.FEAT, source);
 		processToken(source);
 		assertEquals(baseCount(), targetFacetCount());
-		CategorizedAbilitySelection cas =
-				new CategorizedAbilitySelection(AbilityCategory.FEAT, source,
-					Nature.AUTOMATIC);
-		directAbilityFacet.add(id, cas);
+		CNAbilitySelection cas =
+				new CNAbilitySelection(new CNAbility(AbilityCategory.FEAT, source,
+					Nature.AUTOMATIC));
+		directAbilityFacet.add(id, cas, UserSelection.getInstance());
 		assertTrue(containsExpected());
 		assertEquals(baseCount() + 1, targetFacetCount());
-		directAbilityFacet.remove(id, cas);
+		directAbilityFacet.remove(id, cas, UserSelection.getInstance());
 		assertEquals(baseCount(), targetFacetCount());
 	}
 
@@ -185,7 +186,7 @@ public abstract class AbstractContentTokenTest extends AbstractTokenModelTest
 		Race source = create(Race.class, "Source");
 		processToken(source);
 		assertEquals(baseCount(), targetFacetCount());
-		raceFacet.set(id, getSelectionObject(source));
+		raceFacet.directSet(id, source, getAssoc());
 		assertTrue(containsExpected());
 		assertEquals(baseCount() + 1, targetFacetCount());
 		raceFacet.remove(id);
@@ -214,11 +215,10 @@ public abstract class AbstractContentTokenTest extends AbstractTokenModelTest
 		PCTemplate source = create(PCTemplate.class, "Source");
 		processToken(source);
 		assertEquals(baseCount(), targetFacetCount());
-		Selection<PCTemplate, ?> sel = getSelectionObject(source);
-		templateFacet.add(id, sel, this);
+		templateInputFacet.directAdd(id, source, getAssoc());
 		assertTrue(containsExpected());
 		assertEquals(baseCount() + 1, targetFacetCount());
-		templateFacet.remove(id, sel, this);
+		templateInputFacet.remove(id, source);
 		assertEquals(baseCount(), targetFacetCount());
 	}
 

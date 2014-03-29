@@ -1,0 +1,41 @@
+DS/DL DONE:
+- Collating PsiUn and PsiEx entries
+- Page numbering, updating, and new entries through Chapter 3: Skills and Feats (p. 120)
+- Some new entries for race abilities/archetypes
+- Update powers known/max power level variables and display for classes (and gifted blade)
+- Chapter 7: Prestige Classes
+- Chapter 8: Psionic Items
+  * All but legendary items done
+  * Two legendary items done
+- Change classlevel references to xxxLVL (for consistency)
+  
+DS/DL DOING:
+- Chapter 8: Psionic Items
+  * Most legendary items to be implemented
+  
+ELRO DONE:
+- Change BONUS/PREAPPLY to TEMPBONUS
+- Chapter 5: Powers
+  * Add commas to the COMPS entries and change to full words
+  * Check all powers: fix errors/page numbers etc.
+
+LEFT TO DO:
+- Overall:
+  * Update SOURCExxx line
+  * Update page numbers
+  * Remove monsters (except astral construct / astral swarm / psicrystal)
+  * Consolidate files and change to new file naming scheme - do last
+    * Add appropriate comments to separate sections
+  * Update OGL info
+  * Consider adding checklist info to all the myriad N/day abilities
+- Chapter 4: Psionics - Nothing should be needed here
+- Chapter 6: Advanced Options
+  * Add new archetypes
+  * Add new character traits
+  * Power Displays - Nothing should be needed here
+  * Add new racial traits (and make sure they're still working with the changes made to core)
+  * Add new racial favored class abilities (they may all be in there)
+  * Add new racial archetypes
+    * Double-check xephyr/gifted blade interaction
+ - Appendix: These should all be present already
+

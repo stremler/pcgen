@@ -17,39 +17,12 @@
  */
 package pcgen.cdom.facet.model;
 
-import pcgen.cdom.content.Selection;
 import pcgen.cdom.facet.base.AbstractItemFacet;
-import pcgen.cdom.facet.event.DataFacetChangeEvent;
-import pcgen.cdom.facet.event.DataFacetChangeListener;
 import pcgen.core.Race;
 
 /**
  * RaceFacet is a Facet that tracks the Race of a Player Character.
  */
-public class RaceFacet extends AbstractItemFacet<Race> implements
-		DataFacetChangeListener<Selection<Race, ?>>
+public class RaceFacet extends AbstractItemFacet<Race>
 {
-	private RaceSelectionFacet raceSelectionFacet;
-
-	public void setRaceSelectionFacet(RaceSelectionFacet raceSelectionFacet)
-	{
-		this.raceSelectionFacet = raceSelectionFacet;
-	}
-
-	public void init()
-	{
-		raceSelectionFacet.addDataFacetChangeListener(this);
-	}
-
-	@Override
-	public void dataAdded(DataFacetChangeEvent<Selection<Race, ?>> dfce)
-	{
-		set(dfce.getCharID(), dfce.getCDOMObject().getObject());
-	}
-
-	@Override
-	public void dataRemoved(DataFacetChangeEvent<Selection<Race, ?>> dfce)
-	{
-		remove(dfce.getCharID());
-	}
 }

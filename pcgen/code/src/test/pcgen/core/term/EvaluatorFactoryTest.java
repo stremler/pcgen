@@ -9,6 +9,9 @@ import pcgen.PCGenTestCase;
 import pcgen.cdom.base.Constants;
 import pcgen.cdom.list.ClassSpellList;
 import pcgen.core.Globals;
+import pcgen.core.PCStat;
+import pcgen.core.SettingsHandler;
+import pcgen.rules.context.ReferenceContext;
 import pcgen.util.TestHelper;
 
 /**
@@ -57,7 +60,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor001() {
 
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
 		Field pF = (Field) TestHelper.findField(uClass, "internalVarPattern");
@@ -97,7 +100,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor002()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -136,7 +139,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor003()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -174,7 +177,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor004()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -212,7 +215,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor005()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -250,7 +253,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor006()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -288,7 +291,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor007()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -326,7 +329,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor008()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -364,7 +367,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor009()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -402,7 +405,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor010()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -440,7 +443,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor011()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -478,7 +481,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor012()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -516,7 +519,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor013()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -554,7 +557,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor014()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -592,7 +595,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor015()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -630,7 +633,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor016()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -668,7 +671,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor017()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -706,7 +709,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor018()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -744,7 +747,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor019()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -782,7 +785,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor020()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -820,7 +823,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor021()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -858,7 +861,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor022()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -896,7 +899,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor023()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -934,7 +937,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor024()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -972,7 +975,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor025()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -1010,7 +1013,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor026()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -1048,7 +1051,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor027()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -1086,7 +1089,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor028()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -1124,7 +1127,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor029()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -1162,7 +1165,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor030()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -1200,7 +1203,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor031()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -1238,7 +1241,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor032()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -1276,7 +1279,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor033()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -1314,7 +1317,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor034()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -1352,7 +1355,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor035()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -1390,7 +1393,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor036()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -1428,7 +1431,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor037()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -1466,7 +1469,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor038()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -1504,7 +1507,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor039()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -1542,7 +1545,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor040()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -1580,7 +1583,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor041()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -1618,7 +1621,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor042()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -1656,7 +1659,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor043()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -1694,7 +1697,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor044()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -1732,7 +1735,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor045()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -1770,7 +1773,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor046()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -1808,7 +1811,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor047()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -1846,7 +1849,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor048()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -1884,7 +1887,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor049()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -1922,7 +1925,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor050()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -1960,7 +1963,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor051()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -1998,7 +2001,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor052()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -2036,7 +2039,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor053()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -2074,7 +2077,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor054()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -2112,7 +2115,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor055()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -2150,7 +2153,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor056()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -2188,7 +2191,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor057()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -2226,7 +2229,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor058()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -2264,7 +2267,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor059()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -2302,7 +2305,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor060()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -2340,7 +2343,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor061()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -2378,7 +2381,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor062()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -2416,7 +2419,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor063()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -2454,7 +2457,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor064()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -2492,7 +2495,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor065()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -2530,7 +2533,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor066()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -2568,7 +2571,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor067()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -2606,7 +2609,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor068()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -2644,7 +2647,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor069()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -2682,7 +2685,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor070()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -2720,7 +2723,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor071()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -2758,7 +2761,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor072()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -2796,7 +2799,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor073()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -2834,7 +2837,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor074()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -2872,7 +2875,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor075()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -2910,7 +2913,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor076()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -2948,7 +2951,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor077()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -2986,7 +2989,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor078()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -3024,7 +3027,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor079()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -3062,7 +3065,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor080()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -3100,7 +3103,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor081()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -3138,7 +3141,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor082()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -3176,7 +3179,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor083()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -3214,7 +3217,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor084()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -3252,7 +3255,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor085()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -3290,7 +3293,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor086()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -3328,7 +3331,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor087()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -3366,7 +3369,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor088()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -3404,7 +3407,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor089()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -3442,7 +3445,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor090()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -3480,7 +3483,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor091()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -3518,7 +3521,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor092()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -3556,7 +3559,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor093()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -3594,7 +3597,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor094()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -3632,7 +3635,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor095()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -3670,7 +3673,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor096()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -3708,7 +3711,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor097()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -3746,7 +3749,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor098()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -3784,7 +3787,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor099()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -3822,7 +3825,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor100()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -3860,7 +3863,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor101()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -3898,7 +3901,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor102()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -3936,7 +3939,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor103()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -3974,7 +3977,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor104()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -4012,7 +4015,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor105()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -4050,7 +4053,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor106()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -4088,7 +4091,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 */
 	public void testConstructor107()
 	{
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		Class<?> uClass = pcgen.core.term.EvaluatorFactory.class;
 
@@ -4125,7 +4128,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator001() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "ACCHECK";
 
@@ -4164,7 +4167,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator002() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "ACHECK";
 
@@ -4203,7 +4206,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator003() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "ARMORACCHECK";
 
@@ -4242,7 +4245,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator004() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "ARMORACHECK";
 
@@ -4281,7 +4284,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator005() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "BAB";
 
@@ -4320,7 +4323,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator006() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "BASESPELLSTAT";
 
@@ -4363,7 +4366,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator007() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "BASESPELLSTAT";
 
@@ -4406,7 +4409,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator008() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "CASTERLEVEL";
 
@@ -4449,7 +4452,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator009() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "CASTERLEVEL";
 
@@ -4492,7 +4495,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator010() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "CASTERLEVEL";
 
@@ -4531,7 +4534,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator011() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "CASTERLEVEL.TOTAL";
 
@@ -4570,7 +4573,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator012() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[ATTACKS]";
 
@@ -4609,7 +4612,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator013() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[CHECKS]";
 
@@ -4648,7 +4651,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator014() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[CLASSES]";
 
@@ -4687,7 +4690,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator015() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[CONTAINERS]";
 
@@ -4726,7 +4729,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator016() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[DOMAINS]";
 
@@ -4765,7 +4768,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator017() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[FEATSALL.ALL]";
 
@@ -4812,7 +4815,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator018() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[FEATSALL.HIDDEN]";
 
@@ -4859,7 +4862,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator019() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[FEATSALL.VISIBLE]";
 
@@ -4906,7 +4909,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator020() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[FEATSALL]";
 
@@ -4953,7 +4956,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator021() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[FEATSAUTO.ALL]";
 
@@ -5000,7 +5003,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator022() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[FEATSAUTO.HIDDEN]";
 
@@ -5047,7 +5050,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator023() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[FEATSAUTO.VISIBLE]";
 
@@ -5094,7 +5097,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator024() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[FEATSAUTO]";
 
@@ -5141,7 +5144,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator025() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[FEATS.ALL]";
 
@@ -5188,7 +5191,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator026() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[FEATS.HIDDEN]";
 
@@ -5235,7 +5238,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator027() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[FEATS.VISIBLE]";
 
@@ -5282,7 +5285,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator028() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[FEATS]";
 
@@ -5329,7 +5332,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator029() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[VFEATS.ALL]";
 
@@ -5376,7 +5379,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator030() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[VFEATS.HIDDEN]";
 
@@ -5423,7 +5426,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator031() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[VFEATS.VISIBLE]";
 
@@ -5470,7 +5473,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator032() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[VFEATS]";
 
@@ -5517,7 +5520,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator033() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[FOLLOWERS]";
 
@@ -5556,7 +5559,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator034() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[LANGUAGES]";
 
@@ -5595,7 +5598,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator035() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[MISC.COMPANIONS]";
 
@@ -5634,7 +5637,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator036() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[MISC.FUNDS]";
 
@@ -5673,7 +5676,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator037() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[MISC.MAGIC]";
 
@@ -5712,7 +5715,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator038() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[MOVE]";
 
@@ -5751,7 +5754,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator039() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[NOTES]";
 
@@ -5790,7 +5793,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator040() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[RACESUBTYPES]";
 
@@ -5829,7 +5832,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator041() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[SA]";
 
@@ -5868,7 +5871,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator042() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[SKILLS]";
 
@@ -5907,7 +5910,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator043() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[SPELLCLASSES]";
 
@@ -5946,7 +5949,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator044() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[SPELLRACE]";
 
@@ -5985,7 +5988,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator045() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[STATS]";
 
@@ -6024,7 +6027,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator046() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[TEMPBONUSNAMES]";
 
@@ -6063,7 +6066,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator047() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[TEMPLATES]";
 
@@ -6102,7 +6105,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator048() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[VISIBLETEMPLATES]";
 
@@ -6141,7 +6144,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator049() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[VISION]";
 
@@ -6180,7 +6183,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator050() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "ENCUMBERANCE";
 
@@ -6219,7 +6222,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator051() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "HD";
 
@@ -6257,7 +6260,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluatorHp() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "HP";
 
@@ -6296,7 +6299,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator052() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "MAXCASTABLE";
 
@@ -6340,7 +6343,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator053() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "MAXCASTABLE";
 
@@ -6383,7 +6386,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator054() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "MAXCASTABLE";
 
@@ -6426,7 +6429,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator055() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "MAXCASTABLE";
 
@@ -6465,7 +6468,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator056() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "MAXCASTABLE";
 
@@ -6479,7 +6482,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator057() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "MOVEBASE";
 
@@ -6518,7 +6521,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator058() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "PC.HEIGHT";
 
@@ -6557,7 +6560,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator059() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "PC.WEIGHT";
 
@@ -6596,7 +6599,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator060() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "PROFACCHECK";
 
@@ -6639,7 +6642,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator061() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "PROFACCHECK";
 
@@ -6682,7 +6685,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator062() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "RACESIZE";
 
@@ -6721,7 +6724,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator063() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "SCORE";
 
@@ -6764,7 +6767,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator064() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "SCORE";
 
@@ -6807,7 +6810,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator065() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "SHIELDACCHECK";
 
@@ -6846,7 +6849,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator066() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "SHIELDACHECK";
 
@@ -6885,7 +6888,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator067() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "SIZE";
 
@@ -6924,7 +6927,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator068() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "SIZEMOD";
 
@@ -6963,7 +6966,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator069() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "SPELLBASESTAT";
 
@@ -7006,7 +7009,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator070() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "SPELLBASESTATSCORE";
 
@@ -7049,7 +7052,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator071() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "SPELLBASESTAT";
 
@@ -7092,7 +7095,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator072() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "SPELLBASESTATSCORE";
 
@@ -7135,7 +7138,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator073() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "SPELLLEVEL";
 
@@ -7174,7 +7177,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator074() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "TL";
 
@@ -7213,7 +7216,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator075() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "BL";
 
@@ -7256,7 +7259,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator076() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "BL";
 
@@ -7299,7 +7302,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator077() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "BL.Wizard";
 
@@ -7342,7 +7345,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator078() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "BL=Cleric";
 
@@ -7385,7 +7388,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator079() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "CL;BEFORELEVEL.10";
 
@@ -7432,7 +7435,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator080() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "CL;BEFORELEVEL=15";
 
@@ -7479,7 +7482,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator081() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "CL;BEFORELEVEL=Fighter";
 
@@ -7493,7 +7496,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator082() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "CLASSLEVEL.Bard (Bardiliscious)";
 
@@ -7536,7 +7539,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator083() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "CLASSLEVEL=Rogue {Sneaky}";
 
@@ -7579,7 +7582,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator084() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "CLASS.Druid";
 
@@ -7622,7 +7625,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator085() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "CLASS=Paladin";
 
@@ -7665,7 +7668,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator086() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "CL";
 
@@ -7708,7 +7711,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator087() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "CL";
 
@@ -7722,7 +7725,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator088() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "CL.Bard";
 
@@ -7765,7 +7768,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator089() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "CL=Rogue";
 
@@ -7808,7 +7811,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator090() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQTYPE.MERGENONE]";
 
@@ -7855,7 +7858,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator091() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQTYPE.MERGELOC]";
 
@@ -7902,7 +7905,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator092() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQTYPE]";
 
@@ -7949,7 +7952,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator093() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQTYPE.EQUIPPED]";
 
@@ -7996,7 +7999,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator094() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQTYPE.NOTEQUIPPED]";
 
@@ -8043,7 +8046,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator095() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQTYPE.CONTAINER]";
 
@@ -8090,7 +8093,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator096() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQTYPE.WEAPON]";
 
@@ -8137,7 +8140,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator097() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQTYPE.ACITEM]";
 
@@ -8184,7 +8187,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator098() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQTYPE.MERGENONE.ARMOR.IS.FOO]";
 
@@ -8233,7 +8236,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator099() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQTYPE.MERGELOC.QUX.NOT.BAR]";
 
@@ -8282,7 +8285,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator100() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQTYPE.QUUX.ADD.BAZ]";
 
@@ -8331,7 +8334,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator101() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQTYPE.MERGENONE.WEAPON.IS.FOO]";
 
@@ -8380,7 +8383,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator102() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQTYPE.WEAPON.IS.FOO.EQUIPPED.ADD.BAR]";
 
@@ -8432,7 +8435,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator103() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQTYPE.FOO]";
 
@@ -8479,7 +8482,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator104() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQTYPE.MERGENONE.IS.FOO.QUX]";
 
@@ -8493,7 +8496,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator105() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQTYPE.MERGELOC.NOT.BAR.QUX]";
 
@@ -8507,7 +8510,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator106() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQTYPE.ADD.BAZ.QUX]";
 
@@ -8521,7 +8524,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator107() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQUIPMENT.MERGENONE]";
 
@@ -8568,7 +8571,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator108() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQUIPMENT.MERGELOC]";
 
@@ -8615,7 +8618,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator109() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQUIPMENT]";
 
@@ -8662,7 +8665,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator110() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQUIPMENT.EQUIPPED]";
 
@@ -8676,7 +8679,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator111() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQUIPMENT.NOTEQUIPPED]";
 
@@ -8690,7 +8693,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator112() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQUIPMENT.CONTAINER]";
 
@@ -8704,7 +8707,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator113() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQUIPMENT.WEAPON]";
 
@@ -8718,7 +8721,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator114() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQUIPMENT.ACITEM]";
 
@@ -8732,7 +8735,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator115() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQUIPMENT.MERGENONE.IS.FOO]";
 
@@ -8780,7 +8783,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator116() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQUIPMENT.MERGELOC.NOT.BAR]";
 
@@ -8828,7 +8831,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator117() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQUIPMENT.ADD.BAZ]";
 
@@ -8876,7 +8879,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator118() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQUIPMENT.IS.FOO.EQUIPPED.ADD.BAR]";
 
@@ -8938,7 +8941,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator120() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQUIPMENT.MERGENONE.BAR.IS.FOO.QUX]";
 
@@ -8952,7 +8955,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator121() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQUIPMENT.MERGELOC.BAR.NOT.BAZ.QUX]";
 
@@ -8966,7 +8969,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator122() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[EQUIPMENT.BAR.ADD.BAZ.QUX]";
 
@@ -8980,7 +8983,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator123() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[FEATAUTOTYPE.HIDDEN]";
 
@@ -9031,7 +9034,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator124() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[FEATAUTOTYPE=VISIBLE]";
 
@@ -9082,7 +9085,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator125() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[FEATNAME.Jack of all trades]";
 
@@ -9133,7 +9136,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator126() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[FEATNAME=Weapon Focus (Dagger)]";
 
@@ -9184,7 +9187,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator127() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[FEATTYPE.BAR]";
 
@@ -9235,7 +9238,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator128() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[FEATTYPE.BAZ]";
 
@@ -9286,7 +9289,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator129() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[VFEATTYPE.HIDDEN]";
 
@@ -9337,7 +9340,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator130() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[VFEATTYPE=ALL]";
 
@@ -9388,7 +9391,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator131() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[FEATTYPE.FOO.BAR.BAZ.QUX]";
 
@@ -9442,7 +9445,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator132() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[FOLLOWERTYPE.MOO]";
 
@@ -9485,7 +9488,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator133() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[FOLLOWERTYPE.MOO.0.EQTYPE]";
 
@@ -9536,7 +9539,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator134() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[FOLLOWERTYPE.MOO.0]";
 
@@ -9550,7 +9553,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator135() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[FOLLOWERTYPE.MOO.FOO.0]";
 
@@ -9564,7 +9567,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator136() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[SKILLTYPE.KNOWLEDGE]";
 
@@ -9607,7 +9610,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator137() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[SKILLTYPE=PERFORM]";
 
@@ -9650,7 +9653,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator138() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[SPELLBOOKS]";
 
@@ -9689,7 +9692,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator139() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[SPELLBOOKS.broken";
 
@@ -9703,7 +9706,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator140() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[SPELLSINBOOK.1.0]";
 
@@ -9746,7 +9749,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator141() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[SPELLSINBOOK.1.0";
 
@@ -9760,7 +9763,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator142() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[SPELLSKNOWN.0.0]";
 
@@ -9804,7 +9807,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator143() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[SPELLSKNOWN.0]";
 
@@ -9818,7 +9821,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator144() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[SPELLSKNOWN.FOO]";
 
@@ -9832,7 +9835,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator145() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[SPELLSKNOWN.FOO";
 
@@ -9846,7 +9849,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator146() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[SPELLTIMES.1.2.3.4]";
 
@@ -9901,7 +9904,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator147() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[SPELLSLEVELSINBOOK.1.2]";
 
@@ -9948,7 +9951,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator148() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[SPELLSLEVELSINBOOK.1.2";
 
@@ -9962,7 +9965,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator149() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[SPELLSLEVELSINBOOK.0]";
 
@@ -9976,7 +9979,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator150() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[SPELLTIMES.1.2.3.4";
 
@@ -9990,7 +9993,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator151() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "COUNT[SPELLTIMES.1.2.3]";
 
@@ -10004,7 +10007,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator152() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "EQTYPE.EQUIPPED.IS.FOO";
 
@@ -10043,7 +10046,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator153() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "HASDEITY:Bane";
 
@@ -10086,7 +10089,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator154() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "HASFEAT:Endurance";
 
@@ -10129,7 +10132,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator155() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "MODEQUIPSPELLFAILURE";
 
@@ -10172,7 +10175,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator156() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "MOVE[Walk]";
 
@@ -10215,7 +10218,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator157() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "MOVE[Walk";
 
@@ -10229,7 +10232,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator158() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "PC.SIZE";
 
@@ -10268,7 +10271,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator159() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "SKILLRANK.Tumble";
 
@@ -10311,7 +10314,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator160() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "SKILLRANK=Perform (Dance)";
 
@@ -10354,7 +10357,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator161() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "SKILLRANK=Perform {Sing}";
 
@@ -10397,7 +10400,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator162() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "SKILLTOTAL.Tumble";
 
@@ -10440,7 +10443,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator163() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "SKILLTOTAL=Perform (Dance)";
 
@@ -10483,7 +10486,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator164() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "SKILLTOTAL=Perform {Sing}";
 
@@ -10526,7 +10529,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator165() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "VARDEFINED:MilkyBarsEaten";
 
@@ -10569,7 +10572,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator166() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "WEIGHT.CARRIED";
 
@@ -10608,7 +10611,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator167() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "WEIGHT.EQUIPPED";
 
@@ -10647,7 +10650,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator168() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "WEIGHT.PC";
 
@@ -10686,7 +10689,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator169() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "WEIGHT.TOTAL";
 
@@ -10725,7 +10728,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator170() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "WEIGHT.NONSENSE";
 
@@ -10739,7 +10742,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator171() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "STR";
 
@@ -10782,7 +10785,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator172() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "INT";
 
@@ -10825,7 +10828,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator173() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "DEX";
 
@@ -10868,7 +10871,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator174() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "WIS";
 
@@ -10911,7 +10914,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator175() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "CON";
 
@@ -10954,7 +10957,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator176() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "CHA";
 
@@ -10997,7 +11000,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator177() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "STRSCORE";
 
@@ -11040,7 +11043,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator178() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "INTSCORE";
 
@@ -11083,7 +11086,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator179() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "DEXSCORE";
 
@@ -11126,7 +11129,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator180() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "WISSCORE";
 
@@ -11169,7 +11172,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator181() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "CONSCORE";
 
@@ -11212,7 +11215,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator182() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "CHASCORE";
 
@@ -11255,7 +11258,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator183() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "STR.BASE";
 
@@ -11298,7 +11301,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator184() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "INT.BASE";
 
@@ -11341,7 +11344,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator185() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "DEX.BASE";
 
@@ -11384,7 +11387,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator186() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "WIS.BASE";
 
@@ -11427,7 +11430,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator187() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "CON.BASE";
 
@@ -11470,7 +11473,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator188() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "CHA.BASE";
 
@@ -11513,7 +11516,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator189() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "STRSCORE.BASE";
 
@@ -11556,7 +11559,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator190() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "INTSCORE.BASE";
 
@@ -11599,7 +11602,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator191() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "DEXSCORE.BASE";
 
@@ -11642,7 +11645,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator192() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "WISSCORE.BASE";
 
@@ -11685,7 +11688,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator193() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "CONSCORE.BASE";
 
@@ -11728,7 +11731,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator194() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "CHASCORE.BASE";
 
@@ -11771,7 +11774,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator195() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "STRENGTH";
 
@@ -11785,7 +11788,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator196() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "INTELLIGENCE";
 
@@ -11799,7 +11802,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator197() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "DEXTERITY";
 
@@ -11813,7 +11816,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator198() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "WISDOM";
 
@@ -11827,7 +11830,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator199() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "CONSTITUTION";
 
@@ -11841,7 +11844,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator200() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "CHARMING";
 
@@ -11855,7 +11858,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator201() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "BASECOST";
 
@@ -11895,7 +11898,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator202() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "CRITMULT";
 
@@ -11934,7 +11937,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator203() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "DMGDICE";
 
@@ -11973,7 +11976,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator204() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "DMGDIE";
 
@@ -12012,7 +12015,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator205() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "EQACCHECK";
 
@@ -12051,7 +12054,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator206() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "EQHANDS";
 
@@ -12090,7 +12093,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator207() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "EQSPELLFAIL";
 
@@ -12129,7 +12132,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator208() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "EQUIP.SIZE";
 
@@ -12168,7 +12171,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator209() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "EQUIP.SIZE.INT";
 
@@ -12206,7 +12209,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluatorAltPlusTotal() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "ALTPLUSTOTAL";
 
@@ -12245,7 +12248,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluatorPlusTotal() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "PLUSTOTAL";
 
@@ -12284,7 +12287,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator210() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "RACEREACH";
 
@@ -12327,7 +12330,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator211() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "RANGE";
 
@@ -12366,7 +12369,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator212() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "REACH";
 
@@ -12405,7 +12408,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator213() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "REACHMULT";
 
@@ -12444,7 +12447,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator214() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "SIZE";
 
@@ -12483,7 +12486,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator215() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term = "WT";
 
@@ -12521,7 +12524,7 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 	 * Method: getTermEvaluator(String term, String source)
 	 */
 	public void testGetTermEvaluator216() {
-		TestHelper.loadAll();
+		EvaluatorFactoryTest.loadAll();
 
 		String term1 = "CL;BEFORELEVEL=15";
 
@@ -12558,6 +12561,49 @@ public class EvaluatorFactoryTest extends PCGenTestCase {
 		is(t6.equals(t5), eq(false), "t6 and t5 are different objects");
 		
 		is(t1.equals(t4), eq(false),  "t1 and t4 are diffferent objects");
+	}
+
+	/**
+	 * Initialise the data and game modes - does the parsing of the data, so 
+	 * the plugins must be loaded before this method is called.
+	 * 
+	 * @deprecated This is calling Persistence Manager, so it should no longer be used
+	 * CODE-1888
+	 */
+	@Deprecated
+	public static void initGameModes()
+	{
+		SettingsHandler.setGame(SettingsHandler.getPCGenOption("game", "35e")); //$NON-NLS-1$
+		SettingsHandler.game.clearLoadContext();
+	
+		Globals.createEmptyRace();
+	
+		ReferenceContext rc = Globals.getContext().ref;
+		PCStat str = rc.constructCDOMObject(PCStat.class, "Strength");
+		rc.registerAbbreviation(str, "STR");
+		PCStat intel = rc.constructCDOMObject(PCStat.class, "Intelligence");
+		rc.registerAbbreviation(intel, "INT");
+		PCStat dex = rc.constructCDOMObject(PCStat.class, "Dexterity");
+		rc.registerAbbreviation(dex, "DEX");
+		PCStat wis = rc.constructCDOMObject(PCStat.class, "Wisdom");
+		rc.registerAbbreviation(wis, "WIS");
+		PCStat con = rc.constructCDOMObject(PCStat.class, "Constitution");
+		rc.registerAbbreviation(con, "CON");
+		PCStat cha = rc.constructCDOMObject(PCStat.class, "Charisma");
+		rc.registerAbbreviation(cha, "CHA");
+		SettingsHandler.validateBonuses = SettingsHandler.getPCGenOption("validateBonuses", false); //$NON-NLS-1$
+	}
+
+	/**
+	 * Load and initialise the properties, plugins and GameModes
+	 */
+	public static void loadAll()
+	{
+		SettingsHandler.readOptionsProperties();
+		SettingsHandler.getOptionsFromProperties(null);
+	
+		TestHelper.loadPlugins();
+		EvaluatorFactoryTest.initGameModes();
 	}
 
 }

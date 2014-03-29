@@ -19,7 +19,6 @@ package plugin.lsttokens.add;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -38,7 +37,6 @@ import pcgen.cdom.choiceset.SpellCasterChoiceSet;
 import pcgen.cdom.enumeration.ListKey;
 import pcgen.cdom.inst.PCClassLevel;
 import pcgen.cdom.reference.CDOMGroupRef;
-import pcgen.core.Globals;
 import pcgen.core.PCClass;
 import pcgen.core.PlayerCharacter;
 import pcgen.core.analysis.BonusAddition;
@@ -64,7 +62,7 @@ public class SpellCasterToken extends AbstractToken implements
 
 	private String getFullName()
 	{
-		return getParentToken() + ":" + getTokenName();
+		return getParentToken() + Constants.COLON + getTokenName();
 	}
 
 	@Override
@@ -244,7 +242,6 @@ public class SpellCasterToken extends AbstractToken implements
 	public void applyChoice(CDOMObject owner, PCClass choice, PlayerCharacter pc)
 	{
 		PCClass theClass = pc.getClassKeyed(choice.getKeyName());
-
 		if (theClass == null)
 		{
 			pc.incrementClassLevel(0, choice);
@@ -271,8 +268,7 @@ public class SpellCasterToken extends AbstractToken implements
 	@Override
 	public PCClass decodeChoice(LoadContext context, String s)
 	{
-		return Globals.getContext().ref.silentlyGetConstructedCDOMObject(
-				PCCLASS_CLASS, s);
+		return context.ref.silentlyGetConstructedCDOMObject(PCCLASS_CLASS, s);
 	}
 
 	@Override
@@ -309,12 +305,5 @@ public class SpellCasterToken extends AbstractToken implements
 				pc.calculateKnownSpellsForClassLevel(pcClass);
 			}
 		}
-	}
-
-	@Override
-	public List<PCClass> getCurrentlySelected(CDOMObject owner,
-			PlayerCharacter pc)
-	{
-		return Collections.emptyList();
 	}
 }

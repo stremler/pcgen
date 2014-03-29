@@ -43,6 +43,7 @@ import pcgen.core.kit.KitTable;
 import pcgen.core.prereq.PrereqHandler;
 import pcgen.core.prereq.PrerequisiteUtilities;
 import pcgen.util.Logging;
+import pcgen.util.enumeration.View;
 import pcgen.util.enumeration.Visibility;
 
 /**
@@ -168,6 +169,7 @@ public final class Kit extends PObject implements Comparable<Object>, KitFacade
 		{
 			bk.apply(pc);
 		}
+		pc.setCalcEquipmentList();
 
 		if (getSafe(ObjectKey.APPLY_MODE) == KitApply.PERMANENT)
 		{
@@ -253,14 +255,14 @@ public final class Kit extends PObject implements Comparable<Object>, KitFacade
 	 *
 	 * @return  Whether the kit is visible
 	 */
-	public final boolean isVisible(PlayerCharacter aPC)
+	public final boolean isVisible(PlayerCharacter aPC, View v)
 	{
 		Visibility kitVisible = getSafe(ObjectKey.VISIBILITY);
 		if (kitVisible == Visibility.QUALIFY)
 		{
 			return qualifies(aPC, this);
 		}
-		else if (kitVisible == Visibility.DEFAULT)
+		else if (kitVisible.isVisibleTo(v))
 		{
 			return true;
 		}
@@ -425,14 +427,17 @@ public final class Kit extends PObject implements Comparable<Object>, KitFacade
 		final List<BaseKit> thingsToAdd = new ArrayList<BaseKit>();
 		final List<String> warnings = new ArrayList<String>();
 		aKit.testApplyKit(aPC, thingsToAdd, warnings);
-		if (warnings.size() != 0)
+		if (Logging.isLoggable(Logging.WARNING))
 		{
-			Logging.log(Logging.WARNING,
-				"The following warnings were encountered when applying the kit "
-					+ aKit.getKeyName());
-			for (String string : warnings)
+			if (warnings.size() != 0)
 			{
-				Logging.log(Logging.WARNING, "  " + string);
+				Logging.log(Logging.WARNING,
+					"The following warnings were encountered when applying the kit "
+						+ aKit.getKeyName());
+				for (String string : warnings)
+				{
+					Logging.log(Logging.WARNING, "  " + string);
+				}
 			}
 		}
 		aKit.processKit(aPC, thingsToAdd, 0);

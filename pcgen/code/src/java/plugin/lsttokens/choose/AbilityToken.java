@@ -22,7 +22,7 @@ import java.util.StringTokenizer;
 
 import pcgen.cdom.base.CDOMObject;
 import pcgen.cdom.base.CategorizedChooseInformation;
-import pcgen.cdom.base.CategorizedPersistentChoiceActor;
+import pcgen.cdom.base.CategorizedChooser;
 import pcgen.cdom.base.Category;
 import pcgen.cdom.base.ChooseInformation;
 import pcgen.cdom.base.ChooseSelectionActor;
@@ -50,8 +50,7 @@ import pcgen.rules.persistence.token.ParseResult;
  */
 
 public class AbilityToken extends AbstractTokenWithSeparator<CDOMObject>
-		implements CDOMSecondaryToken<CDOMObject>,
-		CategorizedPersistentChoiceActor<Ability>
+		implements CDOMSecondaryToken<CDOMObject>, CategorizedChooser<Ability>
 {
 	private static final Class<AbilityCategory> ABILITY_CATEGORY_CLASS =
 			AbilityCategory.class;
@@ -93,7 +92,7 @@ public class AbilityToken extends AbstractTokenWithSeparator<CDOMObject>
 				activeValue = value.substring(0, pipeLoc);
 				if (title == null || title.length() == 0)
 				{
-					return new ParseResult.Fail(getParentToken() + ":"
+					return new ParseResult.Fail(getParentToken() + Constants.COLON
 						+ getTokenName() + " had TITLE= but no title: " + value, context);
 				}
 			}
@@ -154,7 +153,7 @@ public class AbilityToken extends AbstractTokenWithSeparator<CDOMObject>
 		if (!tc.getGroupingState().isValid())
 		{
 			context.addWriteMessage("Invalid combination of objects"
-				+ " was used in: " + getParentToken() + ":" + getTokenName());
+				+ " was used in: " + getParentToken() + Constants.COLON + getTokenName());
 			return null;
 		}
 		StringBuilder sb = new StringBuilder();
@@ -190,7 +189,6 @@ public class AbilityToken extends AbstractTokenWithSeparator<CDOMObject>
 				ca.removeChoice(owner, choice, pc);
 			}
 		}
-		pc.removeAssociation(owner, encodeChoice(choice));
 	}
 
 	@Override
@@ -198,7 +196,6 @@ public class AbilityToken extends AbstractTokenWithSeparator<CDOMObject>
 		Ability choice)
 	{
 		pc.addAssoc(owner, getListKey(), choice);
-		pc.addAssociation(owner, encodeChoice(choice));
 		List<ChooseSelectionActor<?>> actors =
 				owner.getListFor(ListKey.NEW_CHOOSE_ACTOR);
 		if (actors != null)
@@ -298,8 +295,8 @@ public class AbilityToken extends AbstractTokenWithSeparator<CDOMObject>
 		}
 		String ab = st.nextToken();
 		Ability a =
-				Globals.getContext().ref.silentlyGetConstructedCDOMObject(
-					Ability.class, ac, ab);
+				context.ref.silentlyGetConstructedCDOMObject(Ability.class, ac,
+					ab);
 		if (a == null)
 		{
 			throw new IllegalArgumentException(

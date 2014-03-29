@@ -5,7 +5,6 @@ import java.util.StringTokenizer;
 
 import pcgen.core.Ability;
 import pcgen.core.AbilityUtilities;
-import pcgen.core.AssociationStore;
 import pcgen.core.Equipment;
 import pcgen.core.Globals;
 import pcgen.core.PCStat;
@@ -29,7 +28,7 @@ public class BonusCalc
 	 */
 	public static int getStatMod(PObject po, PCStat stat, final PlayerCharacter aPC)
 	{
-		return (int) BonusCalc.bonusTo(po, "STAT", stat.getAbb(), aPC, aPC);
+		return (int) BonusCalc.charBonusTo(po, "STAT", stat.getAbb(), aPC);
 	}
 
 	public static double bonusTo(
@@ -148,14 +147,22 @@ public class BonusCalc
 	 * @param aPC
 	 * @return the bonus
 	 */
-	public static double bonusTo(
+	public static double charBonusTo(
 		PObject po,
 		final String aType,
 		final String aName,
-		final AssociationStore obj,
 		final PlayerCharacter aPC)
 	{
-		return bonusTo(po, aType, aName, obj, po.getBonusList(obj), aPC);
+		return bonusTo(po, aType, aName, aPC, po.getBonusList(aPC), aPC);
+	}
+
+	public static double equipBonusTo(
+		Equipment po,
+		final String aType,
+		final String aName,
+		final PlayerCharacter aPC)
+	{
+		return bonusTo(po, aType, aName, po, po.getBonusList(po), aPC);
 	}
 
 	/**
@@ -194,9 +201,8 @@ public class BonusCalc
 	
 		String aString = aTok.nextToken();
 	
-		if ((!aString.equalsIgnoreCase(aType) && !aString.endsWith("%LIST"))
-			|| (aString.endsWith("%LIST") && (po.numberInList(aPC, aType) == 0))
-			|| (aName.equals("ALL")))
+		if (!aString.equalsIgnoreCase(aType) || aString.endsWith("%LIST")
+			|| aName.equals("ALL"))
 		{
 			return 0;
 		}
@@ -266,17 +272,7 @@ public class BonusCalc
 		}
 	
 		double bonus = 0;
-	
-		if ("LIST".equalsIgnoreCase(aList))
-		{
-			final int iCount = po.numberInList(aPC, aName);
-	
-			if (iCount != 0)
-			{
-				bonus += (iBonus * iCount);
-			}
-		}
-	
+
 		String bonusTypeString = null;
 	
 		final StringTokenizer bTok = new StringTokenizer(aList, ",");

@@ -17,9 +17,10 @@
  */
 package pcgen.cdom.helper;
 
+import pcgen.cdom.base.Identified;
 import pcgen.core.PCClass;
 
-public class ClassSource
+public class ClassSource implements Identified
 {
 	private final PCClass pcclass;
 	private final int level;
@@ -64,5 +65,21 @@ public class ClassSource
 			return (level == other.level) && (pcclass.equals(other.pcclass));
 		}
 		return false;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return "ClassSource: " + getDisplayName();
+	}
+
+	public String getKeyName()
+	{
+		return pcclass.getFullKey() + " " + level;
+	}
+
+	public String getDisplayName()
+	{
+		return pcclass.getDisplayName() + " " + level;
 	}
 }

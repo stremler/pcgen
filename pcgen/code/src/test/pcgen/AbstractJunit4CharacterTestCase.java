@@ -24,22 +24,15 @@
 package pcgen;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
 
-import gmgen.pluginmgr.PluginLoader;
-import pcgen.cdom.base.Constants;
 import pcgen.cdom.base.FormulaFactory;
 import pcgen.cdom.enumeration.FormulaKey;
-import pcgen.cdom.enumeration.Nature;
 import pcgen.cdom.enumeration.ObjectKey;
 import pcgen.cdom.enumeration.StringKey;
 import pcgen.cdom.enumeration.VariableKey;
-import pcgen.core.Ability;
 import pcgen.core.AbilityCategory;
 import pcgen.core.GameMode;
 import pcgen.core.Globals;
@@ -55,6 +48,7 @@ import pcgen.core.system.LoadInfo;
 import pcgen.persistence.GameModeFileLoader;
 import pcgen.persistence.SourceFileLoader;
 import pcgen.rules.context.ReferenceContext;
+import pcgen.util.TestHelper;
 
 /**
  * This is an abstract TestClass designed to be able to create a PlayerCharacter
@@ -98,6 +92,7 @@ abstract public class AbstractJunit4CharacterTestCase
 	@Before
 	public void setUp() throws Exception
 	{
+		TestHelper.loadPlugins();
 		final GameMode gamemode = new GameMode("3.5");
 		gamemode.setBonusFeatLevels("3|3");
 		gamemode.setAlignmentText("Alignment");
@@ -190,8 +185,6 @@ abstract public class AbstractJunit4CharacterTestCase
 		ref.importObject(createAlignment("None", "NONE"));
 		ref.importObject(createAlignment("Deity's", "Deity"));
 
-		PluginLoader ploader = PluginLoader.inst();
-		ploader.startSystemPlugins(Constants.SYSTEM_TOKENS);
 		GameModeFileLoader.addDefaultWieldCategories(Globals.getContext());
 		
 		ref.importObject(str);
@@ -305,85 +298,6 @@ abstract public class AbstractJunit4CharacterTestCase
 			final int value)
 	{
 		pc.setStat(stat,  value);
-	}
-
-
-	/**
-	 * Checks if the character has the specified ability.
-	 * 
-	 * <p>
-	 * If <tt>aCategory</tt> is <tt>null</tt> then all categories that have
-	 * the same innate ability category will be checked.
-	 * <p>
-	 * If <tt>anAbilityType</tt> is <tt>ANY</tt> then all Natures will be
-	 * checked for the ability.
-	 * 
-	 * @param aCategory
-	 *            An <tt>AbilityCategory</tt> or <tt>null</tt>
-	 * @param anAbilityType
-	 *            A <tt>Nature</tt>.
-	 * @param anAbility
-	 *            The <tt>Ability</tt> to check for.
-	 * 
-	 * @return <tt>true</tt> if the character has the ability with the
-	 *         criteria specified.
-	 */
-	public boolean hasAbility(PlayerCharacter pc, final AbilityCategory aCategory, final Nature anAbilityType, final Ability anAbility)
-	{
-		final List<AbilityCategory> categories;
-		if (aCategory == null)
-		{
-			// A null category means we have to check all categories for
-			// abilities of the same innate category as the passed in one.
-			categories = new ArrayList<AbilityCategory>();
-			final Collection<AbilityCategory> allCategories = SettingsHandler.getGame().getAllAbilityCategories();
-			for (final AbilityCategory cat : allCategories)
-			{
-				if (cat.getParentCategory().equals(anAbility.getCDOMCategory()))
-				{
-					categories.add(cat);
-				}
-			}
-		} else
-		{
-			categories = new ArrayList<AbilityCategory>();
-			categories.add(aCategory);
-		}
-
-		final int start, end;
-		if (anAbilityType == Nature.ANY)
-		{
-			start = 0;
-			end = Nature.values().length - 2;
-		} else
-		{
-			start = end = anAbilityType.ordinal();
-		}
-		for (int i = start; i <= end; i++)
-		{
-			final Nature nature = Nature.values()[i];
-			boolean hasIt = false;
-			for (final AbilityCategory cat : categories)
-			{
-				switch (nature)
-				{
-				case NORMAL:
-					hasIt = pc.hasRealAbility(cat, anAbility);
-					break;
-				case AUTOMATIC:
-					hasIt = pc.hasAutomaticAbility(cat, anAbility);
-					break;
-				case VIRTUAL:
-					hasIt = pc.hasVirtualAbility(cat, anAbility);
-					break;
-				}
-				if (hasIt)
-				{
-					return true;
-				}
-			}
-		}
-		return false;
 	}
 
 }

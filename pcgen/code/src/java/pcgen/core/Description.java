@@ -23,11 +23,13 @@
 package pcgen.core;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import pcgen.base.lang.StringUtil;
 import pcgen.cdom.base.ConcretePrereqObject;
 import pcgen.cdom.base.Constants;
+import pcgen.cdom.content.CNAbility;
 import pcgen.io.EntityEncoder;
 import pcgen.persistence.lst.output.prereq.PrerequisiteWriter;
 import pcgen.util.Logging;
@@ -133,11 +135,15 @@ public class Description extends ConcretePrereqObject
 					// even a single integer.  Assume we have a DESC field that
 					// is using a % unescaped.
 					theComponents.add(aString.substring(percentInd, percentInd+1));
-					Logging.log(
-						Logging.LST_WARNING,
-						"The % without a number in the description '"
-							+ aString
-							+ "' should be either escaped e.g. %% or made into a parameter reference e.g. %1 .");
+					if (Logging.isLoggable(Logging.LST_WARNING))
+					{
+						Logging
+							.log(
+								Logging.LST_WARNING,
+								"The % without a number in the description '"
+									+ aString
+									+ "' should be either escaped e.g. %% or made into a parameter reference e.g. %1 .");
+					}
 				}
 			}
 		}
@@ -166,16 +172,33 @@ public class Description extends ConcretePrereqObject
 	 * 
 	 * @return The fully substituted description string.
 	 */
-	public String getDescription( final PlayerCharacter aPC, PObject theOwner )
+	public String getDescription( final PlayerCharacter aPC, List<? extends Object> objList )
 	{
-		final StringBuilder buf = new StringBuilder();
-		
-		if (this.qualifies(aPC, theOwner))
+		if (objList.size() == 0)
 		{
-			if ( theOwner instanceof Ability )
-			{
-				theOwner = aPC.getAbilityMatching((Ability)theOwner);
-			}
+			return Constants.EMPTY_STRING;
+		}
+		PObject sampleObject;
+		Object b = objList.get(0);
+		if (b instanceof PObject)
+		{
+			sampleObject = (PObject) b;
+		}
+		else if (b instanceof CNAbility)
+		{
+			sampleObject = ((CNAbility) b).getAbility();
+		}
+		else
+		{
+			Logging
+				.errorPrint("Unable to resolve Description with object of type: "
+					+ b.getClass().getName());
+			return Constants.EMPTY_STRING;
+		}
+		
+		final StringBuilder buf = new StringBuilder();
+		if (this.qualifies(aPC, sampleObject))
+		{
 			for ( final String comp : theComponents )
 			{
 				if ( comp.startsWith(VAR_MARKER) )
@@ -183,67 +206,114 @@ public class Description extends ConcretePrereqObject
 					final int ind = Integer.parseInt(comp.substring(VAR_MARKER.length()));
 					if ( theVariables == null || ind > theVariables.size() )
 					{
-						buf.append(Constants.EMPTY_STRING);
 						continue;
 					}
 					final String var = theVariables.get(ind - 1);
 					if ( var.equals(VAR_NAME) )
 					{
-						if ( theOwner != null )
+						if ( sampleObject != null )
 						{
-							buf.append(theOwner.getOutputName());
+							buf.append(sampleObject.getOutputName());
 						}
 					}
 					else if ( var.equals(VAR_CHOICE) )
 					{
-						if ( theOwner != null && aPC.hasAssociations(theOwner) )
+						Object obj = objList.get(0);
+						PObject object;
+						if (obj instanceof PObject)
 						{
-							buf.append(aPC.getFirstAssociation(theOwner));
+							object = (PObject) b;
+						}
+						else if (obj instanceof CNAbility)
+						{
+							object = ((CNAbility) obj).getAbility();
+						}
+						else
+						{
+							Logging
+								.errorPrint("In Description resolution, "
+									+ "Ignoring object of type: "
+									+ b.getClass().getName());
+							continue;
+						}
+						if (aPC.hasAssociations(object))
+						{
+							//TODO This is ill defined
+							buf.append(aPC.getAssociationList(object).get(0));
 						}
 					}
 					else if ( var.equals(VAR_LIST) )
 					{
-						if ( theOwner != null )
+						List<String> assocList = new ArrayList<String>();
+						for (Object obj : objList)
 						{
-							List<String> assocList = aPC.getExpandedAssociations(theOwner);
-							String joinString;
-							if (assocList.size() == 2)
+							PObject object;
+							if (obj instanceof PObject)
 							{
-								joinString = " and ";
+								object = (PObject) b;
+							}
+							else if (obj instanceof CNAbility)
+							{
+								object = ((CNAbility) obj).getAbility();
 							}
 							else
 							{
-								joinString = ", ";
+								Logging
+									.errorPrint("In Description resolution, "
+										+ "Ignoring object of type: "
+										+ b.getClass().getName());
+								continue;
 							}
-			                buf.append(StringUtil.joinToStringBuilder(aPC
-									.getExpandedAssociations(theOwner),
-									joinString));
+							assocList.addAll(aPC.getAssociationList(object));
 						}
+						String joinString;
+						if (assocList.size() == 2)
+						{
+							joinString = " and ";
+						}
+						else
+						{
+							joinString = ", ";
+						}
+						Collections.sort(assocList);
+						buf.append(StringUtil.joinToStringBuilder(assocList,
+							joinString));
 					}
 					else if ( var.startsWith(VAR_FEATS) )
 					{
 						final String featName = var.substring(VAR_FEATS.length());
+						List<CNAbility> feats;
 						if (featName.startsWith("TYPE=") || featName.startsWith("TYPE."))
 						{
-							final List<Ability> feats = aPC.getAggregateAbilityList(AbilityCategory.FEAT);
-							boolean needSpace = false;
-							for ( final Ability feat : feats )
-							{
-								if (feat.isType(featName.substring(5)))
-								{
-									if (needSpace)
-									{
-										buf.append(' ');
-									}
-									buf.append(aPC.getDescription(feat));
-									needSpace = true;
-								}
-							}
+							feats = aPC.getCNAbilities(AbilityCategory.FEAT);
 						}
 						else
 						{
-							final Ability feat = aPC.getAbilityKeyed(AbilityCategory.FEAT, featName);
-							buf.append(aPC.getDescription(feat));
+							Ability feat =
+									Globals.getContext().ref
+										.silentlyGetConstructedCDOMObject(
+											Ability.class,
+											AbilityCategory.FEAT, featName);
+							if (feat == null)
+							{
+								Logging
+									.errorPrint("Found invalid Feat reference in Description: "
+										+ featName);
+							}
+							feats = aPC.getMatchingCNAbilities(feat);
+						}
+						boolean needSpace = false;
+						for ( final CNAbility cna : feats )
+						{
+							if (cna.getAbility().isType(featName.substring(5)))
+							{
+								if (needSpace)
+								{
+									buf.append(' ');
+								}
+								buf.append(aPC.getDescription(Collections.singletonList(cna)));
+								needSpace = true;
+							}
 						}
 					}
 					else if ( var.startsWith("\"") ) //$NON-NLS-1$

@@ -92,6 +92,7 @@ import pcgen.util.Logging;
 import pcgen.util.PJEP;
 import pcgen.util.PjepPool;
 import pcgen.util.enumeration.Load;
+import pcgen.util.enumeration.View;
 import pcgen.util.enumeration.Visibility;
 
 /**
@@ -103,7 +104,7 @@ import pcgen.util.enumeration.Visibility;
  * @version $Revision$
  */
 public final class Equipment extends PObject implements Serializable,
-		Comparable<Object>, VariableContainer, AssociationStore, EquipmentFacade
+		Comparable<Object>, VariableContainer, EquipmentFacade
 {
 	private static final long serialVersionUID = 1;
 
@@ -2236,7 +2237,7 @@ public final class Equipment extends PObject implements Serializable,
 	 *            The equipment modifier
 	 * @return The visible value
 	 */
-	public boolean isVisible(final EquipmentModifier eqMod)
+	public boolean isVisible(final EquipmentModifier eqMod, View v)
 	{
 		Visibility vis = eqMod.getSafe(ObjectKey.VISIBILITY);
 
@@ -2261,7 +2262,7 @@ public final class Equipment extends PObject implements Serializable,
 			return false;
 		}
 
-		return Visibility.DEFAULT.equals(vis);
+		return vis.isVisibleTo(v);
 	}
 
 	/**
@@ -2273,8 +2274,8 @@ public final class Equipment extends PObject implements Serializable,
 	 * 			  Is this for the main head (true), or the secondary one (false)?
 	 * @return The visible value
 	 */
-	public boolean isVisible(final EquipmentModifier eqMod, boolean primaryHead)
-	{
+	public boolean isVisible(final EquipmentModifier eqMod,
+			boolean primaryHead, View v)	{
 		Visibility vis = eqMod.getSafe(ObjectKey.VISIBILITY);
 
 		if (Visibility.QUALIFY.equals(vis))
@@ -2284,7 +2285,7 @@ public final class Equipment extends PObject implements Serializable,
 				this, null);
 		}
 
-		return Visibility.DEFAULT.equals(vis);
+		return vis.isVisibleTo(v);
 	}
 
 	/**
@@ -2669,7 +2670,7 @@ public final class Equipment extends PObject implements Serializable,
 			}
 		}
 
-		setBase(aPC);
+		setBase();
 	}
 
 	/**
@@ -2774,7 +2775,7 @@ public final class Equipment extends PObject implements Serializable,
 
 		if (bPrimary)
 		{
-			BonusCalc.bonusTo(this, aType, aName, this, aPC);
+			BonusCalc.equipBonusTo(this, aType, aName, aPC);
 
 			// now do temp bonuses
 			final List<BonusObj> tbList = new ArrayList<BonusObj>();
@@ -3109,11 +3110,6 @@ public final class Equipment extends PObject implements Serializable,
 			sbuf.append(base.getKeyName());
 			sbuf.append(sep).append("NAME").append(endPart).append(
 				toString(false));
-		}
-
-		if (base == null)
-		{
-			return sbuf.toString();
 		}
 
 		// When you customise a piece of equipment using the customiser, it sets
@@ -3492,7 +3488,6 @@ public final class Equipment extends PObject implements Serializable,
 	{
 
 		final String itemName = getItemNameFromModifiers();
-		cleanTypes(pc);
 		setDefaultCrit(pc);
 		setName(itemName);
 		remove(StringKey.OUTPUT_NAME);
@@ -3718,7 +3713,7 @@ public final class Equipment extends PObject implements Serializable,
 	 */
 	public void resizeItem(final PlayerCharacter pc, SizeAdjustment newSize)
 	{
-		setBase(pc);
+		setBase();
 
 		final int iOldSize = sizeInt();
 		int iNewSize = SizeUtilities.sizeInt(newSize);
@@ -4077,7 +4072,7 @@ public final class Equipment extends PObject implements Serializable,
 	 * @param pc The PC carrying the item 
 	 * Todo remove the pc parameter, it is unused.
 	 */
-	public void setBase(final PlayerCharacter pc)
+	public void setBase()
 	{
 
 		if (get(ObjectKey.BASE_ITEM) == null)
@@ -4781,70 +4776,6 @@ public final class Equipment extends PObject implements Serializable,
 			commonList.add(0, eqMod);
 			extractList.remove(i);
 		}
-	}
-
-	/**
-	 * Strip sizes and "Standard" from type string.
-	 * 
-	 * @param aPC The PC That has the Equipment
-	 */
-	private void cleanTypes(final PlayerCharacter aPC)
-	{
-		//
-		//		final String aType = super.getType();
-		//		final StringTokenizer aTok = new StringTokenizer(aType, ".");
-		//		final StringBuilder aCleaned = new StringBuilder(aType.length());
-		//		aCleaned.append(".CLEAR");
-		//
-		//		while (aTok.hasMoreTokens()) {
-		//			final String aString = aTok.nextToken();
-		//			int i;
-		//
-		//			for (i = 0; i <= (SettingsHandler.getGame()
-		//					.getSizeAdjustmentListSize() - 1); ++i) {
-		//				if (aString.equalsIgnoreCase(SettingsHandler.getGame()
-		//						.getSizeAdjustmentAtIndex(i).getDisplayName())) {
-		//					break;
-		//				}
-		//			}
-		//
-		//			//
-		//			// Ignore size or "Standard" unless previous tag
-		//			// was "ARMOR" and this is "MEDIUM"
-		//			//
-		//			if ("Standard".equalsIgnoreCase(aString)) {
-		//				continue;
-		//			}
-		//
-		//			if (i < SettingsHandler.getGame().getSizeAdjustmentListSize()) {
-		//				final SizeAdjustment sa = SettingsHandler.getGame()
-		//						.getSizeAdjustmentAtIndex(i);
-		//
-		//				if ((!sa.isDefaultSize())
-		//						|| !aCleaned.toString().toUpperCase().endsWith("ARMOR")) {
-		//					continue;
-		//				}
-		//			}
-		//
-		//			//
-		//			// Make sure "Magic" is the first thing in the list
-		//			//
-		//			if ("Magic".equalsIgnoreCase(aString)) {
-		//				if (aCleaned.length() > 0) {
-		//					aCleaned.insert(0, '.');
-		//				}
-		//
-		//				aCleaned.insert(0, aString);
-		//			} else {
-		//				if (aCleaned.length() > 0) {
-		//					aCleaned.append('.');
-		//				}
-		//
-		//				aCleaned.append(aString);
-		//			}
-		//		}
-		//
-		//		setTypeInfo(aCleaned.toString());
 	}
 
 	private BigDecimal evaluateCost(final PJEP myParser, final String costExpr)
@@ -6581,20 +6512,12 @@ public final class Equipment extends PObject implements Serializable,
 		return null;
 	}
 
-    @Override
 	public void addAssociation(CDOMObject obj, String o)
 	{
 		assocSupt.addAssoc(obj, AssociationListKey.CHOICES,
 			new FixedStringList(o));
 	}
 
-    @Override
-	public void addAssociation(CDOMObject obj, FixedStringList o)
-	{
-		assocSupt.addAssoc(obj, AssociationListKey.CHOICES, o);
-	}
-
-    @Override
 	public boolean containsAssociated(CDOMObject obj, String o)
 	{
 		List<FixedStringList> list =
@@ -6613,7 +6536,6 @@ public final class Equipment extends PObject implements Serializable,
 		return false;
 	}
 
-    @Override
 	public int getSelectCorrectedAssociationCount(CDOMObject obj)
 	{
 		Formula f = obj.getSafe(FormulaKey.SELECT);
@@ -6624,8 +6546,7 @@ public final class Equipment extends PObject implements Serializable,
 			/ select;
 	}
 
-	@Override
-	public List<String> getAssociationList(Object obj)
+	public List<String> getAssociationList(CDOMObject obj)
 	{
 		List<String> list = new ArrayList<String>();
 		List<FixedStringList> assocList =
@@ -6648,13 +6569,11 @@ public final class Equipment extends PObject implements Serializable,
 		return list;
 	}
 
-	@Override
 	public boolean hasAssociations(Object obj)
 	{
 		return assocSupt.hasAssocs(obj, AssociationListKey.CHOICES);
 	}
 
-    @Override
 	public List<String> removeAllAssociations(CDOMObject obj)
 	{
 		List<String> list = getAssociationList(obj);
@@ -6662,61 +6581,12 @@ public final class Equipment extends PObject implements Serializable,
 		return list;
 	}
 
-    @Override
 	public void removeAssociation(CDOMObject obj, String o)
 	{
 		assocSupt.removeAssoc(obj, AssociationListKey.CHOICES,
 			new FixedStringList(o));
 	}
 
-    @Override
-	public int getDetailedAssociationCount(CDOMObject obj)
-	{
-		List<FixedStringList> assocs =
-				assocSupt.getAssocList(obj, AssociationListKey.CHOICES);
-		int count = 0;
-		if (assocs != null)
-		{
-			for (FixedStringList choice : assocs)
-			{
-				count += choice.size();
-			}
-		}
-		return count;
-	}
-
-    @Override
-	public List<FixedStringList> getDetailedAssociations(CDOMObject obj)
-	{
-		List<FixedStringList> list =
-				assocSupt.getAssocList(obj, AssociationListKey.CHOICES);
-		if (list == null)
-		{
-			list = Collections.emptyList();
-		}
-		return list;
-	}
-
-    @Override
-	public List<String> getExpandedAssociations(CDOMObject obj)
-	{
-		List<FixedStringList> assocs =
-				assocSupt.getAssocList(obj, AssociationListKey.CHOICES);
-		List<String> list = new ArrayList<String>();
-		if (assocs != null)
-		{
-			for (FixedStringList choice : assocs)
-			{
-				for (String s : choice)
-				{
-					list.add(s);
-				}
-			}
-		}
-		return list;
-	}
-
-    @Override
 	public String getFirstAssociation(CDOMObject obj)
 	{
 		return assocSupt.getAssocList(obj, AssociationListKey.CHOICES).get(0)

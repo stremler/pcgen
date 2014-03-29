@@ -45,6 +45,7 @@ import pcgen.base.util.HashMapToList;
 import pcgen.cdom.base.CDOMList;
 import pcgen.cdom.base.CDOMObject;
 import pcgen.cdom.base.Constants;
+import pcgen.cdom.content.CNAbility;
 import pcgen.cdom.enumeration.AssociationKey;
 import pcgen.cdom.enumeration.IntegerKey;
 import pcgen.cdom.enumeration.ListKey;
@@ -53,7 +54,6 @@ import pcgen.cdom.enumeration.SourceFormat;
 import pcgen.cdom.enumeration.StringKey;
 import pcgen.core.Ability;
 import pcgen.core.AbilityCategory;
-import pcgen.core.AbilityUtilities;
 import pcgen.core.Domain;
 import pcgen.core.Equipment;
 import pcgen.core.Globals;
@@ -71,7 +71,6 @@ import pcgen.core.character.CharacterSpell;
 import pcgen.core.character.SpellBook;
 import pcgen.core.character.SpellInfo;
 import pcgen.core.display.CharacterDisplay;
-import pcgen.core.facade.CharacterFacade;
 import pcgen.core.facade.ChooserFacade.ChooserTreeViewType;
 import pcgen.core.facade.ClassFacade;
 import pcgen.core.facade.DataSetFacade;
@@ -93,12 +92,13 @@ import pcgen.core.utils.MessageType;
 import pcgen.core.utils.ShowMessageDelegate;
 import pcgen.gui2.tools.Utility;
 import pcgen.gui2.util.HtmlInfoBuilder;
+import pcgen.io.ExportUtilities;
 import pcgen.system.BatchExporter;
 import pcgen.system.LanguageBundle;
 import pcgen.system.PCGenSettings;
 import pcgen.util.Logging;
 import pcgen.util.enumeration.Tab;
-import pcgen.util.enumeration.Visibility;
+import pcgen.util.enumeration.View;
 import pcgen.util.fop.FOPHandler;
 import pcgen.util.fop.FOPHandlerFactory;
 
@@ -391,20 +391,19 @@ public class SpellSupportFacadeImpl implements SpellSupportFacade,
 	 */
 	private List<InfoFacade> buildAvailableMetamagicFeatList(SpellNode spellNode)
 	{
-		List<Ability> characterMetaMagicFeats = new ArrayList<Ability>();;
-		List<Ability> feats =
-				AbilityUtilities.getAggregateAbilitiesListForKey(
-					AbilityCategory.FEAT.getKeyName(), pc);
-		Globals.sortPObjectListByName(feats);
+		List<Ability> characterMetaMagicFeats = new ArrayList<Ability>();
+		List<CNAbility> feats = pc.getCNAbilities(AbilityCategory.FEAT);
 
-		for (Ability aFeat : feats)
+		for (CNAbility cna : feats)
 		{
-			if (aFeat.isType("Metamagic") &&  //$NON-NLS-1$
-					!Visibility.DISPLAY_ONLY.equals(aFeat.get(ObjectKey.VISIBILITY)))
+			Ability aFeat = cna.getAbility();
+			if (aFeat.isType("Metamagic") //$NON-NLS-1$
+					&& !aFeat.getSafe(ObjectKey.VISIBILITY).isVisibleTo(View.HIDDEN_EXPORT))
 			{
 				characterMetaMagicFeats.add(aFeat);
 			}
 		}
+		Globals.sortPObjectListByName(characterMetaMagicFeats);
 
 		if (!(spellNode.getSpell() instanceof SpellFacadeImplem))
 		{
@@ -1423,7 +1422,7 @@ public class SpellSupportFacadeImpl implements SpellSupportFacade,
 		File outputFile = BatchExporter.getTempOutputFilename(templateFile);
 		
 		boolean success;
-		if (BatchExporter.isPdfTemplate(templateFile))
+		if (ExportUtilities.isPdfTemplate(templateFile))
 		{
 			success = BatchExporter.exportCharacterToPDF(pcFacade, outputFile, templateFile);
 		}
@@ -1513,7 +1512,7 @@ public class SpellSupportFacadeImpl implements SpellSupportFacade,
 
 			// Output the file
 			File templateFile = new File(template);
-			if (BatchExporter.isPdfTemplate(templateFile))
+			if (ExportUtilities.isPdfTemplate(templateFile))
 			{
 				BatchExporter.exportCharacterToPDF(pcFacade, outFile, templateFile);
 			}

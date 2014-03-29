@@ -19,7 +19,6 @@ package plugin.lsttokens.add;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -36,7 +35,6 @@ import pcgen.cdom.base.SelectableSet;
 import pcgen.cdom.base.TransitionChoice;
 import pcgen.cdom.choiceset.ReferenceChoiceSet;
 import pcgen.cdom.enumeration.ListKey;
-import pcgen.core.Globals;
 import pcgen.core.PCTemplate;
 import pcgen.core.PlayerCharacter;
 import pcgen.core.utils.ParsingSeparator;
@@ -60,7 +58,7 @@ public class TemplateToken extends AbstractNonEmptyToken<CDOMObject> implements
 
 	private String getFullName()
 	{
-		return getParentToken() + ":" + getTokenName();
+		return getParentToken() + Constants.COLON + getTokenName();
 	}
 
 	@Override
@@ -192,7 +190,7 @@ public class TemplateToken extends AbstractNonEmptyToken<CDOMObject> implements
 	@Override
 	public PCTemplate decodeChoice(LoadContext context, String s)
 	{
-		return Globals.getContext().ref.silentlyGetConstructedCDOMObject(
+		return context.ref.silentlyGetConstructedCDOMObject(
 				PCTEMPLATE_CLASS, s);
 	}
 
@@ -214,12 +212,5 @@ public class TemplateToken extends AbstractNonEmptyToken<CDOMObject> implements
 			PCTemplate choice)
 	{
 		pc.removeTemplate(choice);
-	}
-
-	@Override
-	public List<PCTemplate> getCurrentlySelected(CDOMObject owner,
-			PlayerCharacter pc)
-	{
-		return Collections.emptyList();
 	}
 }

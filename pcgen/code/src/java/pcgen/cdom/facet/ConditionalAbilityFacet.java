@@ -20,10 +20,11 @@ package pcgen.cdom.facet;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import pcgen.cdom.enumeration.CharID;
-import pcgen.cdom.facet.base.AbstractListFacet;
-import pcgen.cdom.helper.CategorizedAbilitySelection;
+import pcgen.cdom.facet.base.AbstractSingleSourceListFacet;
+import pcgen.cdom.helper.CNAbilitySelection;
 
 /**
  * ConditionalAbilityFacet is a DataFacet that contains information about
@@ -36,22 +37,9 @@ import pcgen.cdom.helper.CategorizedAbilitySelection;
  * @author Thomas Parker (thpr [at] yahoo.com)
  */
 public class ConditionalAbilityFacet extends
-		AbstractListFacet<CategorizedAbilitySelection>
+		AbstractSingleSourceListFacet<CNAbilitySelection, Object>
 {
 	private PrerequisiteFacet prerequisiteFacet;
-
-	/**
-	 * Overrides the default behavior of AbstractListFacet, since we need to
-	 * ensure we are storing the conditionally granted abilities as a raw list
-	 * (can appear more than once) rather than a set.
-	 * 
-	 * @see pcgen.cdom.facet.base.AbstractListFacet#getComponentSet()
-	 */
-	@Override
-	protected Collection<CategorizedAbilitySelection> getComponentSet()
-	{
-		return new ArrayList<CategorizedAbilitySelection>();
-	}
 
 	/**
 	 * Returns a non-null copy of the Set of objects the character qualifies for
@@ -76,17 +64,18 @@ public class ConditionalAbilityFacet extends
 	 * @return A non-null Set of objects the Player Character represented by the
 	 *         given CharID qualifies for in this AbstractQualifiedListFacet
 	 */
-	public Collection<CategorizedAbilitySelection> getQualifiedSet(CharID id)
+	public Collection<CNAbilitySelection> getQualifiedSet(CharID id)
 	{
-		List<CategorizedAbilitySelection> set = new ArrayList<CategorizedAbilitySelection>();
-		Collection<CategorizedAbilitySelection> cached = getCachedSet(id);
+		List<CNAbilitySelection> set = new ArrayList<CNAbilitySelection>();
+		Map<CNAbilitySelection, Object> cached = getCachedMap(id);
 		if (cached != null)
 		{
-			for (CategorizedAbilitySelection cas : cached)
+			for (Map.Entry<CNAbilitySelection, Object> me : cached.entrySet())
 			{
-				if (prerequisiteFacet.qualifies(id, cas, cas.getSource()))
+				CNAbilitySelection cnas = me.getKey();
+				if (prerequisiteFacet.qualifies(id, cnas, me.getValue()))
 				{
-					set.add(cas);
+					set.add(cnas);
 				}
 			}
 		}
@@ -94,32 +83,25 @@ public class ConditionalAbilityFacet extends
 	}
 
 	/**
-	 * Removes all information for the given source from this
-	 * ConditionalAbilityFacet for the PlayerCharacter represented by the given
-	 * CharID.
-	 * 
+	 * Check if the character is allowed to take the ability selection.
 	 * @param id
-	 *            The CharID representing the Player Character for which items
-	 *            from the given source will be removed
-	 * @param source
-	 *            The source for the objects to be removed from the list of
-	 *            items stored for the Player Character identified by the given
-	 *            CharID
+	 *            The CharID representing the Player Character.
+	 * @param cas The ability selection to be checked.
+	 * @return true if the character qualifies for the selection, false if not.
 	 */
-	public void removeAllFromSource(CharID id, Object source)
+	public boolean isQualified(CharID id, CNAbilitySelection cas)
 	{
-		Collection<CategorizedAbilitySelection> cached = getCachedSet(id);
+		Map<CNAbilitySelection, Object> cached = getCachedMap(id);
 		if (cached != null)
 		{
-			for (CategorizedAbilitySelection cas : new ArrayList<CategorizedAbilitySelection>(
-					cached))
+			Object source = cached.get(cas);
+			//null gate b/c we may not have cas
+			if (source != null)
 			{
-				if (cas.getSource().equals(source))
-				{
-					remove(id, cas);
-				}
+				return prerequisiteFacet.qualifies(id, cas, source);
 			}
 		}
+		return false;
 	}
 
 	public void setPrerequisiteFacet(PrerequisiteFacet prerequisiteFacet)

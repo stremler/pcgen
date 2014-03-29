@@ -20,6 +20,8 @@ package pcgen.cdom.facet;
 import pcgen.cdom.facet.analysis.ChangeProfFacet;
 import pcgen.cdom.facet.analysis.LevelFacet;
 import pcgen.cdom.facet.input.ActiveAbilityFacet;
+import pcgen.cdom.facet.input.ClassSkillListFacet;
+import pcgen.cdom.facet.input.MasterUsableSkillFacet;
 import pcgen.cdom.facet.model.ActiveEqModFacet;
 import pcgen.cdom.facet.model.AlignmentFacet;
 import pcgen.cdom.facet.model.BioSetFacet;
@@ -29,15 +31,13 @@ import pcgen.cdom.facet.model.ClassLevelFacet;
 import pcgen.cdom.facet.model.CompanionModFacet;
 import pcgen.cdom.facet.model.DeityFacet;
 import pcgen.cdom.facet.model.DomainFacet;
-import pcgen.cdom.facet.model.DomainSelectionFacet;
 import pcgen.cdom.facet.model.ExpandedCampaignFacet;
 import pcgen.cdom.facet.model.RaceFacet;
-import pcgen.cdom.facet.model.RaceSelectionFacet;
+import pcgen.cdom.facet.model.SimpleAbilityFacet;
 import pcgen.cdom.facet.model.SizeFacet;
 import pcgen.cdom.facet.model.SkillFacet;
 import pcgen.cdom.facet.model.StatFacet;
 import pcgen.cdom.facet.model.TemplateFacet;
-import pcgen.cdom.facet.model.TemplateSelectionFacet;
 import pcgen.cdom.facet.model.WeaponProfFacet;
 
 public class FacetInitialization {
@@ -86,10 +86,6 @@ public class FacetInitialization {
 		SkillFacet skillFacet = FacetLibrary.getFacet(SkillFacet.class);
 		ActiveAbilityFacet abFacet = FacetLibrary.getFacet(ActiveAbilityFacet.class);
 
-		DomainSelectionFacet domainSelectionFacet = FacetLibrary.getFacet(DomainSelectionFacet.class);
-		RaceSelectionFacet raceSelectionFacet = FacetLibrary.getFacet(RaceSelectionFacet.class);
-		TemplateSelectionFacet templateSelectionFacet = FacetLibrary.getFacet(TemplateSelectionFacet.class);
-
 		NaturalWeaponProfFacet nwpFacet = FacetLibrary.getFacet(NaturalWeaponProfFacet.class);
 		UserEquipmentFacet userEquipmentFacet = FacetLibrary.getFacet(UserEquipmentFacet.class);
 		NaturalWeaponFacet naturalWeaponFacet = FacetLibrary.getFacet(NaturalWeaponFacet.class);
@@ -101,8 +97,10 @@ public class FacetInitialization {
 		EquipmentConsolidationFacet eqObjectFacet = FacetLibrary.getFacet(EquipmentConsolidationFacet.class);
 		GrantedAbilityFacet grantedAbilityFacet = FacetLibrary.getFacet(GrantedAbilityFacet.class);
 		DirectAbilityFacet directAbilityFacet = FacetLibrary.getFacet(DirectAbilityFacet.class);
+		DirectAbilityInputFacet directAbilityInputFacet = FacetLibrary.getFacet(DirectAbilityInputFacet.class);
 		ConditionallyGrantedAbilityFacet cabFacet = FacetLibrary.getFacet(ConditionallyGrantedAbilityFacet.class);
-		OldChooseCleanupFacet occFacet = FacetLibrary.getFacet(OldChooseCleanupFacet.class);
+		SimpleAbilityFacet simpleAbilityFacet = FacetLibrary.getFacet(SimpleAbilityFacet.class);
+		AbilitySelectionApplication abilitySelectionApplication = FacetLibrary.getFacet(AbilitySelectionApplication.class);
 
 		equipmentFacet.addDataFacetChangeListener(naturalEquipmentFacet);
 		equippedFacet.addDataFacetChangeListener(activeEquipmentFacet);
@@ -120,12 +118,11 @@ public class FacetInitialization {
 		levelFacet.addLevelChangeListener(conditionalTemplateFacet);
 		levelFacet.addLevelChangeListener(sizeFacet);
 
+		grantedAbilityFacet.addDataFacetChangeListener(abilitySelectionApplication);
+		grantedAbilityFacet.addDataFacetChangeListener(simpleAbilityFacet);
 		directAbilityFacet.addDataFacetChangeListener(grantedAbilityFacet);
+		directAbilityInputFacet.addDataFacetChangeListener(grantedAbilityFacet);
 		cabFacet.addDataFacetChangeListener(grantedAbilityFacet);
-
-		raceSelectionFacet.addDataFacetChangeListener(-1000, occFacet);
-		domainSelectionFacet.addDataFacetChangeListener(-1000, occFacet);
-		templateSelectionFacet.addDataFacetChangeListener(-1000, occFacet);
 
 		raceFacet.addDataFacetChangeListener(bioSetTrackingFacet);
 
@@ -148,7 +145,7 @@ public class FacetInitialization {
 		// weaponProfList is still just a list of Strings
 		// results.addAll(getWeaponProfList());
 		classLevelFacet.addDataFacetChangeListener(charObjectFacet); //model done
-		grantedAbilityFacet.addDataFacetChangeListener(charObjectFacet);
+		simpleAbilityFacet.addDataFacetChangeListener(charObjectFacet);
 		companionModFacet.addDataFacetChangeListener(charObjectFacet); //model done
 
 		activeEquipmentFacet.addDataFacetChangeListener(eqObjectFacet);
@@ -163,6 +160,11 @@ public class FacetInitialization {
 
 	private static void doBridges()
 	{
+		/*
+		 * Do dataset-level facets
+		 */
+		FacetLibrary.getFacet(MasterSkillFacet.class);
+		FacetLibrary.getFacet(MasterUsableSkillFacet.class);
 		/*
 		 * TODO These are required because they are "bridges" - meaning they
 		 * refer to others, but no one refers to them. Need to consider if these
@@ -185,6 +187,7 @@ public class FacetInitialization {
 		FacetLibrary.getFacet(ChooseDriverFacet.class);
 		FacetLibrary.getFacet(AvailableSpellInputFacet.class);
 		FacetLibrary.getFacet(KnownSpellInputFacet.class);
+		FacetLibrary.getFacet(ClassSkillListFacet.class);
 		//This one is a just in case
 		FacetLibrary.getFacet(ChangeProfFacet.class);
 		//and others just in case...

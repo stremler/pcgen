@@ -26,13 +26,13 @@
 
 package pcgen.core.term;
 
-import java.util.List;
+import java.util.Collection;
 
-import pcgen.core.Ability;
-import pcgen.core.PlayerCharacter;
-import pcgen.core.AbilityCategory;
-import pcgen.core.AssociationStore;
+import pcgen.cdom.content.CNAbility;
 import pcgen.cdom.enumeration.ObjectKey;
+import pcgen.core.AbilityCategory;
+import pcgen.core.PlayerCharacter;
+import pcgen.util.enumeration.View;
 import pcgen.util.enumeration.Visibility;
 
 public abstract class BasePCCountAbilitiesTermEvaluator extends BasePCTermEvaluator
@@ -41,7 +41,7 @@ public abstract class BasePCCountAbilitiesTermEvaluator extends BasePCTermEvalua
 	protected boolean visible;
 	protected boolean hidden;
 
-	abstract List<Ability> getAbilities(PlayerCharacter pc);
+	abstract Collection<CNAbility> getAbilities(PlayerCharacter pc);
 
 	/**
 	 * This function takes a list of feats and returns the number of visible,
@@ -56,14 +56,14 @@ public abstract class BasePCCountAbilitiesTermEvaluator extends BasePCTermEvalua
 	 * @return the number of matching abilities
 	 */
 	protected Float countVisibleAbilities(
-			AssociationStore pc,
-			final Iterable<Ability> aList,
+			PlayerCharacter pc,
+			final Iterable<CNAbility> aList,
 			final boolean visible,
 			final boolean hidden)
 	{
 		Float count = 0f;
 
-		for (Ability ability : aList)
+		for (CNAbility ability : aList)
 		{
 			count += countVisibleAbility(pc, ability, visible, hidden, true);
 		}
@@ -86,30 +86,31 @@ public abstract class BasePCCountAbilitiesTermEvaluator extends BasePCTermEvalua
 	 * @return The number of occurrences of the ability.
 	 */
 	protected Float countVisibleAbility(
-			AssociationStore pc,
-			final Ability ability,
+			PlayerCharacter pc,
+			final CNAbility cna,
 			final boolean visible,
 			final boolean hidden,
 			final boolean onceOnly)
 	{
-		Visibility v = ability.getSafe(ObjectKey.VISIBILITY); 
+		Visibility v = cna.getAbility().getSafe(ObjectKey.VISIBILITY); 
 
-		boolean abilityInvisibile = Visibility.DISPLAY_ONLY == v ||
-									Visibility.HIDDEN == v;
+		//TODO This is a bug, it assumes export
+		boolean abilityInvisibile = v.isVisibleTo(View.HIDDEN_EXPORT);
+
 		int count = 0;
 
 		if (abilityInvisibile)
 		{
 			if (hidden)
 			{
-				count += onceOnly ? 1 : Math.max(1, pc.getSelectCorrectedAssociationCount(ability));
+				count += onceOnly ? 1 : Math.max(1, pc.getSelectCorrectedAssociationCount(cna));
 			}
 		}
 		else
 		{
 			if (visible)
 			{
-				count += onceOnly ? 1 : Math.max(1, pc.getSelectCorrectedAssociationCount(ability));
+				count += onceOnly ? 1 : Math.max(1, pc.getSelectCorrectedAssociationCount(cna));
 			}
 		}
 

@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -47,7 +46,6 @@ import pcgen.cdom.enumeration.ListKey;
 import pcgen.cdom.enumeration.ObjectKey;
 import pcgen.cdom.enumeration.RaceSubType;
 import pcgen.cdom.enumeration.RaceType;
-import pcgen.cdom.enumeration.SkillCost;
 import pcgen.cdom.enumeration.SkillFilter;
 import pcgen.cdom.enumeration.StringKey;
 import pcgen.cdom.facet.ActiveSpellsFacet;
@@ -65,7 +63,6 @@ import pcgen.cdom.facet.MasterFacet;
 import pcgen.cdom.facet.NoteItemFacet;
 import pcgen.cdom.facet.PrimaryWeaponFacet;
 import pcgen.cdom.facet.SecondaryWeaponFacet;
-import pcgen.cdom.facet.SkillCostFacet;
 import pcgen.cdom.facet.SkillRankFacet;
 import pcgen.cdom.facet.SpellBookFacet;
 import pcgen.cdom.facet.SpellListFacet;
@@ -170,7 +167,7 @@ import pcgen.core.character.SpellBook;
 import pcgen.core.pclevelinfo.PCLevelInfo;
 import pcgen.core.spell.Spell;
 import pcgen.util.enumeration.Load;
-import pcgen.util.enumeration.Visibility;
+import pcgen.util.enumeration.View;
 import pcgen.util.enumeration.VisionType;
 
 public class CharacterDisplay
@@ -232,7 +229,6 @@ public class CharacterDisplay
 	private NoteItemFacet noteItemFacet = FacetLibrary.getFacet(NoteItemFacet.class);
 	private SubRaceFacet subRaceFacet = FacetLibrary.getFacet(SubRaceFacet.class);
 	private UserSpecialAbilityFacet userSpecialAbilityFacet = FacetLibrary.getFacet(UserSpecialAbilityFacet.class);
-	private SkillCostFacet skillCostFacet = FacetLibrary.getFacet(SkillCostFacet.class);
 	private SkillRankFacet skillRankFacet = FacetLibrary.getFacet(SkillRankFacet.class);
 	private ShieldProfProviderFacet shieldProfFacet = FacetLibrary.getFacet(ShieldProfProviderFacet.class);
 	private SpecialAbilityFacet specialAbilityFacet = FacetLibrary.getFacet(SpecialAbilityFacet.class);
@@ -553,8 +549,7 @@ public class CharacterDisplay
 	 */
 	public List<PCTemplate> getOutputVisibleTemplateList()
 	{
-		return getVisibleToTemplateList(EnumSet.of(Visibility.DEFAULT,
-			Visibility.OUTPUT_ONLY));
+		return getVisibleToTemplateList(View.VISIBLE_EXPORT);
 	}
 
 	/**
@@ -565,18 +560,17 @@ public class CharacterDisplay
 	 */
 	public List<PCTemplate> getDisplayVisibleTemplateList()
 	{
-		return getVisibleToTemplateList(EnumSet.of(Visibility.DEFAULT,
-			Visibility.DISPLAY_ONLY));
+		return getVisibleToTemplateList(View.VISIBLE_DISPLAY);
 	}
 
-	private List<PCTemplate> getVisibleToTemplateList(Set<Visibility> visiSet)
+	private List<PCTemplate> getVisibleToTemplateList(View v)
 	{
 		List<PCTemplate> tl = new ArrayList<PCTemplate>();
 
 		TreeSet<PCTemplate> treeSet = new TreeSet<PCTemplate>(CDOMObjectUtilities.CDOM_SORTER);
 		for (PCTemplate template : templateFacet.getSet(id))
 		{
-			if (visiSet.contains(template.getSafe(ObjectKey.VISIBILITY)))
+			if (template.getSafe(ObjectKey.VISIBILITY).isVisibleTo(v))
 			{
 				treeSet.add(template);
 			}
@@ -851,10 +845,18 @@ public class CharacterDisplay
 	 * @return A list of the character's skills matching the visibility
 	 *         criteria.
 	 */
-	public List<Skill> getPartialSkillList(Visibility vis)
+	public List<Skill> getPartialSkillList(View v)
 	{
 		// Now select the required set of skills, based on their visibility.
-		return Globals.getObjectsOfVisibility(skillFacet.getSet(id), vis);
+		ArrayList<Skill> aList = new ArrayList<Skill>();
+		for (Skill po : skillFacet.getSet(id))
+		{
+			if (po.getSafe(ObjectKey.VISIBILITY).isVisibleTo(v))
+			{
+				aList.add(po);
+			}
+		}
+		return aList;
 	}
 
 	/**
@@ -1953,16 +1955,6 @@ public class CharacterDisplay
 	public Float getRank(Skill sk)
 	{
 		return skillRankFacet.getRank(id, sk);
-	}
-
-	public SkillCost skillCostForPCClass(Skill sk, PCClass aClass)
-	{
-		return skillCostFacet.skillCostForPCClass(id, sk, aClass);
-	}
-
-	public boolean isClassSkill(PCClass aClass, Skill sk)
-	{
-		return skillCostFacet.isClassSkill(id, aClass, sk);
 	}
 
 	public List<WeaponProf> getWeaponProfsInTarget(CDOMGroupRef<WeaponProf> master)

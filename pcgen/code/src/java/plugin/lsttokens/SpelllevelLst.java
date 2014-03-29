@@ -74,7 +74,7 @@ public class SpelllevelLst extends AbstractSpellListToken implements
 						+ " not enough tokens: " + value, context);
 			}
 			String lastToken = workingValue.substring(lastPipeLoc + 1);
-			if (lastToken.startsWith("PRE") || lastToken.startsWith("!PRE"))
+			if (looksLikeAPrerequisite(lastToken))
 			{
 				workingValue = workingValue.substring(0, lastPipeLoc);
 				Prerequisite prerequisite = getPrerequisite(lastToken);
@@ -92,7 +92,7 @@ public class SpelllevelLst extends AbstractSpellListToken implements
 			}
 		}
 
-		StringTokenizer tok = new StringTokenizer(workingValue, "|");
+		StringTokenizer tok = new StringTokenizer(workingValue, Constants.PIPE);
 
 		if (tok.countTokens() < 3)
 		{

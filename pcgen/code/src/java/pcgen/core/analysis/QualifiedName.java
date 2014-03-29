@@ -19,10 +19,16 @@
  */
 package pcgen.core.analysis;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import pcgen.base.lang.StringUtil;
 import pcgen.cdom.base.ChooseInformation;
+import pcgen.cdom.content.CNAbility;
 import pcgen.cdom.enumeration.ObjectKey;
 import pcgen.core.Ability;
+import pcgen.core.AbilityUtilities;
 import pcgen.core.PlayerCharacter;
 import pcgen.core.Skill;
 
@@ -42,8 +48,9 @@ public class QualifiedName
 	 *         the times the ability is applied e.g. " (3x)", or a list of the
 	 *         sub-choices e.g. " (Sub1, Sub2, ...)".
 	 */
-	public static String qualifiedName(PlayerCharacter pc, Ability a)
+	public static String qualifiedName(PlayerCharacter pc, List<CNAbility> list)
 	{
+		Ability a = AbilityUtilities.validateCNAList(list);
 		String outputName = OutputNameFormatting.getOutputName(a);
 		if ("[BASE]".equalsIgnoreCase(outputName))
 		{
@@ -52,34 +59,35 @@ public class QualifiedName
 		// start with the name of the ability
 		// don't do for Weapon Profs
 		final StringBuilder aStrBuf = new StringBuilder(outputName);
-
-		if (pc.hasAssociations(a)
-				&& !a.getKeyName().startsWith("Armor Proficiency"))
+		
+		ChooseInformation<?> chooseInfo = a.get(ObjectKey.CHOOSE_INFO);
+		if (chooseInfo != null)
 		{
-			ChooseInformation<?> chooseInfo =
-				a.get(ObjectKey.CHOOSE_INFO);
+			processChooseInfo(aStrBuf, pc, chooseInfo, list);
+		}
+		return aStrBuf.toString();
+	}
 
-			String choiceInfo;
-			if (chooseInfo != null)
+	private static <T> void processChooseInfo(StringBuilder aStrBuf, PlayerCharacter pc, 
+		ChooseInformation<T> chooseInfo, List<CNAbility> list)
+	{
+		List<T> allSelections = new ArrayList<T>();
+		for (CNAbility cna : list)
+		{
+			if (pc.hasAssociations(cna))
 			{
-				
-				choiceInfo = chooseInfo.getDisplay(pc, a).toString();
-			}
-			else
-			{
-				choiceInfo = StringUtil.joinToStringBuilder(pc
-						.getExpandedAssociations(a), ", ").toString();
-			}
-			
-			if (choiceInfo.length() > 0)
-			{
-				aStrBuf.append(" (");
-				aStrBuf.append(choiceInfo);
-				aStrBuf.append(")");
+				List<? extends T> selections =
+						(List<? extends T>) pc.getDetailedAssociations(cna);
+				allSelections.addAll(selections);
 			}
 		}
-
-		return aStrBuf.toString();
+		String choiceInfo = chooseInfo.composeDisplay(allSelections).toString();
+		if (choiceInfo.length() > 0)
+		{
+			aStrBuf.append(" (");
+			aStrBuf.append(choiceInfo);
+			aStrBuf.append(")");
+		}
 	}
 
 	public static String qualifiedName(PlayerCharacter pc, Skill s)
@@ -92,8 +100,9 @@ public class QualifiedName
 
 		final StringBuilder buffer = new StringBuilder();
 		buffer.append(outputName).append("(");
-		buffer.append(StringUtil.joinToStringBuilder(pc.getAssociationList(s),
-				", "));
+		List<String> associationList = pc.getAssociationList(s);
+		Collections.sort(associationList);
+		buffer.append(StringUtil.joinToStringBuilder(associationList, ", "));
 		buffer.append(")");
 
 		return buffer.toString();

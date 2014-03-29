@@ -28,6 +28,10 @@ import pcgen.cdom.enumeration.ListKey;
 import pcgen.cdom.facet.base.AbstractQualifiedListFacet;
 import pcgen.cdom.facet.event.DataFacetChangeEvent;
 import pcgen.cdom.facet.event.DataFacetChangeListener;
+import pcgen.cdom.meta.CorePerspective;
+import pcgen.cdom.meta.CorePerspectiveDB;
+import pcgen.cdom.meta.FacetBehavior;
+import pcgen.cdom.meta.PerspectiveLocation;
 import pcgen.core.Language;
 import pcgen.core.QualifiedObject;
 
@@ -39,8 +43,10 @@ import pcgen.core.QualifiedObject;
  */
 public class AutoLanguageFacet extends
 		AbstractQualifiedListFacet<QualifiedObject<CDOMReference<Language>>>
-		implements DataFacetChangeListener<CDOMObject>
+		implements DataFacetChangeListener<CharID, CDOMObject>, PerspectiveLocation
 {
+
+	private AutoLanguageUnconditionalFacet autoLanguageUnconditionalFacet;
 
 	/**
 	 * Processes CDOMObjects added to a Player Character to extract Languages
@@ -58,7 +64,7 @@ public class AutoLanguageFacet extends
 	 * @see pcgen.cdom.facet.event.DataFacetChangeListener#dataAdded(pcgen.cdom.facet.event.DataFacetChangeEvent)
 	 */
 	@Override
-	public void dataAdded(DataFacetChangeEvent<CDOMObject> dfce)
+	public void dataAdded(DataFacetChangeEvent<CharID, CDOMObject> dfce)
 	{
 		CDOMObject cdo = dfce.getCDOMObject();
 		CharID id = dfce.getCharID();
@@ -67,13 +73,30 @@ public class AutoLanguageFacet extends
 				cdo.getSafeListFor(ListKey.AUTO_LANGUAGES);
 		if (list != null)
 		{
-			addAll(id, list, cdo);
+			separateAll(id, list, cdo);
 		}
 		// AUTO:LANG
 		list = cdo.getSafeListFor(ListKey.AUTO_LANGUAGE);
 		if (list != null)
 		{
-			addAll(id, list, cdo);
+			separateAll(id, list, cdo);
+		}
+	}
+
+	private void separateAll(CharID id,
+		List<QualifiedObject<CDOMReference<Language>>> list, CDOMObject cdo)
+	{
+		for (QualifiedObject<CDOMReference<Language>> qRef : list)
+		{
+			if (qRef.hasPrerequisites())
+			{
+				add(id, qRef, cdo);
+			}
+			else
+			{
+				autoLanguageUnconditionalFacet.addAll(id, qRef.getRawObject()
+					.getContainedObjects(), cdo);
+			}
 		}
 	}
 
@@ -94,9 +117,12 @@ public class AutoLanguageFacet extends
 	 * @see pcgen.cdom.facet.event.DataFacetChangeListener#dataRemoved(pcgen.cdom.facet.event.DataFacetChangeEvent)
 	 */
 	@Override
-	public void dataRemoved(DataFacetChangeEvent<CDOMObject> dfce)
+	public void dataRemoved(DataFacetChangeEvent<CharID, CDOMObject> dfce)
 	{
-		removeAll(dfce.getCharID(), dfce.getCDOMObject());
+		CharID id = dfce.getCharID();
+		CDOMObject cdo = dfce.getCDOMObject();
+		removeAll(id, cdo);
+		autoLanguageUnconditionalFacet.removeAll(id, cdo);
 	}
 
 	/**
@@ -132,5 +158,22 @@ public class AutoLanguageFacet extends
 			}
 		}
 		return list;
+	}
+
+	public void setAutoLanguageUnconditionalFacet(
+		AutoLanguageUnconditionalFacet autoLanguageUnconditionalFacet)
+	{
+		this.autoLanguageUnconditionalFacet = autoLanguageUnconditionalFacet;
+	}
+
+	public void init()
+	{
+		CorePerspectiveDB.register(CorePerspective.LANGUAGE, FacetBehavior.CONDITIONAL, this);
+	}
+
+	@Override
+	public String getIdentity()
+	{
+		return "AUTO:LANG|<ref> (with prerequisite)";
 	}
 }

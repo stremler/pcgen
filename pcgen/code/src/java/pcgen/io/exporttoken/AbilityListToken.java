@@ -28,6 +28,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import pcgen.base.util.HashMapToList;
+import pcgen.base.util.MapToList;
+import pcgen.cdom.content.CNAbility;
 import pcgen.cdom.enumeration.Nature;
 import pcgen.core.Ability;
 import pcgen.core.AbilityCategory;
@@ -35,6 +38,7 @@ import pcgen.core.PlayerCharacter;
 import pcgen.core.SettingsHandler;
 import pcgen.core.analysis.QualifiedName;
 import pcgen.io.ExportHandler;
+import pcgen.util.enumeration.View;
 
 /**
  * <code>AbilityListToken</code> handles the output of a comma separated 
@@ -55,7 +59,7 @@ public class AbilityListToken extends Token
 	private static final String DELIM = ", ";
 
 	//TODO: Should these be static to enable the caching?
-	private List<Ability> abilityList = null;
+	private MapToList<Ability, CNAbility> abilityMap = null;
 	private PlayerCharacter lastPC = null;
 	private int lastPCSerial;
 	private String lastType = "";
@@ -116,12 +120,7 @@ public class AbilityListToken extends Token
 		if (lastPC != pc || !aCategory.equals(lastCategory)
 			|| lastPCSerial != pc.getSerial() || !tokenString.equals(lastType))
 		{
-			Collection<AbilityCategory> cats = SettingsHandler.getGame().getAllAbilityCatsForKey(aCategory.getKeyName());
-			abilityList = new ArrayList<Ability>();
-			for (AbilityCategory abilityCategory : cats)
-			{
-				abilityList.addAll(getAbilityList(pc, abilityCategory));
-			}
+			abilityMap = getAbilityList(pc, aCategory);
 			lastPC = pc;
 			lastCategory = aCategory;
 			lastPCSerial = pc.getSerial();
@@ -157,12 +156,12 @@ public class AbilityListToken extends Token
 			}
 		}
 
-		List<Ability> aList =
+		MapToList<Ability, CNAbility> aList =
 				AbilityToken.buildAbilityList(types, negate, null,
-					AbilityToken.ABILITY_VISIBLE, aspect, abilityList);
+					View.VISIBLE_EXPORT, aspect, abilityMap);
 
 		boolean needComma = false;
-		for (Ability ability : aList)
+		for (Ability ability : aList.getKeySet())
 		{
 			if (needComma)
 			{
@@ -170,7 +169,7 @@ public class AbilityListToken extends Token
 			}
 			needComma = true;
 
-			retString.append(QualifiedName.qualifiedName(pc, ability));
+			retString.append(QualifiedName.qualifiedName(pc, aList.getListFor(ability)));
 		}
 
 		return retString.toString();
@@ -185,13 +184,21 @@ public class AbilityListToken extends Token
 	 * @param aCategory The category of ability required.
 	 * @return List of feats.
 	 */
-	protected List<Ability> getAbilityList(PlayerCharacter pc,
-		AbilityCategory aCategory)
+	protected MapToList<Ability, CNAbility> getAbilityList(PlayerCharacter pc,
+		final AbilityCategory aCategory)
 	{
-		List<Ability> listOfAbilities = new ArrayList<Ability>();
-		for (Ability ability : pc.getAbilityList(aCategory, Nature.NORMAL))
+		final MapToList<Ability, CNAbility> listOfAbilities = new HashMapToList<Ability, CNAbility>();
+		Collection<AbilityCategory> allCats =
+				SettingsHandler.getGame().getAllAbilityCategories();
+		for (AbilityCategory aCat : allCats)
 		{
-			listOfAbilities.add(ability);
+			if (AbilityCategory.ANY.equals(aCategory) || aCat.getParentCategory().equals(aCategory))
+			{
+				for (CNAbility cna : pc.getPoolAbilities(aCat, Nature.NORMAL))
+				{
+					listOfAbilities.addToListFor(cna.getAbility(), cna);
+				}
+			}
 		}
 		return listOfAbilities;
 	}

@@ -26,7 +26,8 @@ import java.util.Set;
 import pcgen.base.util.WrappedMapSet;
 import pcgen.cdom.enumeration.CharID;
 import pcgen.cdom.facet.base.AbstractListFacet;
-import pcgen.cdom.helper.CategorizedAbilitySelection;
+import pcgen.cdom.helper.CNAbilitySelection;
+import pcgen.util.Logging;
 
 /**
  * ConditionallyGrantedAbilityFacet is a DataFacet that contains information
@@ -36,10 +37,13 @@ import pcgen.cdom.helper.CategorizedAbilitySelection;
  * @author Thomas Parker (thpr [at] yahoo.com)
  */
 public class ConditionallyGrantedAbilityFacet extends
-		AbstractListFacet<CategorizedAbilitySelection>
+		AbstractListFacet<CNAbilitySelection>
 {
 
 	private ConditionalAbilityFacet conditionalAbilityFacet;
+	
+	/** Best guess of the current recursion level for debugging purposes only.*/
+	private static int depth = 0;
 
 	/**
 	 * Performs a global update of conditionally granted Abilities for a Player
@@ -51,23 +55,59 @@ public class ConditionallyGrantedAbilityFacet extends
 	 */
 	public void update(CharID id)
 	{
-		Collection<CategorizedAbilitySelection> current = getSet(id);
-		Collection<CategorizedAbilitySelection> qualified = conditionalAbilityFacet
+		depth++;
+		Collection<CNAbilitySelection> current = getSet(id);
+		Collection<CNAbilitySelection> qualified = conditionalAbilityFacet
 				.getQualifiedSet(id);
-		List<CategorizedAbilitySelection> toRemove = new ArrayList<CategorizedAbilitySelection>(
+		List<CNAbilitySelection> toRemove = new ArrayList<CNAbilitySelection>(
 				current);
 		toRemove.removeAll(qualified);
-		List<CategorizedAbilitySelection> toAdd = new ArrayList<CategorizedAbilitySelection>(
+		List<CNAbilitySelection> toAdd = new ArrayList<CNAbilitySelection>(
 				qualified);
 		toAdd.removeAll(current);
-		for (CategorizedAbilitySelection cas : toRemove)
+		if (!toAdd.isEmpty() || !toRemove.isEmpty())
 		{
-			remove(id, cas);
+			if (Logging.isDebugMode())
+			{
+				Logging.debugPrint("CGAF at depth " + depth + " removing "
+						+ toRemove + " adding " + toAdd);
+			}
 		}
-		for (CategorizedAbilitySelection cas : toAdd)
+		for (CNAbilitySelection cas : toRemove)
 		{
-			add(id, cas);
+			// Things could have changed, so we make sure
+			if (!conditionalAbilityFacet.isQualified(id, cas) && contains(id, cas))
+			{
+				if (Logging.isDebugMode())
+				{
+					Logging.debugPrint("CGAF at depth " + depth + " removing "
+						+ cas);
+				}
+				remove(id, cas);
+			}
 		}
+		for (CNAbilitySelection cas : toAdd)
+		{
+			// Things could have changed, so we make sure
+			if (conditionalAbilityFacet.isQualified(id, cas) && !contains(id, cas))
+			{
+				if (Logging.isDebugMode())
+				{
+					Logging.debugPrint("CGAF at depth " + depth + " adding "
+						+ cas);
+				}
+				add(id, cas);
+			}
+		}
+
+		if (!toAdd.isEmpty() || !toRemove.isEmpty())
+		{
+			if (Logging.isDebugMode())
+			{
+				Logging.debugPrint("CGAF at depth " + depth + " completed.");
+			}
+		}
+		depth--;
 	}
 
 	/**
@@ -79,9 +119,9 @@ public class ConditionallyGrantedAbilityFacet extends
 	 * @see pcgen.cdom.facet.base.AbstractListFacet#getComponentSet()
 	 */
 	@Override
-	protected Set<CategorizedAbilitySelection> getComponentSet()
+	protected Set<CNAbilitySelection> getComponentSet()
 	{
-		return new WrappedMapSet<CategorizedAbilitySelection>(
+		return new WrappedMapSet<CNAbilitySelection>(
 				IdentityHashMap.class);
 	}
 

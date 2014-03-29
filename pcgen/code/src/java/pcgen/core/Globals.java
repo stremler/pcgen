@@ -49,14 +49,11 @@ import pcgen.cdom.base.Constants;
 import pcgen.cdom.base.MasterListInterface;
 import pcgen.cdom.content.BaseDice;
 import pcgen.cdom.enumeration.ListKey;
-import pcgen.cdom.enumeration.ObjectKey;
 import pcgen.cdom.enumeration.Pantheon;
 import pcgen.cdom.enumeration.RaceType;
 import pcgen.cdom.enumeration.SourceFormat;
 import pcgen.cdom.enumeration.StringKey;
 import pcgen.cdom.enumeration.Type;
-import pcgen.cdom.facet.FacetLibrary;
-import pcgen.cdom.facet.MasterSkillFacet;
 import pcgen.core.analysis.SizeUtilities;
 import pcgen.core.character.EquipSlot;
 import pcgen.core.chooser.CDOMChooserFacadeImpl;
@@ -65,7 +62,6 @@ import pcgen.core.spell.Spell;
 import pcgen.core.utils.CoreUtility;
 import pcgen.core.utils.MessageType;
 import pcgen.gui2.facade.Gui2InfoFactory;
-import pcgen.persistence.PersistenceManager;
 import pcgen.rules.context.ConsolidatedListCommitStrategy;
 import pcgen.rules.context.LoadContext;
 import pcgen.rules.context.ReferenceContext;
@@ -78,7 +74,6 @@ import pcgen.util.InputInterface;
 import pcgen.util.Logging;
 import pcgen.util.chooser.ChooserFactory;
 import pcgen.util.enumeration.Load;
-import pcgen.util.enumeration.Visibility;
 import pcgen.util.enumeration.VisionType;
 
 /**
@@ -934,21 +929,23 @@ public final class Globals
 		boolean listsHappy = checkListsHappy();
 
 		Level logLevel = listsHappy ? Logging.DEBUG : Logging.WARNING;
-		Logging.log(logLevel, "Number of objects loaded. The following should "
-			+ "all be greater than 0:");
-		Logging.log(logLevel, "Races=" + Globals.getContext().ref.getConstructedCDOMObjects(Race.class).size());
-		Logging.log(logLevel, "Classes=" + getContext().ref.getConstructedCDOMObjects(PCClass.class).size());
-		Logging.log(logLevel, "Skills=" + Globals.getContext().ref.getConstructedCDOMObjects(Skill.class).size());
-		Logging.log(logLevel, "Feats="
-				+ Globals.getContext().ref.getManufacturer(Ability.class,
-						AbilityCategory.FEAT).getConstructedObjectCount());
-		Logging.log(logLevel, "Equipment=" + Globals.getContext().ref.getConstructedCDOMObjects(Equipment.class).size());
-		Logging.log(logLevel, "ArmorProfs=" + Globals.getContext().ref.getConstructedCDOMObjects(ArmorProf.class).size());
-		Logging.log(logLevel, "ShieldProfs=" + Globals.getContext().ref.getConstructedCDOMObjects(ShieldProf.class).size());
-		Logging.log(logLevel, "WeaponProfs=" + Globals.getContext().ref.getConstructedCDOMObjects(WeaponProf.class).size());
-		Logging.log(logLevel, "Kits=" + Globals.getContext().ref.getConstructedCDOMObjects(Kit.class).size());
-		Logging.log(logLevel, "Templates=" + Globals.getContext().ref.getConstructedCDOMObjects(PCTemplate.class).size());
-
+		if (Logging.isLoggable(logLevel))
+		{
+			Logging.log(logLevel, "Number of objects loaded. The following should "
+				+ "all be greater than 0:");
+			Logging.log(logLevel, "Races=" + Globals.getContext().ref.getConstructedCDOMObjects(Race.class).size());
+			Logging.log(logLevel, "Classes=" + getContext().ref.getConstructedCDOMObjects(PCClass.class).size());
+			Logging.log(logLevel, "Skills=" + Globals.getContext().ref.getConstructedCDOMObjects(Skill.class).size());
+			Logging.log(logLevel, "Feats="
+					+ Globals.getContext().ref.getManufacturer(Ability.class,
+					AbilityCategory.FEAT).getConstructedObjectCount());
+			Logging.log(logLevel, "Equipment=" + Globals.getContext().ref.getConstructedCDOMObjects(Equipment.class).size());
+			Logging.log(logLevel, "ArmorProfs=" + Globals.getContext().ref.getConstructedCDOMObjects(ArmorProf.class).size());
+			Logging.log(logLevel, "ShieldProfs=" + Globals.getContext().ref.getConstructedCDOMObjects(ShieldProf.class).size());
+			Logging.log(logLevel, "WeaponProfs=" + Globals.getContext().ref.getConstructedCDOMObjects(WeaponProf.class).size());
+			Logging.log(logLevel, "Kits=" + Globals.getContext().ref.getConstructedCDOMObjects(Kit.class).size());
+			Logging.log(logLevel, "Templates=" + Globals.getContext().ref.getConstructedCDOMObjects(PCTemplate.class).size());
+		}
 		return listsHappy;
 	}
 
@@ -1008,11 +1005,8 @@ public final class Globals
 
 		// Perform other special cleanup
 		Equipment.clearEquipmentTypes();
-		PersistenceManager.getInstance().emptyLists();
 		SettingsHandler.getGame().clearLoadContext();
-		FacetLibrary.getFacet(MasterSkillFacet.class).emptyLists();
 
-		
 		Pantheon.clearConstants();
 		RaceType.clearConstants();
 		createEmptyRace();
@@ -1685,21 +1679,6 @@ public final class Globals
 		return hasSpellPPCost;
 	}
 	
-	public static <T extends CDOMObject> List<T> getObjectsOfVisibility(Collection<T> c, Visibility v)
-	{
-		ArrayList<T> aList = new ArrayList<T>();
-		for (T po : c)
-		{
-			Visibility poVis = po.getSafe(ObjectKey.VISIBILITY);
-			if (v == Visibility.DEFAULT || poVis == Visibility.DEFAULT
-					|| poVis == v)
-			{
-				aList.add(po);
-			}
-		}
-		return aList;
-	}
-
 	/**
 	 * Return the set of equipment type names as a sorted set of strings.
 	 * 

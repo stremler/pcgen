@@ -326,8 +326,8 @@ public class EquipmentSetFacadeImpl implements EquipmentSetFacade,
 					
 					updateTotalQuantity(es.getItem(), es.getItem().getQty()
 						.intValue());
-					updateTotalWeight(es.getItem(), es.getItem().getQty(),
-						parentNode.getBodyStructure());
+//					updateTotalWeight(es.getItem(), es.getItem().getQty(),
+//						parentNode.getBodyStructure());
 	
 					// add to list for recursive calls
 					children.add(node);
@@ -1718,6 +1718,11 @@ public class EquipmentSetFacadeImpl implements EquipmentSetFacade,
 				return 1;
 
 			case PHANTOM_SLOT:
+				final String slotName = node.getSlot().toString();
+				if (Constants.EQUIP_LOCATION_BOTH.equals(slotName))
+				{
+					return 2;
+				}
 				return node.singleOnly ? 1 : node.getSlot().getSlotCount()
 					+ (int) theCharacter.getTotalBonusTo("SLOTS", node
 						.getSlot().getSlotName());
@@ -2031,7 +2036,11 @@ public class EquipmentSetFacadeImpl implements EquipmentSetFacade,
 		EquipmentFacade equipmentFacade = e.getElement();
 		if (equippedItemsList.containsElement(equipmentFacade))
 		{
-			Logging.debugPrint("Currently equipped item " + equipmentFacade + " is being removed.");
+			if (Logging.isDebugMode())
+			{
+				Logging.debugPrint("Currently equipped item " + equipmentFacade
+					+ " is being removed.");
+			}
 		}
 		List<EquipNodeImpl> affectedList = findEquipmentNodes(equipmentFacade);
 		for (EquipNodeImpl equipNode : affectedList)
@@ -2067,7 +2076,10 @@ public class EquipmentSetFacadeImpl implements EquipmentSetFacade,
 	{
 		// We expect a refresh of the equipment set to follow an equipment changed 
 		// event, so we can ignore these.
-		Logging.debugPrint("Equip elementsChanged " + e);
+		if (Logging.isDebugMode())
+		{
+			Logging.debugPrint("Equip elementsChanged " + e);
+		}
 	}
 
 
@@ -2094,9 +2106,13 @@ public class EquipmentSetFacadeImpl implements EquipmentSetFacade,
 					equippedItemsList.getQuantity(equipmentFacade);
 			if (quantity < 0)
 			{
-				Logging.debugPrint("Currently equipped item " + equipmentFacade
-					+ " is being partially removed " + quantity + " from "
-					+ equippedItemsList.getQuantity(equipmentFacade));
+				if (Logging.isDebugMode())
+				{
+					Logging.debugPrint("Currently equipped item "
+						+ equipmentFacade + " is being partially removed "
+						+ quantity + " from "
+						+ equippedItemsList.getQuantity(equipmentFacade));
+				}
 
 				int numStillToRemove = -1*quantity;
 				List<EquipNodeImpl> affectedList = findEquipmentNodes(equipmentFacade);

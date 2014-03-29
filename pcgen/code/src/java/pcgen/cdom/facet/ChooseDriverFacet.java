@@ -18,12 +18,9 @@
 package pcgen.cdom.facet;
 
 import pcgen.cdom.base.CDOMObject;
-import pcgen.cdom.content.Selection;
-import pcgen.cdom.facet.event.DataFacetChangeEvent;
-import pcgen.cdom.facet.event.DataFacetChangeListener;
-import pcgen.cdom.facet.model.DomainSelectionFacet;
-import pcgen.cdom.facet.model.RaceSelectionFacet;
-import pcgen.cdom.facet.model.TemplateSelectionFacet;
+import pcgen.cdom.enumeration.CharID;
+import pcgen.cdom.facet.event.ScopeFacetChangeEvent;
+import pcgen.cdom.facet.event.ScopeFacetChangeListener;
 import pcgen.core.PlayerCharacter;
 import pcgen.core.analysis.ChooseActivation;
 import pcgen.core.chooser.ChoiceManagerList;
@@ -50,101 +47,62 @@ public class ChooseDriverFacet
 	private Adder adder = new Adder();
 	private Remover remover = new Remover();
 
-	private class Adder implements DataFacetChangeListener<Selection<?, ?>>
+	private class Adder implements ScopeFacetChangeListener<CharID, CDOMObject, Object>
 	{
-		/**
-		 * Triggered when one of the Facets to which ChooseDriverFacet listens
-		 * fires a DataFacetChangeEvent to indicate a CDOMObject was added to a
-		 * Player Character.
-		 * 
-		 * @param dfce
-		 *            The DataFacetChangeEvent containing the information about
-		 *            the change
-		 * 
-		 * @see pcgen.cdom.facet.event.DataFacetChangeListener#dataAdded(pcgen.cdom.facet.event.DataFacetChangeEvent)
-		 */
-		@Override
-		public void dataAdded(DataFacetChangeEvent<Selection<?, ?>> dfce)
+		public void dataAdded(ScopeFacetChangeEvent<CharID, CDOMObject, Object> dfce)
 		{
-			Selection<?, ?> sel = dfce.getCDOMObject();
-			CDOMObject obj = sel.getObject();
+			PlayerCharacter pc = trackingFacet.getPC(dfce.getCharID());
+			if (!pc.isAllowInteraction())
+			{
+				return;
+			}
+			CDOMObject obj = dfce.getScope();
+			Object sel = dfce.getCDOMObject();
 			if (ChooseActivation.hasNewChooseToken(obj))
 			{
-				PlayerCharacter pc = trackingFacet.getPC(dfce.getCharID());
-				add(ChooserUtilities.getChoiceManager(obj, pc), pc, obj, sel);
+				addAssoc(ChooserUtilities.getChoiceManager(obj, pc), pc, obj, sel);
 			}
 		}
 
-		private <T> void add(ChoiceManagerList<T> aMan, PlayerCharacter pc,
-			CDOMObject obj, Selection<?, T> sel)
+		private <T> void addAssoc(ChoiceManagerList<T> aMan, PlayerCharacter pc,
+			CDOMObject obj, T sel)
 		{
-			aMan.applyChoice(pc, obj, sel.getSelection());
+			aMan.applyChoice(pc, obj, sel);
 		}
 
-		/**
-		 * Triggered when one of the Facets to which ChooseDriverFacet listens
-		 * fires a DataFacetChangeEvent to indicate a CDOMObject was removed
-		 * from a Player Character.
-		 * 
-		 * @param dfce
-		 *            The DataFacetChangeEvent containing the information about
-		 *            the change
-		 * 
-		 * @see pcgen.cdom.facet.event.DataFacetChangeListener#dataRemoved(pcgen.cdom.facet.event.DataFacetChangeEvent)
-		 */
-		@Override
-		public void dataRemoved(DataFacetChangeEvent<Selection<?, ?>> dfce)
+		public void dataRemoved(ScopeFacetChangeEvent<CharID, CDOMObject, Object> dfce)
 		{
 			//ignore
 		}
 	}
 
-	private class Remover implements DataFacetChangeListener<Selection<?, ?>>
+	private class Remover implements
+			ScopeFacetChangeListener<CharID, CDOMObject, Object>
 	{
-		/**
-		 * Triggered when one of the Facets to which ChooseDriverFacet listens
-		 * fires a DataFacetChangeEvent to indicate a CDOMObject was added to a
-		 * Player Character.
-		 * 
-		 * @param dfce
-		 *            The DataFacetChangeEvent containing the information about
-		 *            the change
-		 * 
-		 * @see pcgen.cdom.facet.event.DataFacetChangeListener#dataAdded(pcgen.cdom.facet.event.DataFacetChangeEvent)
-		 */
-		@Override
-		public void dataAdded(DataFacetChangeEvent<Selection<?, ?>> dfce)
+		public void dataAdded(ScopeFacetChangeEvent<CharID, CDOMObject, Object> dfce)
 		{
 			//ignore
 		}
 
-		/**
-		 * Triggered when one of the Facets to which ChooseDriverFacet listens
-		 * fires a DataFacetChangeEvent to indicate a CDOMObject was removed
-		 * from a Player Character.
-		 * 
-		 * @param dfce
-		 *            The DataFacetChangeEvent containing the information about
-		 *            the change
-		 * 
-		 * @see pcgen.cdom.facet.event.DataFacetChangeListener#dataRemoved(pcgen.cdom.facet.event.DataFacetChangeEvent)
-		 */
-		@Override
-		public void dataRemoved(DataFacetChangeEvent<Selection<?, ?>> dfce)
+		public void dataRemoved(ScopeFacetChangeEvent<CharID, CDOMObject, Object> dfce)
 		{
-			Selection<?, ?> sel = dfce.getCDOMObject();
-			CDOMObject obj = sel.getObject();
-			if (ChooseActivation.hasNewChooseToken(obj))
+			PlayerCharacter pc = trackingFacet.getPC(dfce.getCharID());
+			if (!pc.isAllowInteraction())
 			{
-				PlayerCharacter pc = trackingFacet.getPC(dfce.getCharID());
-				remove(ChooserUtilities.getChoiceManager(obj, pc), pc, obj, sel);
+				return;
+			}
+			Object assoc = dfce.getCDOMObject();
+			CDOMObject cdo = dfce.getScope();
+			if (ChooseActivation.hasNewChooseToken(cdo))
+			{
+				removeAssoc(ChooserUtilities.getChoiceManager(cdo, pc), pc, cdo, assoc);
 			}
 		}
 
-		private <T> void remove(ChoiceManagerList<T> aMan, PlayerCharacter pc,
-			CDOMObject obj, Selection<?, T> sel)
+		private <T> void removeAssoc(ChoiceManagerList<T> aMan, PlayerCharacter pc,
+			CDOMObject obj, T sel)
 		{
-			aMan.removeChoice(pc, obj, sel.getSelection());
+			aMan.removeChoice(pc, obj, sel);
 		}
 
 	}
@@ -168,11 +126,11 @@ public class ChooseDriverFacet
 
 	public void init()
 	{
-		raceSelectionFacet.addDataFacetChangeListener(1000, adder);
-		domainSelectionFacet.addDataFacetChangeListener(1000, adder);
-		templateSelectionFacet.addDataFacetChangeListener(1000, adder);
-		raceSelectionFacet.addDataFacetChangeListener(-1000, remover);
-		domainSelectionFacet.addDataFacetChangeListener(-1000, remover);
-		templateSelectionFacet.addDataFacetChangeListener(-1000, remover);
+		raceSelectionFacet.addScopeFacetChangeListener(1000, adder);
+		domainSelectionFacet.addScopeFacetChangeListener(1000, adder);
+		templateSelectionFacet.addScopeFacetChangeListener(1000, adder);
+		raceSelectionFacet.addScopeFacetChangeListener(-1000, remover);
+		domainSelectionFacet.addScopeFacetChangeListener(-1000, remover);
+		templateSelectionFacet.addScopeFacetChangeListener(-1000, remover);
 	}
 }

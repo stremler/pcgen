@@ -28,12 +28,9 @@ import pcgen.cdom.base.CDOMReference;
 import pcgen.cdom.base.CategorizedCDOMObject;
 import pcgen.cdom.base.Category;
 import pcgen.cdom.base.Constants;
-import pcgen.cdom.enumeration.AspectName;
 import pcgen.cdom.enumeration.ListKey;
-import pcgen.cdom.enumeration.MapKey;
 import pcgen.cdom.enumeration.ObjectKey;
 import pcgen.cdom.enumeration.Type;
-import pcgen.cdom.helper.Aspect;
 import pcgen.cdom.list.AbilityList;
 import pcgen.cdom.reference.CDOMDirectSingleRef;
 import pcgen.core.facade.AbilityFacade;
@@ -107,59 +104,6 @@ public final class Ability extends PObject implements CategorizedCDOMObject<Abil
 		txt.append("\t");
 		txt.append(PrerequisiteWriter.prereqsToString(this));
 		return txt.toString();
-	}
-
-	/**
-	 * Enhanced containsAssociated, which parses the input parameter for "=",
-	 * "+num" and "-num" to extract the value to look for.
-	 * @param   type  The type we're looking for
-	 *
-	 * @return  enhanced containsAssociated, which parses the input parameter
-	 *          for "=", "+num" and "-num" to extract the value to look for.
-	 */
-	@Override
-	public int numberInList(PlayerCharacter pc, final String type)
-	{
-        String aType = type;
-
-        if (aType.lastIndexOf('=') > -1)
-		{
-			aType = aType.substring(aType.lastIndexOf('=') + 1);
-		}
-
-		// truncate at + sign if following character is a number
-        final String numString = "0123456789";
-        if (aType.lastIndexOf('+') > -1)
-		{
-			final String aString = aType.substring(aType.lastIndexOf('+') + 1);
-
-			if (numString.lastIndexOf(aString.substring(0, 1)) > 0)
-			{
-				aType = aType.substring(0, aType.lastIndexOf('+'));
-			}
-		}
-
-		// truncate at - sign if following character is a number
-		if (aType.lastIndexOf('-') > -1)
-		{
-			final String aString = aType.substring(aType.lastIndexOf('-') + 1);
-
-			if (numString.lastIndexOf(aString.substring(0, 1)) > 0)
-			{
-				aType = aType.substring(0, aType.lastIndexOf('-'));
-			}
-		}
-
-        int iCount = 0;
-		for (String assoc : pc.getAssociationList(this))
-		{
-			if (assoc.equalsIgnoreCase(aType))
-			{
-				iCount += 1;
-			}
-		}
-
-		return iCount;
 	}
 
     /**
@@ -273,13 +217,7 @@ public final class Ability extends PObject implements CategorizedCDOMObject<Abil
     @Override
 	public boolean isMult()
 	{
-		Boolean mult = get(ObjectKey.MULTIPLE_ALLOWED);
-		//Why is a null a valid return value?
-		if (mult != null && mult)
-		{
-			return true;
-		}
-		return false;
+		return getSafe(ObjectKey.MULTIPLE_ALLOWED);
 	}
 
 	/* (non-Javadoc)
@@ -288,43 +226,10 @@ public final class Ability extends PObject implements CategorizedCDOMObject<Abil
     @Override
 	public boolean isStackable()
 	{
-		Boolean mult = get(ObjectKey.STACKS);
-		//Why is a null a valid return value?
-		if (mult != null && mult)
-		{
-			return true;
-		}
-		return false;
+		return getSafe(ObjectKey.STACKS);
 	}
 
-	public String printAspect(PlayerCharacter pc, AspectName key) {
-		StringBuilder buff = new StringBuilder();
-		List<Aspect> aspects = this.get(MapKey.ASPECT, key);
-		Aspect aspect = lastPassingAspect(aspects, pc);
-		if (aspect != null)
-		{
-			buff.append(aspect.getName()).append(": ");
-			buff.append(aspect.getAspectText(pc, this));
-		}
-		return buff.toString();
-	}
-	
-	public Aspect lastPassingAspect(List<Aspect> aspects, PlayerCharacter pc) {
-		Aspect retAspect = null;
-		if(aspects != null) {
-			for(int i = 0; i < aspects.size(); i++) {
-				Aspect testAspect = aspects.get(i);
-				if(testAspect.qualifies(pc, this)) {
-					retAspect = testAspect;
-				}
-			}
-		}
-		return retAspect;
-	}
-
-    @Override
 	public double getCost() {
-		// TODO Auto-generated method stub
 		return getSafe(ObjectKey.SELECTION_COST).doubleValue();
 	}
 }

@@ -24,8 +24,9 @@ import pcgen.base.formula.Formula;
 import pcgen.cdom.base.CDOMObject;
 import pcgen.cdom.base.ChooseInformation;
 import pcgen.cdom.base.ChooseSelectionActor;
+import pcgen.cdom.base.Chooser;
+import pcgen.cdom.base.Constants;
 import pcgen.cdom.base.FormulaFactory;
-import pcgen.cdom.base.PersistentChoiceActor;
 import pcgen.cdom.base.PrimitiveCollection;
 import pcgen.cdom.base.SpellLevelChooseInformation;
 import pcgen.cdom.enumeration.AssociationListKey;
@@ -45,8 +46,7 @@ import pcgen.rules.persistence.token.ParseResult;
  * New chooser plugin, handles Spell Level.
  */
 public class SpellLevelToken extends AbstractTokenWithSeparator<CDOMObject>
-		implements CDOMSecondaryToken<CDOMObject>,
-		PersistentChoiceActor<SpellLevel>
+		implements CDOMSecondaryToken<CDOMObject>, Chooser<SpellLevel>
 {
 
 	@Override
@@ -114,17 +114,7 @@ public class SpellLevelToken extends AbstractTokenWithSeparator<CDOMObject>
 						+ getFullName() + ": " + value, context);
 			}
 			String minLevelString = sep.next();
-			int minLevel;
-			try
-			{
-				minLevel = Integer.parseInt(minLevelString);
-			}
-			catch (NumberFormatException e)
-			{
-				return new ParseResult.Fail("Badly formed minimum level: "
-					+ minLevelString + " in " + getFullName() + " value: "
-					+ value, context);
-			}
+			Formula minLevel = FormulaFactory.getFormulaFor(minLevelString);
 			if (!sep.hasNext())
 			{
 				return new ParseResult.Fail(
@@ -151,7 +141,7 @@ public class SpellLevelToken extends AbstractTokenWithSeparator<CDOMObject>
 
 	private String getFullName()
 	{
-		return getParentToken() + ":" + getTokenName();
+		return getParentToken() + Constants.COLON + getTokenName();
 	}
 
 	@Override
@@ -178,7 +168,7 @@ public class SpellLevelToken extends AbstractTokenWithSeparator<CDOMObject>
 		if (!tc.getGroupingState().isValid())
 		{
 			context.addWriteMessage("Invalid combination of objects"
-				+ " was used in: " + getParentToken() + ":" + getTokenName());
+				+ " was used in: " + getParentToken() + Constants.COLON + getTokenName());
 			return null;
 		}
 		StringBuilder sb = new StringBuilder();
@@ -212,7 +202,6 @@ public class SpellLevelToken extends AbstractTokenWithSeparator<CDOMObject>
 				ca.removeChoice(owner, choice, pc);
 			}
 		}
-		pc.removeAssociation(owner, encodeChoice(choice));
 	}
 
 	@Override
@@ -220,7 +209,6 @@ public class SpellLevelToken extends AbstractTokenWithSeparator<CDOMObject>
 		SpellLevel choice)
 	{
 		pc.addAssoc(owner, getListKey(), choice);
-		pc.addAssociation(owner, encodeChoice(choice));
 		List<ChooseSelectionActor<?>> actors =
 				owner.getListFor(ListKey.NEW_CHOOSE_ACTOR);
 		if (actors != null)

@@ -48,7 +48,7 @@ import pcgen.cdom.facet.event.DataFacetChangeEvent;
  * @author Thomas Parker (thpr [at] yahoo.com)
  */
 public abstract class AbstractSingleSourceListFacet<T, ST> extends
-		AbstractDataFacet<T>
+		AbstractDataFacet<CharID, T>
 {
 	/**
 	 * Add the given object with the given source to the list of objects stored
@@ -481,6 +481,11 @@ public abstract class AbstractSingleSourceListFacet<T, ST> extends
 		Map<T, ST> componentMap = getCachedMap(id);
 		if (componentMap != null)
 		{
+			/*
+			 * This list exists primarily to eliminate the possibility of a
+			 * concurrent modification exception on a recursive remove
+			 */
+			List<T> removedKeys = new ArrayList<T>();
 			for (Iterator<Map.Entry<T, ST>> it = componentMap.entrySet()
 					.iterator(); it.hasNext();)
 			{
@@ -490,9 +495,17 @@ public abstract class AbstractSingleSourceListFacet<T, ST> extends
 				{
 					T obj = me.getKey();
 					it.remove();
-					fireDataFacetChangeEvent(id, obj,
-							DataFacetChangeEvent.DATA_REMOVED);
+					removedKeys.add(obj);
 				}
+			}
+			if (componentMap.isEmpty())
+			{
+				removeCache(id);
+			}
+			for (T obj : removedKeys)
+			{
+				fireDataFacetChangeEvent(id, obj,
+					DataFacetChangeEvent.DATA_REMOVED);
 			}
 		}
 	}
@@ -589,4 +602,5 @@ public abstract class AbstractSingleSourceListFacet<T, ST> extends
 			}
 		}
 	}
+
 }

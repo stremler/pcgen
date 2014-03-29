@@ -17,6 +17,8 @@
  */
 package pcgen.cdom.facet;
 
+import java.lang.ref.WeakReference;
+
 import pcgen.cdom.enumeration.CharID;
 import pcgen.cdom.facet.base.AbstractStorageFacet;
 import pcgen.core.PlayerCharacter;
@@ -25,16 +27,24 @@ import pcgen.core.PlayerCharacter;
  * This is a transition class, designed to allow things to be taken out of
  * PlayerCharacter while a transition is made to the new facet system.
  */
-public class PlayerCharacterTrackingFacet extends AbstractStorageFacet
+public class PlayerCharacterTrackingFacet extends AbstractStorageFacet<CharID>
 {
 	public void associatePlayerCharacter(CharID id, PlayerCharacter pc)
 	{
-		setCache(id, pc);
+		setCache(id, new WeakReference<PlayerCharacter>(pc));
 	}
 
 	public PlayerCharacter getPC(CharID id)
 	{
-		return (PlayerCharacter) getCache(id);
+		WeakReference<PlayerCharacter> wr = (WeakReference<PlayerCharacter>) getCache(id);
+		/*
+		 * In theory, wr should never be null. However, we have unit tests that
+		 * test the facets individually, and thus they implicitly call
+		 * PrerequisiteFacet (which calls PlayerCharacterTrackingFacet), but
+		 * they may not have prerequisites present. Therefore we have to protect
+		 * against that situation - Tom P Feb 11 '14
+		 */
+		return (wr == null) ? null : wr.get();
 	}
 
 	@Override

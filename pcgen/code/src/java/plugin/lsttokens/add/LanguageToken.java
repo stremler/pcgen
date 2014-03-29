@@ -19,7 +19,6 @@ package plugin.lsttokens.add;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -36,7 +35,6 @@ import pcgen.cdom.base.SelectableSet;
 import pcgen.cdom.base.TransitionChoice;
 import pcgen.cdom.choiceset.ReferenceChoiceSet;
 import pcgen.cdom.enumeration.ListKey;
-import pcgen.core.Globals;
 import pcgen.core.Language;
 import pcgen.core.PlayerCharacter;
 import pcgen.core.utils.ParsingSeparator;
@@ -61,7 +59,7 @@ public class LanguageToken extends AbstractNonEmptyToken<CDOMObject> implements
 
 	private String getFullName()
 	{
-		return getParentToken() + ":" + getTokenName();
+		return getParentToken() + Constants.COLON + getTokenName();
 	}
 
 	@Override
@@ -215,8 +213,7 @@ public class LanguageToken extends AbstractNonEmptyToken<CDOMObject> implements
 	@Override
 	public Language decodeChoice(LoadContext context, String s)
 	{
-		return Globals.getContext().ref.silentlyGetConstructedCDOMObject(
-				LANGUAGE_CLASS, s);
+		return context.ref.silentlyGetConstructedCDOMObject(LANGUAGE_CLASS, s);
 	}
 
 	@Override
@@ -237,12 +234,5 @@ public class LanguageToken extends AbstractNonEmptyToken<CDOMObject> implements
 			Language choice)
 	{
 		pc.removeAddLanguage(choice, owner);
-	}
-
-	@Override
-	public List<Language> getCurrentlySelected(CDOMObject owner,
-			PlayerCharacter pc)
-	{
-		return Collections.emptyList();
 	}
 }

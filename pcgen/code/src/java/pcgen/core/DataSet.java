@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Set;
 
 import pcgen.cdom.base.Category;
+import pcgen.cdom.base.ChooseInformation;
 import pcgen.cdom.base.Constants;
 import pcgen.cdom.enumeration.ObjectKey;
 import pcgen.cdom.enumeration.StringKey;
@@ -119,7 +120,7 @@ public class DataSet implements DataSetFacade
 		Collections.sort(raceList, new RaceComparator());
 		for (Race race : raceList)
 		{
-			if (race.getSafe(ObjectKey.VISIBILITY).isVisibleTo(View.VISIBLE, false))
+			if (race.getSafe(ObjectKey.VISIBILITY).isVisibleTo(View.VISIBLE_DISPLAY))
 			{
 				races.addElement(race);
 			}
@@ -129,7 +130,7 @@ public class DataSet implements DataSetFacade
 		Collections.sort(classList, new PCClassComparator());
 		for (PCClass pcClass : classList)
 		{
-			if (pcClass.getSafe(ObjectKey.VISIBILITY).isVisibleTo(View.VISIBLE, false))
+			if (pcClass.getSafe(ObjectKey.VISIBILITY).isVisibleTo(View.VISIBLE_DISPLAY))
 			{
 				classes.addElement(pcClass);
 			}
@@ -137,7 +138,7 @@ public class DataSet implements DataSetFacade
 
 		for (Skill skill : context.ref.getConstructedCDOMObjects(Skill.class))
 		{
-			if (skill.getSafe(ObjectKey.VISIBILITY).isVisibleTo(View.VISIBLE, false))
+			if (skill.getSafe(ObjectKey.VISIBILITY).isVisibleTo(View.VISIBLE_DISPLAY))
 			{
 				skills.addElement(skill);
 			}
@@ -148,7 +149,7 @@ public class DataSet implements DataSetFacade
 		}
 		for (PCTemplate template : context.ref.getConstructedCDOMObjects(PCTemplate.class))
 		{
-			if (template.getSafe(ObjectKey.VISIBILITY).isVisibleTo(View.VISIBLE, false))
+			if (template.getSafe(ObjectKey.VISIBILITY).isVisibleTo(View.VISIBLE_DISPLAY))
 			{
 				templates.addElement(template);
 			}
@@ -172,7 +173,7 @@ public class DataSet implements DataSetFacade
 			new AbilityCategoryComparator());
 		for (AbilityCategory category : displayOrderCategories)
 		{
-			if (category.isVisible())
+			if (category.isVisibleTo(View.VISIBLE_DISPLAY))
 			{
 				categories.addElement(category);
 				List<Ability> abList =
@@ -189,7 +190,7 @@ public class DataSet implements DataSetFacade
 					if (facade instanceof Ability)
 					{
 						Ability ability = (Ability) facade;
-						if (!(ability.getSafe(ObjectKey.VISIBILITY).isVisibleTo(View.VISIBLE, false)))
+						if (!(ability.getSafe(ObjectKey.VISIBILITY).isVisibleTo(View.VISIBLE_DISPLAY)))
 						{
 							iterator.remove();
 						}
@@ -416,9 +417,8 @@ public class DataSet implements DataSetFacade
 		for (SkillFacade aSkillFacade : skills)
 		{
 			Skill aSkill = (Skill) aSkillFacade;
-			if (aSkill.getSafe(StringKey.CHOICE_STRING).indexOf("Language") >= 0
-				|| (aSkill.get(ObjectKey.CHOOSE_INFO) != null && "LANG"
-					.equals(aSkill.get(ObjectKey.CHOOSE_INFO).getName())))
+			ChooseInformation<?> chooseInfo = aSkill.get(ObjectKey.CHOOSE_INFO);
+			if ((chooseInfo != null) && "LANG".equals(chooseInfo.getName()))
 			{
 				speakLanguageSkill = aSkillFacade;
 			}

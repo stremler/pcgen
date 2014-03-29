@@ -170,7 +170,7 @@ public class Logging
 	public static boolean isLoggable(Level level)
 	{
 		Logger l = getLogger();
-		return l != null && l.isLoggable(DEBUG);
+		return l != null && l.isLoggable(level);
 	}
 	
 	/**
@@ -228,8 +228,11 @@ public class Logging
 	public static void debugPrint(final String s, final Throwable thr)
 	{
 		debugPrint(s);
-
-		//thr.printStackTrace(System.err);
+		Logger l = getLogger();
+		if (l != null && l.isLoggable(DEBUG))
+		{
+			thr.printStackTrace(System.err);
+		}
 	}
 
 	/**
@@ -657,6 +660,7 @@ public class Logging
 	public static void setCurrentLoggingLevel(Level level)
 	{
 		retainRootLoggers();
+		debugMode = (level == Logging.DEBUG);
 		Logger.getLogger("pcgen").setLevel(level);
 		Logger.getLogger("plugin").setLevel(level);
 	}

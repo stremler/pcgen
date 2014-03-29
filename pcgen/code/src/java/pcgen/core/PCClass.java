@@ -499,7 +499,6 @@ public class PCClass extends PObject implements ClassFacade
 //						Logging.debugPrint("Feat bonus for " + this + " is "
 //							+ aBuf.toString());
 				BonusObj bon = Bonus.newBonus(Globals.getContext(), aBuf.toString());
-				bon.setSaveToPCG(false);
 				aPC.addBonus(bon, this);
 			}
 		}
@@ -663,8 +662,11 @@ public class PCClass extends PObject implements ClassFacade
 		{
 			return ss;
 		}
-		Logging.debugPrint("Found Class: " + getDisplayName()
+		if (Logging.isDebugMode())
+		{
+			Logging.debugPrint("Found Class: " + getDisplayName()
 				+ " that did not have any SPELLSTAT defined");
+		}
 		return null;
 	}
 
@@ -793,7 +795,7 @@ public class PCClass extends PObject implements ClassFacade
 		final PlayerCharacter aPC,
 		boolean adjustForPCSize)
 	{
-		SizeAdjustment pcSize = aPC.getSizeAdjustment();
+		int pcSize = adjustForPCSize ? aPC.sizeInt() : aPC.getDisplay().racialSizeInt();
 
 		//
 		// Check "Unarmed Strike", then default to "1d3"
@@ -818,7 +820,7 @@ public class PCClass extends PObject implements ClassFacade
 		if (adjustForPCSize)
 		{
 			aDamage = Globals.adjustDamage(aDamage, SizeUtilities
-					.getDefaultSizeAdjustment(), pcSize);
+					.getDefaultSizeInt(), pcSize);
 		}
 
 		//
@@ -831,7 +833,6 @@ public class PCClass extends PObject implements ClassFacade
 			classObjects.add(aPC.getActiveClassLevel(this, i));
 		}
 		classObjects.add(this);
-		int iSize = aPC.sizeInt();
 		for (CDOMObject cdo : classObjects)
 		{
 			List<String> udam = cdo.getListFor(ListKey.UNARMED_DAMAGE);
@@ -843,7 +844,7 @@ public class PCClass extends PObject implements ClassFacade
 				}
 				else
 				{
-					aDamage = udam.get(iSize);
+					aDamage = udam.get(pcSize);
 				}
 				break;
 			}
@@ -892,6 +893,7 @@ public class PCClass extends PObject implements ClassFacade
 		final int newLevel = aPC.getLevel(this) + 1;
 		boolean levelMax = argLevelMax;
 
+		aPC.setAllowInteraction(false);
 		aPC.setLevelWithoutConsequence(this, newLevel);
 		if (!ignorePrereqs)
 		{
@@ -914,6 +916,7 @@ public class PCClass extends PObject implements ClassFacade
 				return false;
 			}
 		}
+		aPC.setAllowInteraction(true);
 
 		if (isMonster())
 		{
@@ -958,8 +961,6 @@ public class PCClass extends PObject implements ClassFacade
 		{
 			aPC.setDefaultDomainSource(new ClassSource(this, newLevel));
 		}
-
-		doPlusLevelMods(newLevel, aPC);
 
 		// Don't roll the hit points if the gui is not being used.
 		// This is so GMGen can add classes to a person without pcgen flipping
@@ -1153,27 +1154,7 @@ public class PCClass extends PObject implements ClassFacade
 		CDOMObjectUtilities.restoreRemovals(pcl, aPC);
 	}
 
-	/*
-	 * REFACTOR Since this is side effects of adding a level, the
-	 * PlayerCharacter needs to perform this work, not PCClass.
-	 * Then again, this could be in PCClassLevel.
-	 */
-	void doPlusLevelMods(
-		final int newLevel,
-		final PlayerCharacter aPC)
-	{
-		// moved after changeSpecials and addVariablesForLevel
-		// for bug #688564 -- sage_sam, 18 March 2003
-		aPC.calcActiveBonuses();
-		if (!aPC.isImporting() && aPC.doLevelAbilities())
-		{
-			PCClassLevel activeClassLevel = aPC.getActiveClassLevel(this, newLevel);
-			CDOMObjectUtilities.addAdds(activeClassLevel, aPC);
-			CDOMObjectUtilities.checkRemovals(activeClassLevel, aPC);
-		}
-	}
-
-	void subLevel(final boolean bSilent, final PlayerCharacter aPC)
+	void subLevel(final PlayerCharacter aPC)
 	{
 
 		if (aPC != null)

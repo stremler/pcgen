@@ -18,7 +18,6 @@
 package plugin.lsttokens.ability;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -27,6 +26,7 @@ import pcgen.cdom.base.CDOMObject;
 import pcgen.cdom.base.CDOMReference;
 import pcgen.cdom.base.ChoiceActor;
 import pcgen.cdom.base.ChoiceSet;
+import pcgen.cdom.base.ChooseInformation;
 import pcgen.cdom.base.ConcreteTransitionChoice;
 import pcgen.cdom.base.Constants;
 import pcgen.cdom.base.FormulaFactory;
@@ -40,9 +40,7 @@ import pcgen.core.Ability;
 import pcgen.core.AbilityCategory;
 import pcgen.core.Globals;
 import pcgen.core.PlayerCharacter;
-import pcgen.core.SettingsHandler;
 import pcgen.core.chooser.CDOMChooserFacadeImpl;
-import pcgen.core.chooser.ChooserUtilities;
 import pcgen.core.facade.ChooserFacade.ChooserTreeViewType;
 import pcgen.rules.context.LoadContext;
 import pcgen.rules.persistence.TokenUtilities;
@@ -127,7 +125,7 @@ public class ModifyfeatchoiceToken extends AbstractTokenWithSeparator<Ability>
 			return null;
 		}
 		return new String[] { StringUtil.replaceAll(mc.getChoices()
-				.getLSTformat(), ",", "|") };
+				.getLSTformat(), ",", Constants.PIPE) };
 	}
 
 	@Override
@@ -139,30 +137,34 @@ public class ModifyfeatchoiceToken extends AbstractTokenWithSeparator<Ability>
 	@Override
 	public void applyChoice(CDOMObject owner, Ability choice, PlayerCharacter pc)
 	{
-		final List<String> availableList = new ArrayList<String>();
-		final List<String> selectedList = new ArrayList<String>();
-
 		// build a list of available choices and choices already made.
-		ChooserUtilities.modChoices(choice, availableList, selectedList, false,
-				pc, true, SettingsHandler.getGame().getAbilityCategory(
-						choice.getCategory()));
+		processApplication(pc, choice, choice.get(ObjectKey.CHOOSE_INFO));
+	}
 
-		final int currentSelections = selectedList.size();
+	private <T> void processApplication(PlayerCharacter pc, Ability choice,
+		ChooseInformation<T> chooseInfo)
+	{
+		List<T> available = new ArrayList<T>(chooseInfo.getSet(pc));
+		List<? extends T> selected =
+				chooseInfo.getChoiceActor().getCurrentlySelected(choice, pc);
+
+		final int currentSelections = selected.size();
+		final List<T> origSelections = new ArrayList<T>(selected);
 
 		//
 		// If nothing to choose, or nothing selected, then leave
 		//
-		if ((availableList.size() == 0) || (currentSelections == 0))
+		if ((available.size() == 0) || (currentSelections == 0))
 		{
 			return;
 		}
 
-		Globals.sortChooserLists(availableList, selectedList);
+		Globals.sortChooserLists(available, selected);
 
-		CDOMChooserFacadeImpl<String> chooserFacade =
-				new CDOMChooserFacadeImpl<String>(
-						"Modify selections for " + choice, availableList, 
-					selectedList, 0);
+		CDOMChooserFacadeImpl<T> chooserFacade =
+				new CDOMChooserFacadeImpl<T>(
+						"Modify selections for " + choice, available, 
+						selected, 0);
 		chooserFacade.setDefaultView(ChooserTreeViewType.NAME);
 		ChooserFactory.getDelegate().showGeneralChooser(chooserFacade);
 		final int selectedSize = chooserFacade.getFinalSelected().size();
@@ -173,14 +175,18 @@ public class ModifyfeatchoiceToken extends AbstractTokenWithSeparator<Ability>
 			return;
 		}
 
-		// replace old selection(s) with new and update bonuses
-		pc.removeAllAssociations(choice);
+		List<T> add = new ArrayList<T>(chooserFacade.getFinalSelected());
+		add.removeAll(origSelections);
+		List<T> remove = new ArrayList<T>(origSelections);
+		remove.removeAll(chooserFacade.getFinalSelected());
 
-		for (int i = 0; i < selectedSize; ++i)
+		for (T selection : remove)
 		{
-			pc
-					.addAssociation(choice, (String) chooserFacade.getFinalSelected()
-							.get(i));
+			chooseInfo.removeChoice(pc, choice, selection);
+		}
+		for (T selection : add)
+		{
+			chooseInfo.removeChoice(pc, choice, selection);
 		}
 	}
 
@@ -188,12 +194,5 @@ public class ModifyfeatchoiceToken extends AbstractTokenWithSeparator<Ability>
 	public boolean allow(Ability choice, PlayerCharacter pc, boolean allowStack)
 	{
 		return true;
-	}
-
-	@Override
-	public List<Ability> getCurrentlySelected(CDOMObject owner,
-			PlayerCharacter pc)
-	{
-		return Collections.emptyList();
 	}
 }

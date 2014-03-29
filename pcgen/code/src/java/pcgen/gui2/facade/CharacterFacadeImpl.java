@@ -52,8 +52,9 @@ import pcgen.cdom.base.AssociatedPrereqObject;
 import pcgen.cdom.base.CDOMObject;
 import pcgen.cdom.base.CDOMReference;
 import pcgen.cdom.base.Constants;
-import pcgen.cdom.content.Selection;
+import pcgen.cdom.content.CNAbility;
 import pcgen.cdom.enumeration.BiographyField;
+import pcgen.cdom.enumeration.CharID;
 import pcgen.cdom.enumeration.EquipmentLocation;
 import pcgen.cdom.enumeration.Gender;
 import pcgen.cdom.enumeration.Handed;
@@ -69,15 +70,15 @@ import pcgen.cdom.facet.FacetLibrary;
 import pcgen.cdom.facet.event.DataFacetChangeEvent;
 import pcgen.cdom.facet.event.DataFacetChangeListener;
 import pcgen.cdom.facet.model.LanguageFacet;
-import pcgen.cdom.facet.model.TemplateSelectionFacet;
+import pcgen.cdom.facet.model.TemplateFacet;
 import pcgen.cdom.helper.ClassSource;
 import pcgen.cdom.inst.PCClassLevel;
+import pcgen.cdom.meta.CorePerspective;
 import pcgen.cdom.reference.CDOMDirectSingleRef;
 import pcgen.cdom.reference.CDOMSingleRef;
 import pcgen.core.Ability;
 import pcgen.core.AbilityCategory;
 import pcgen.core.AgeSet;
-import pcgen.core.BonusManager;
 import pcgen.core.BonusManager.TempBonusInfo;
 import pcgen.core.Deity;
 import pcgen.core.Domain;
@@ -106,12 +107,12 @@ import pcgen.core.VariableProcessor;
 import pcgen.core.analysis.DomainApplication;
 import pcgen.core.analysis.SkillRankControl;
 import pcgen.core.analysis.SpellCountCalc;
-import pcgen.core.bonus.BonusObj;
 import pcgen.core.character.CharacterSpell;
 import pcgen.core.character.EquipSet;
 import pcgen.core.character.Follower;
 import pcgen.core.chooser.ChoiceManagerList;
 import pcgen.core.chooser.ChooserUtilities;
+import pcgen.core.display.BonusDisplay;
 import pcgen.core.display.CharacterDisplay;
 import pcgen.core.facade.AbilityCategoryFacade;
 import pcgen.core.facade.AbilityFacade;
@@ -125,6 +126,7 @@ import pcgen.core.facade.CharacterLevelsFacade.HitPointListener;
 import pcgen.core.facade.CharacterStubFacade;
 import pcgen.core.facade.ClassFacade;
 import pcgen.core.facade.CompanionSupportFacade;
+import pcgen.core.facade.CoreViewNodeFacade;
 import pcgen.core.facade.DataSetFacade;
 import pcgen.core.facade.DefaultReferenceFacade;
 import pcgen.core.facade.DeityFacade;
@@ -179,6 +181,7 @@ import pcgen.system.PCGenSettings;
 import pcgen.util.Logging;
 import pcgen.util.enumeration.Load;
 import pcgen.util.enumeration.Tab;
+import pcgen.util.enumeration.View;
 
 /**
  * The Class <code>CharacterFacadeImpl</code> is an implementation of 
@@ -216,8 +219,8 @@ public class CharacterFacadeImpl implements CharacterFacade, EquipmentListListen
 	private DefaultReferenceFacade<String> tabName;
 	private DefaultReferenceFacade<String> name;
 	private DefaultReferenceFacade<String> playersName;
-	private final PlayerCharacter theCharacter;
-	private final CharacterDisplay charDisplay;
+	private PlayerCharacter theCharacter;
+	private CharacterDisplay charDisplay;
 	private DefaultReferenceFacade<EquipmentSetFacade> equipSet;
 	private DefaultListFacade<LanguageFacade> languages;
 	private EquipmentListFacadeImpl purchasedEquip;
@@ -306,12 +309,15 @@ public class CharacterFacadeImpl implements CharacterFacade, EquipmentListListen
 	{
 		FacetLibrary.getFacet(LanguageFacet.class)
 			.removeDataFacetChangeListener(langListener);
-		FacetLibrary.getFacet(TemplateSelectionFacet.class)
+		FacetLibrary.getFacet(TemplateFacet.class)
 			.removeDataFacetChangeListener(templateListener);
 		characterAbilities.closeCharacter();
 		charLevelsFacade.closeCharacter();
 		GMBus.send(new PCClosedMessage(null, theCharacter));
 		Globals.getPCList().remove(theCharacter);
+		lastExportChar = null;
+		theCharacter = null;
+		charDisplay = null;
 	}
 	
 	/**
@@ -435,7 +441,7 @@ public class CharacterFacadeImpl implements CharacterFacade, EquipmentListListen
 				new DefaultListFacade<TemplateFacade>(
 					charDisplay.getDisplayVisibleTemplateList());
 		templateListener = new TemplateListener(); 
-		FacetLibrary.getFacet(TemplateSelectionFacet.class).addDataFacetChangeListener(templateListener);
+		FacetLibrary.getFacet(TemplateFacet.class).addDataFacetChangeListener(templateListener);
 
 		initTodoList();
 
@@ -719,7 +725,19 @@ public class CharacterFacadeImpl implements CharacterFacade, EquipmentListListen
 		{
 			return null;
 		}
-		return theCharacter.getAbilityNature((Ability) ability);
+		/*
+		 * TODO This is making a somewhat DRASTIC assumption that ANY Ability
+		 * Category is appropriate. Unfortunately, the point at which this
+		 * method is called from the UI it is unclear to the untrained eye how
+		 * to get the category.
+		 */
+		List<CNAbility> cnas = theCharacter.getMatchingCNAbilities((Ability) ability);
+		Nature nature = null;
+		for (CNAbility cna : cnas)
+		{
+			nature = Nature.getBestNature(nature, cna.getNature());
+		}
+		return nature;
 	}
 
 	/* (non-Javadoc)
@@ -1058,19 +1076,25 @@ public class CharacterFacadeImpl implements CharacterFacade, EquipmentListListen
 	{
 		List<TempBonusFacadeImpl> tempBonuses = new ArrayList<TempBonusFacadeImpl>();
 
-		//
-		// first do PC's feats and other abilities
-		for (Ability aFeat : theCharacter.getFullAbilitySet())
+		// first objects on the PC
+		for (CDOMObject cdo : theCharacter.getCDOMObjectList())
 		{
-			scanForTempBonuses(tempBonuses, aFeat);
+			scanForTempBonuses(tempBonuses, cdo);
 		}
 
 		//
-		// next do all Feats to get TEMPBONUS:ANYPC or TEMPBONUS:EQUIP
-		for (Ability aFeat : Globals.getContext().ref.getManufacturer(Ability.class, AbilityCategory.FEAT)
-				.getAllObjects())
+		// next do all abilities to get TEMPBONUS:ANYPC only
+		GameMode game = (GameMode) dataSet.getGameMode();
+		for (AbilityCategory cat : game.getAllAbilityCategories())
 		{
-			scanForNonPcTempBonuses(tempBonuses, aFeat);
+			if (cat.getParentCategory() == cat)
+			{
+				for (Ability aFeat : Globals.getContext().ref.getManufacturer(
+					Ability.class, cat).getAllObjects())
+				{
+					scanForAnyPcTempBonuses(tempBonuses, aFeat);
+				}
+			}
 		}
 
 		//
@@ -1099,47 +1123,10 @@ public class CharacterFacadeImpl implements CharacterFacade, EquipmentListListen
 			scanForNonPcTempBonuses(tempBonuses, spell);
 		}
 
-		//
-		// iterate thru all PC's equipment objects
-		for (Equipment aEq : charDisplay.getEquipmentSet())
-		{
-			scanForTempBonuses(tempBonuses, aEq);
-		}
-
-		//
-		// Do we also need to Iterate Globals.getAbilityKeyIterator(Constants.ALL_CATEGORIES); ?
-		// or will they be covered by getClassList()?
-		//
-		// iterate thru all PC's Classes
-		for (PCClass aClass : charDisplay.getClassSet())
-		{
-			int currentLevel = charDisplay.getLevel(aClass);
-			scanForTempBonuses(tempBonuses, aClass);
-			for (int i = 1; i < currentLevel; i++)
-			{
-				PCClassLevel pcl = charDisplay.getActiveClassLevel(aClass, i);
-				scanForTempBonuses(tempBonuses, pcl);
-			}
-		}
-
-		//
-		// Iterate through all the PC's Templates
-		for (PCTemplate aTemp : charDisplay.getTemplateSet())
-		{
-			scanForTempBonuses(tempBonuses, aTemp);
-		}
-
 		// do all Templates to get TEMPBONUS:ANYPC or TEMPBONUS:EQUIP
 		for (PCTemplate aTemp : Globals.getContext().ref.getConstructedCDOMObjects(PCTemplate.class))
 		{
 			scanForNonPcTempBonuses(tempBonuses, aTemp);
-		}
-
-		//
-		// Iterate through all the PC's Skills
-		for (Skill aSkill : charDisplay.getSkillSet())
-		{
-			scanForTempBonuses(tempBonuses, aSkill);
 		}
 
 		Collections.sort(tempBonuses);
@@ -1153,6 +1140,18 @@ public class CharacterFacadeImpl implements CharacterFacade, EquipmentListListen
 			return;
 		}
 		if (TempBonusHelper.hasNonPCTempBonus(obj, theCharacter))
+		{
+			tempBonuses.add(new TempBonusFacadeImpl(obj));
+		}
+	}
+
+	private void scanForAnyPcTempBonuses(List<TempBonusFacadeImpl> tempBonuses, PObject obj)
+	{
+		if (obj == null)
+		{
+			return;
+		}
+		if (TempBonusHelper.hasAnyPCTempBonus(obj, theCharacter))
 		{
 			tempBonuses.add(new TempBonusFacadeImpl(obj));
 		}
@@ -1185,15 +1184,11 @@ public class CharacterFacadeImpl implements CharacterFacade, EquipmentListListen
 	private void buildAppliedTempBonusList()
 	{
 		Set<String> found = new HashSet<String>();
-		BonusManager bonusMgr = new BonusManager(theCharacter);
-		for (Map.Entry<BonusObj, BonusManager.TempBonusInfo> me : theCharacter
-				.getTempBonusMap().entrySet())
+		for (TempBonusInfo tbi : theCharacter.getTempBonusMap().values())
 		{
-			BonusObj aBonus = me.getKey();
-			TempBonusInfo tbi = me.getValue();
 			Object aC = tbi.source;
 			Object aT = tbi.target;
-			String name = bonusMgr.getBonusDisplayName(aBonus, tbi);
+			String name = BonusDisplay.getBonusDisplayName(tbi);
 
 			if (!found.contains(name))
 			{
@@ -2506,8 +2501,7 @@ public class CharacterFacadeImpl implements CharacterFacade, EquipmentListListen
 		int bonusLangMax = theCharacter.getBonusLanguageCount();
 		
 		currBonusLangs = new ArrayList<Language>();
-		Ability a = Globals.getContext().ref.silentlyGetConstructedCDOMObject(Ability.class, AbilityCategory.LANGBONUS,
-				"*LANGBONUS");
+		CNAbility a = theCharacter.getBonusLanguageAbility();
 		List<String> currBonusLangNameList = theCharacter.getAssociationList(a);
 		for (LanguageFacade langFacade : languages)
 		{
@@ -2596,8 +2590,7 @@ public class CharacterFacadeImpl implements CharacterFacade, EquipmentListListen
 	@Override
 	public ListFacade<LanguageChooserFacade> getLanguageChoosers()
 	{
-		Ability a = Globals.getContext().ref.silentlyGetConstructedCDOMObject(Ability.class, AbilityCategory.LANGBONUS,
-				"*LANGBONUS");
+		Ability a = theCharacter.getBonusLanguageAbility().getAbility();
 		DefaultListFacade<LanguageChooserFacade> chooserList = new DefaultListFacade<LanguageChooserFacade>();
 		chooserList.addElement(new LanguageChooserFacadeImpl(this,
 			LanguageBundle.getString("in_sumLangBonus"), a)); //$NON-NLS-1$
@@ -2642,8 +2635,7 @@ public class CharacterFacadeImpl implements CharacterFacade, EquipmentListListen
 	{
 		if (currBonusLangs.contains(lang))
 		{
-			return Globals.getContext().ref.silentlyGetConstructedCDOMObject(Ability.class, AbilityCategory.LANGBONUS,
-					"*LANGBONUS");
+			return theCharacter.getBonusLanguageAbility().getAbility();
 		} else if (languages.containsElement(lang) && !isAutomatic(lang))
 		{
 			return (Skill) dataSet.getSpeakLanguageSkill();
@@ -4069,7 +4061,7 @@ public class CharacterFacadeImpl implements CharacterFacade, EquipmentListListen
 		ClassFacade classFacade)
 	{
 		if (!(spellFacade instanceof SpellFacadeImplem)
-			|| !(classFacade instanceof PCClass))
+			|| !(classFacade == null || classFacade instanceof PCClass))
 		{
 			return false;
 		}
@@ -4478,7 +4470,7 @@ public class CharacterFacadeImpl implements CharacterFacade, EquipmentListListen
 				continue;
 			}
 
-			if (((Kit) obj).isVisible(theCharacter))
+			if (((Kit) obj).isVisible(theCharacter, View.VISIBLE_DISPLAY))
 			{
 				kits.add(obj);
 			}
@@ -4619,13 +4611,13 @@ public class CharacterFacadeImpl implements CharacterFacade, EquipmentListListen
 	 * The Class <code>LanguageListener</code> tracks adding and removal of 
 	 * languages to the character.
 	 */
-	public class LanguageListener implements DataFacetChangeListener<Language>
+	public class LanguageListener implements DataFacetChangeListener<CharID, Language>
 	{
 		/**
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void dataAdded(DataFacetChangeEvent<Language> dfce)
+		public void dataAdded(DataFacetChangeEvent<CharID, Language> dfce)
 		{
 			if (dfce.getCharID() != theCharacter.getCharID())
 			{
@@ -4638,7 +4630,7 @@ public class CharacterFacadeImpl implements CharacterFacade, EquipmentListListen
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void dataRemoved(DataFacetChangeEvent<Language> dfce)
+		public void dataRemoved(DataFacetChangeEvent<CharID, Language> dfce)
 		{
 			if (dfce.getCharID() != theCharacter.getCharID())
 			{
@@ -4653,13 +4645,13 @@ public class CharacterFacadeImpl implements CharacterFacade, EquipmentListListen
 	 * The Class <code>TemplateListener</code> tracks adding and removal of 
 	 * templates to the character.
 	 */
-	public class TemplateListener implements DataFacetChangeListener<Selection<PCTemplate, ?>>
+	public class TemplateListener implements DataFacetChangeListener<CharID, PCTemplate>
 	{
 		/**
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void dataAdded(DataFacetChangeEvent<Selection<PCTemplate, ?>> dfce)
+		public void dataAdded(DataFacetChangeEvent<CharID, PCTemplate> dfce)
 		{
 			if (dfce.getCharID() != theCharacter.getCharID())
 			{
@@ -4672,7 +4664,7 @@ public class CharacterFacadeImpl implements CharacterFacade, EquipmentListListen
 		 * {@inheritDoc}
 		 */
 		@Override
-		public void dataRemoved(DataFacetChangeEvent<Selection<PCTemplate, ?>> dfce)
+		public void dataRemoved(DataFacetChangeEvent<CharID, PCTemplate> dfce)
 		{
 			if (dfce.getCharID() != theCharacter.getCharID())
 			{
@@ -4682,4 +4674,12 @@ public class CharacterFacadeImpl implements CharacterFacade, EquipmentListListen
 		}
 		
 	}
+
+	@Override
+	public List<CoreViewNodeFacade> getCoreViewTree(CorePerspective pers)
+	{
+		List<CoreViewNodeFacade> coreDebugList = CoreUtils.buildCoreDebugList(theCharacter, pers);
+		return coreDebugList;
+	}
+
 }

@@ -318,7 +318,7 @@ Artisan's Tools (Stonemasonry/Masterwork).MOD																								COST:55				
 Artisan's Tools (Traps).COPY=Artisan's Tools (Traps/Masterwork)
 Artisan's Tools (Traps/Masterwork).MOD																										COST:55						BONUS:SKILL|Craft (Traps)|2|TYPE=Circumstance
 Artisan's Tools (Weaponsmithing).COPY=Artisan's Tools (Weaponsmithing/Masterwork)
-Artisan's Tools (Weaponsmithing/Masterwork).MOD																							COST:55						BONUS:SKILL|Craft (Weaponsmithing)|2|TYPE=Circumstance
+Artisan's Tools (Weaponsmithing/Masterwork).MOD																							COST:55						BONUS:SKILL|Craft (Weapons)|2|TYPE=Circumstance
 Balancing Pole.MOD																		TYPE:Goods.Tools													COST:0.8	WT:12		SOURCEPAGE:p.76
 Bear Trap.MOD																			TYPE:Goods.Tools													COST:2	WT:10		SOURCEPAGE:p.76
 Bellows.MOD																				TYPE:Goods.Tools													COST:1	WT:3		SOURCEPAGE:p.76
@@ -409,8 +409,8 @@ Animal Glue																	TYPE:Goods.General.Consumable														COST:0.5	
 Area Map																	TYPE:Goods.General															COST:50	WT:2					SOURCEPAGE:p.58	BONUS:SKILL|Survival (Navigate),Knowledge (Dungeoneering (Navigate))|1|TYPE=Circumstance																										SPROP:A geographically relevant map grants a user a +1 circumstance bonus on Survival checks made to navigate in the wilderness. It also can be used to grant the same bonus on Knowledge (dungeoneering) checks made to navigate underground.
 Astrolabe.MOD																TYPE:Goods.General															COST:1000	WT:6					SOURCEPAGE:p.58																																									SPROP:When using an astrolabe, you can make a Survival check using your Intelligence modifier instead of your Wisdom modifier to avoid becoming lost.
 Backpack.MOD									OUTPUTNAME:Backpack, Common																												SOURCEPAGE:p.58
-Backpack (Masterwork).MOD							OUTPUTNAME:Backpack, Masterwork		TYPE:Goods.General.Container.Resizable		CONTAINS:UNLIM|Any							COST:50	WT:4					SOURCEPAGE:p.58																BONUS:VAR|LOADSCORE|1
-Bandolier																	TYPE:Goods.Clothing.Resizable														COST:0.5						SOURCEPAGE:p.59																																									SPROP:Contains small loops or pouches for holding eight objects the size of a flask or small dagger. You can use the “retrieve a stored item” action to take an item from a bandolier.
+Backpack (Masterwork).MOD	SOURCEPAGE:p.58
+Bandolier																	TYPE:Goods.Clothing.Resizable.Container		CONTAINS:*UNLIM|Total=8							COST:0.5						SOURCEPAGE:p.59																																									SPROP:Contains small loops or pouches for holding eight objects the size of a flask or small dagger. You can use the “retrieve a stored item” action to take an item from a bandolier.
 Banner (Simple)									OUTPUTNAME:Banner, Simple			TYPE:Goods.General															COST:1	WT:2					SOURCEPAGE:p.59																																									SPROP:A simple banner with one field color and a simple insignia.
 Banner (Complex)									OUTPUTNAME:Banner, Complex			TYPE:Goods.General															COST:5	WT:2					SOURCEPAGE:p.59																																									SPROP:A banner with two to four field colors and a complex insignia.
 Banner (Detailed)									OUTPUTNAME:Banner, Detailed			TYPE:Goods.General															COST:20	WT:2					SOURCEPAGE:p.59																																									SPROP:A detailed banner with four or more field colors and a very complex insignia.
@@ -429,7 +429,7 @@ Bottle (Glass).MOD																																								SOURCEPAGE:p.60
 Breakaway Chains																TYPE:Goods.Tools.Masterwork														COST:65	WT:2					SOURCEPAGE:p.60																																									SPROP:These masterwork chains are easy to break, even though they look like normal chains (Perception DC 25 to notice the difference). A DC 10 Strength check breaks them instantly.
 Bucket.MOD																																										SOURCEPAGE:p.60
 Lantern (Bullseye).MOD								OUTPUTNAME:Bullseye Lantern																												SOURCEPAGE:p.60
-Buoy (Common).MOD									OUTPUTNAME:Bouy, Common				TYPE:Goods.General															COST:0.5	WT:16					SOURCEPAGE:p.60
+Buoy (Common).MOD									OUTPUTNAME:Buoy, Common				TYPE:Goods.General															COST:0.5	WT:16					SOURCEPAGE:p.60
 Buoy (Superior).MOD								OUTPUTNAME:Buoy, Superior			TYPE:Goods.General															COST:10	WT:30					SOURCEPAGE:p.60
 Butterfly Net.MOD																TYPE:Goods.General.Resizable														COST:5	WT:2					SOURCEPAGE:p.60
 Caltrops.MOD																																									SOURCEPAGE:p.60
@@ -871,7 +871,7 @@ Bit and Bridle.MOD											SOURCEPAGE:80
 Cage (Fine)				TYPE:Goods.Mount.Pets		COST:10	WT:2		SOURCEPAGE:p.81
 Cage (Diminutive)			TYPE:Goods.Mount.Pets		COST:10	WT:2		SOURCEPAGE:p.81
 Cage (Tiny).MOD			TYPE:Goods.Mount.Pets		COST:2	WT:5		SOURCEPAGE:p.81
-Cage (Small				TYPE:Goods.Mount.Pets)		COST:15	WT:60		SOURCEPAGE:p.81
+Cage (Small)			TYPE:Goods.Mount.Pets		COST:15	WT:60		SOURCEPAGE:p.81
 Cage (Medium)			TYPE:Goods.Mount.Pets		COST:15	WT:60		SOURCEPAGE:p.81
 Cage (Large).MOD			TYPE:Goods.Mount.Pets		COST:30	WT:240	SOURCEPAGE:p.81
 Cage (Huge).MOD			TYPE:Goods.Mount.Pets		COST:60	WT:960	SOURCEPAGE:p.81

@@ -24,7 +24,9 @@ import pcgen.cdom.enumeration.ListKey;
 import pcgen.cdom.facet.event.DataFacetChangeEvent;
 import pcgen.cdom.facet.event.DataFacetChangeListener;
 import pcgen.cdom.facet.model.DeityFacet;
+import pcgen.cdom.facet.model.DomainFacet;
 import pcgen.cdom.facet.model.RaceFacet;
+import pcgen.cdom.facet.model.SkillFacet;
 import pcgen.cdom.facet.model.TemplateFacet;
 import pcgen.core.Kit;
 import pcgen.core.PlayerCharacter;
@@ -35,7 +37,7 @@ import pcgen.core.PlayerCharacter;
  * 
  * @author Thomas Parker (thpr [at] yahoo.com)
  */
-public class KitChoiceFacet implements DataFacetChangeListener<CDOMObject>
+public class KitChoiceFacet implements DataFacetChangeListener<CharID, CDOMObject>
 {
 	private final PlayerCharacterTrackingFacet trackingFacet = FacetLibrary
 		.getFacet(PlayerCharacterTrackingFacet.class);
@@ -43,6 +45,10 @@ public class KitChoiceFacet implements DataFacetChangeListener<CDOMObject>
 	private RaceFacet raceFacet;
 
 	private DeityFacet deityFacet;
+
+	private DomainFacet domainFacet;
+
+	private SkillFacet skillFacet;
 
 	private TemplateFacet templateFacet;
 
@@ -60,7 +66,7 @@ public class KitChoiceFacet implements DataFacetChangeListener<CDOMObject>
 	 * @see pcgen.cdom.facet.event.DataFacetChangeListener#dataAdded(pcgen.cdom.facet.event.DataFacetChangeEvent)
 	 */
 	@Override
-	public void dataAdded(DataFacetChangeEvent<CDOMObject> dfce)
+	public void dataAdded(DataFacetChangeEvent<CharID, CDOMObject> dfce)
 	{
 		CharID id = dfce.getCharID();
 		PlayerCharacter aPC = trackingFacet.getPC(id);
@@ -87,7 +93,7 @@ public class KitChoiceFacet implements DataFacetChangeListener<CDOMObject>
 	 * @see pcgen.cdom.facet.event.DataFacetChangeListener#dataRemoved(pcgen.cdom.facet.event.DataFacetChangeEvent)
 	 */
 	@Override
-	public void dataRemoved(DataFacetChangeEvent<CDOMObject> dfce)
+	public void dataRemoved(DataFacetChangeEvent<CharID, CDOMObject> dfce)
 	{
 		/*
 		 * Nothing for now?
@@ -109,6 +115,16 @@ public class KitChoiceFacet implements DataFacetChangeListener<CDOMObject>
 		this.deityFacet = deityFacet;
 	}
 
+	public void setDomainFacet(DomainFacet domainFacet)
+	{
+		this.domainFacet = domainFacet;
+	}
+
+	public void setSkillFacet(SkillFacet skillFacet)
+	{
+		this.skillFacet = skillFacet;
+	}
+
 	public void setTemplateFacet(TemplateFacet templateFacet)
 	{
 		this.templateFacet = templateFacet;
@@ -124,6 +140,8 @@ public class KitChoiceFacet implements DataFacetChangeListener<CDOMObject>
 	{
 		raceFacet.addDataFacetChangeListener(this);
 		deityFacet.addDataFacetChangeListener(this);
+		domainFacet.addDataFacetChangeListener(this);
+		skillFacet.addDataFacetChangeListener(this);
 		templateFacet.addDataFacetChangeListener(this);
 	}
 }

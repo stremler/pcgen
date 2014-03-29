@@ -44,6 +44,7 @@ import pcgen.core.PlayerCharacter;
 import pcgen.core.bonus.Bonus;
 import pcgen.core.bonus.BonusObj;
 import pcgen.core.bonus.EquipBonus;
+import pcgen.core.display.BonusDisplay;
 import pcgen.core.display.CharacterDisplay;
 import pcgen.core.facade.ChooserFacade.ChooserTreeViewType;
 import pcgen.core.facade.InfoFacade;
@@ -277,8 +278,7 @@ public class TempBonusHelper
 				if (appliedBonus == null)
 				{
 					String bonusName =
-							new BonusManager(theCharacter).getBonusDisplayName(newB,
-								tempBonusInfo);
+							BonusDisplay.getBonusDisplayName(tempBonusInfo);
 					appliedBonus =
 							new TempBonusFacadeImpl(originObj, aEq,
 								bonusName);
@@ -338,8 +338,7 @@ public class TempBonusHelper
 				if (appliedBonus == null)
 				{
 					String bonusName =
-							new BonusManager(theCharacter).getBonusDisplayName(newB,
-								tempBonusInfo);
+							BonusDisplay.getBonusDisplayName(tempBonusInfo);
 					appliedBonus =
 							new TempBonusFacadeImpl(originObj, theCharacter,
 								bonusName);

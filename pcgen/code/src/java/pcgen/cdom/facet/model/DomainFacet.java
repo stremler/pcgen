@@ -1,5 +1,5 @@
 /*
- * Copyright (c) Thomas Parker, 2009.
+ * Copyright (c) Thomas Parker, 2009-14.
  * 
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Lesser General Public License as published by the Free
@@ -17,11 +17,12 @@
  */
 package pcgen.cdom.facet.model;
 
-import pcgen.cdom.content.SourcedSelection;
 import pcgen.cdom.facet.base.AbstractSingleSourceListFacet;
-import pcgen.cdom.facet.event.DataFacetChangeEvent;
-import pcgen.cdom.facet.event.DataFacetChangeListener;
 import pcgen.cdom.helper.ClassSource;
+import pcgen.cdom.meta.CorePerspective;
+import pcgen.cdom.meta.CorePerspectiveDB;
+import pcgen.cdom.meta.FacetBehavior;
+import pcgen.cdom.meta.PerspectiveLocation;
 import pcgen.core.Domain;
 
 /**
@@ -30,32 +31,17 @@ import pcgen.core.Domain;
  */
 public class DomainFacet extends
 		AbstractSingleSourceListFacet<Domain, ClassSource> implements
-		DataFacetChangeListener<SourcedSelection<Domain, ?, ClassSource>>
+		PerspectiveLocation
 {
-	private DomainSelectionFacet domainSelectionFacet;
-
-	public void setDomainSelectionFacet(
-		DomainSelectionFacet domainSelectionFacet)
-	{
-		this.domainSelectionFacet = domainSelectionFacet;
-	}
-
 	public void init()
 	{
-		domainSelectionFacet.addDataFacetChangeListener(this);
+		CorePerspectiveDB.register(CorePerspective.DOMAIN, FacetBehavior.MODEL, this);
 	}
 
 	@Override
-	public void dataAdded(DataFacetChangeEvent<SourcedSelection<Domain, ?, ClassSource>> dfce)
+	public String getIdentity()
 	{
-		SourcedSelection<Domain, ?, ClassSource> sel = dfce.getCDOMObject();
-		add(dfce.getCharID(), sel.getObject(), sel.getSource());
-	}
-
-	@Override
-	public void dataRemoved(DataFacetChangeEvent<SourcedSelection<Domain, ?, ClassSource>> dfce)
-	{
-		remove(dfce.getCharID(), dfce.getCDOMObject().getObject());
+		return "Character Domains";
 	}
 
 }

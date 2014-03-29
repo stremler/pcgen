@@ -28,8 +28,6 @@
  */
 package pcgen.persistence.lst;
 
-import gmgen.pluginmgr.PluginLoader;
-
 import java.util.List;
 
 import junit.framework.Test;
@@ -47,6 +45,7 @@ import pcgen.core.prereq.Prerequisite;
 import pcgen.persistence.PersistenceLayerException;
 import pcgen.rules.context.LoadContext;
 import pcgen.util.Logging;
+import pcgen.util.TestHelper;
 
 public class PObjectLoaderTest extends PCGenTestCase
 {
@@ -66,10 +65,19 @@ public class PObjectLoaderTest extends PCGenTestCase
 		return new TestSuite(PObjectLoaderTest.class);
 	}
 
+	/**
+	 * Sets up the test case by loading the system plugins.
+	 * 
+	 * @see pcgen.PCGenTestCase#setUp()
+	 */
+	@Override
+	public void setUp() throws Exception
+	{
+		TestHelper.loadPlugins();
+	}
+
 	public void testDefine() throws Exception
 	{
-		PluginLoader ploader = PluginLoader.inst();
-		ploader.startSystemPlugins(Constants.SYSTEM_TOKENS);
 		Ability feat = new Ability();
 
 		Globals.getContext().unconditionallyProcess(feat, "DEFINE", "Foo|0");
@@ -81,9 +89,6 @@ public class PObjectLoaderTest extends PCGenTestCase
 
 	public void testBadDefine() throws Exception
 	{
-		PluginLoader ploader = PluginLoader.inst();
-		ploader.startSystemPlugins(Constants.SYSTEM_TOKENS);
-
 		Ability feat = new Ability();
 
 		try
@@ -111,8 +116,6 @@ public class PObjectLoaderTest extends PCGenTestCase
 		intel.put(StringKey.ABB, "INT");
 		context.ref.registerAbbreviation(intel, intel.getAbb());
 		
-		PluginLoader ploader = PluginLoader.inst();
-		ploader.startSystemPlugins(Constants.SYSTEM_TOKENS);
 		Ability feat = new Ability();
 
 		is(context.processToken(feat, "DEFINESTAT", "UNLOCK|INT"), eq(true),
@@ -127,8 +130,6 @@ public class PObjectLoaderTest extends PCGenTestCase
 
 	public void testBadUnlockDefine() throws Exception
 	{
-		PluginLoader ploader = PluginLoader.inst();
-		ploader.startSystemPlugins(Constants.SYSTEM_TOKENS);
 		Ability feat = new Ability();
 
 		is(Globals.getContext()
@@ -138,9 +139,6 @@ public class PObjectLoaderTest extends PCGenTestCase
 
 	public void testParsePreClear() throws Exception
 	{
-		PluginLoader ploader = PluginLoader.inst();
-		ploader.startSystemPlugins(Constants.SYSTEM_TOKENS);
-
 		PObject object = new PObject();
 
 		LoadContext context = Globals.getContext();
@@ -149,7 +147,7 @@ public class PObjectLoaderTest extends PCGenTestCase
 		List<Prerequisite> list = object.getPrerequisiteList();
 		assertEquals(2, list.size());
 
-		context.unconditionallyProcess(object, "PRE", ".CLEAR");
+		context.unconditionallyProcess(object, "PRE", Constants.LST_DOT_CLEAR);
 		list = object.getPrerequisiteList();
 		assertNotNull("Prereq list should never be null as it is used in foreach loops directly.", list);
 		assertTrue("Prereqlist should be empty after the clear", list.isEmpty());

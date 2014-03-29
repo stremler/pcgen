@@ -41,8 +41,8 @@ import pcgen.cdom.enumeration.StringKey;
 import pcgen.cdom.enumeration.VariableKey;
 import pcgen.cdom.util.ListKeyMapToList;
 import pcgen.cdom.util.MapKeyMap;
-import pcgen.core.AssociationStore;
 import pcgen.core.Description;
+import pcgen.core.Equipment;
 import pcgen.core.PlayerCharacter;
 import pcgen.core.analysis.BonusActivation;
 import pcgen.core.bonus.BonusObj;
@@ -81,7 +81,6 @@ public abstract class CDOMObject extends ConcretePrereqObject implements
 
 	/** A map of Lists for the object */
 	// TODO make this final once clone() is no longer required...
-	// TODO Make this private once PObject is cleaned up
 	private ListKeyMapToList listChar = null;
 
 	/** A map of Maps for the object */
@@ -92,7 +91,7 @@ public abstract class CDOMObject extends ConcretePrereqObject implements
 	/*
 	 * CONSIDER This is currently order enforcing the reference fetching to
 	 * match the integration tests that we perform, and their current behavior.
-	 * Not sure if this is really tbe best solution?
+	 * Not sure if this is really the best solution?
 	 */
 	private DoubleKeyMapToList<CDOMReference<? extends CDOMList<? extends PrereqObject>>, CDOMReference<?>, AssociatedPrereqObject> cdomListMods = null;
 
@@ -109,7 +108,7 @@ public abstract class CDOMObject extends ConcretePrereqObject implements
 	public final int getSafe(IntegerKey key)
 	{
 		Integer intValue = integerChar == null ? null : integerChar.get(key);
-		return intValue == null ? key.getDefault() : intValue;
+		return intValue == null ? key.getDefault() : intValue.intValue();
 	}
 
 	public final Integer put(IntegerKey key, Integer intValue)
@@ -508,7 +507,6 @@ public abstract class CDOMObject extends ConcretePrereqObject implements
 	public String getKeyName()
 	{
 		// FIXME TODO Patched for now to avoid NPEs, but this is wrong
-		// TODO Auto-generated method stub
 		String returnKey = this.get(StringKey.KEY_NAME);
 		if (returnKey == null)
 		{
@@ -873,6 +871,7 @@ public abstract class CDOMObject extends ConcretePrereqObject implements
 		if (pc != null)
 		{
 			bonusList.addAll(pc.getAddedBonusList(this));
+			bonusList.addAll(pc.getSaveableBonusList(this));
 		}
 		return bonusList;
 	}
@@ -898,16 +897,14 @@ public abstract class CDOMObject extends ConcretePrereqObject implements
 		return aList;
 	}
 
-	public List<BonusObj> getBonusList(AssociationStore assocStore)
+	public List<BonusObj> getBonusList(PlayerCharacter assocStore)
 	{
-		if (assocStore instanceof PlayerCharacter)
-		{
-			return getRawBonusList((PlayerCharacter) assocStore);
-		}
-		else
-		{
-			return getRawBonusList(null);
-		}
+		return getRawBonusList(assocStore);
+	}
+	
+	public List<BonusObj> getBonusList(Equipment e)
+	{
+		return getRawBonusList(null);
 	}
 
 	/**
@@ -953,6 +950,6 @@ public abstract class CDOMObject extends ConcretePrereqObject implements
 	@Override
 	public boolean isInternal()
 	{
-		return getSafe(ObjectKey.INTERNAL);
+		return getSafe(ObjectKey.INTERNAL).booleanValue();
 	}
 }

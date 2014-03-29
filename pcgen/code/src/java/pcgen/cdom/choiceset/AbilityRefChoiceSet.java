@@ -34,18 +34,17 @@ import pcgen.cdom.base.Category;
 import pcgen.cdom.base.ChooseInformation;
 import pcgen.cdom.base.Constants;
 import pcgen.cdom.base.PrimitiveChoiceSet;
+import pcgen.cdom.content.CNAbility;
 import pcgen.cdom.enumeration.GroupingState;
 import pcgen.cdom.enumeration.ListKey;
 import pcgen.cdom.enumeration.Nature;
 import pcgen.cdom.enumeration.ObjectKey;
-import pcgen.cdom.helper.CategorizedAbilitySelection;
+import pcgen.cdom.helper.CNAbilitySelection;
 import pcgen.cdom.reference.ReferenceUtilities;
 import pcgen.core.Ability;
-import pcgen.core.AbilityCategory;
 import pcgen.core.Deity;
 import pcgen.core.PlayerCharacter;
 import pcgen.core.WeaponProf;
-import pcgen.core.chooser.ChooserUtilities;
 
 /**
  * A AbilityRefChoiceSet contains references to AbilityRef Objects.
@@ -55,7 +54,7 @@ import pcgen.core.chooser.ChooserUtilities;
  * not vary by the PlayerCharacter used to resolve the AbilityRefChoiceSet.
  */
 public class AbilityRefChoiceSet implements
-		PrimitiveChoiceSet<CategorizedAbilitySelection>
+		PrimitiveChoiceSet<CNAbilitySelection>
 {
 
 	/**
@@ -159,9 +158,9 @@ public class AbilityRefChoiceSet implements
 	 * @return The class of object this AbilityRefChoiceSet contains.
 	 */
 	@Override
-	public Class<CategorizedAbilitySelection> getChoiceClass()
+	public Class<CNAbilitySelection> getChoiceClass()
 	{
-		return CategorizedAbilitySelection.class;
+		return CNAbilitySelection.class;
 	}
 
 	/**
@@ -185,40 +184,31 @@ public class AbilityRefChoiceSet implements
 	 *         contains.
 	 */
 	@Override
-	public Set<CategorizedAbilitySelection> getSet(PlayerCharacter pc)
+	public Set<CNAbilitySelection> getSet(PlayerCharacter pc)
 	{
-		Set<CategorizedAbilitySelection> returnSet = new HashSet<CategorizedAbilitySelection>();
+		Set<CNAbilitySelection> returnSet = new HashSet<CNAbilitySelection>();
 		for (CDOMReference<Ability> ref : abilityRefSet)
 		{
 			for (Ability a : ref.getContainedObjects())
 			{
-				if (a.getSafe(ObjectKey.MULTIPLE_ALLOWED))
+				if (a.getSafe(ObjectKey.MULTIPLE_ALLOWED).booleanValue())
 				{
 					returnSet.addAll(addMultiplySelectableAbility(pc, a, ref
 							.getChoice()));
 				}
 				else
 				{
-					returnSet.add(new CategorizedAbilitySelection(category, a, nature));
+					returnSet.add(new CNAbilitySelection(new CNAbility(
+						category, a, nature)));
 				}
 			}
 		}
 		return returnSet;
 	}
 
-	private Collection<CategorizedAbilitySelection> addMultiplySelectableAbility(
+	private Collection<CNAbilitySelection> addMultiplySelectableAbility(
 			final PlayerCharacter aPC, Ability ability, String subName)
 	{
-		// If already have taken the feat, use it so we can remove
-		// any choices already selected
-		final Ability pcFeat = aPC.getFeatNamed(ability.getKeyName());
-
-		Ability pcability = ability;
-		if (pcFeat != null)
-		{
-			pcability = pcFeat;
-		}
-
 		boolean isPattern = false;
 		String nameRoot = null;
 		if (subName != null)
@@ -236,30 +226,11 @@ public class AbilityRefChoiceSet implements
 			}
 		}
 
-		final List<String> availableList = new ArrayList<String>();
-		final List<?> tempAvailList = new ArrayList<Object>();
-		final List<?> tempSelList = new ArrayList<Object>();
-		ChooserUtilities.modChoices(pcability, tempAvailList, tempSelList,
-				false, aPC, true, AbilityCategory.FEAT);
-		// Mod choices may have sent us back weaponprofs, abilities or
-		// strings,
-		// so we have to do a conversion here
-		for (Object o : tempAvailList)
-		{
-			String choice = o.toString();
-			if ("NOCHOICE".equals(choice))
-			{
-				availableList.add("");
-			}
-			else
-			{
-				availableList.add(choice);
-			}
-		}
+		ChooseInformation<?> chooseInfo = ability.get(ObjectKey.CHOOSE_INFO);
+		final List<String> availableList = getAvailableList(aPC, chooseInfo);
 
 		// Remove any that don't match
 
-		ChooseInformation<?> chooseInfo = pcability.get(ObjectKey.CHOOSE_INFO);
 		/*
 		 * TODO Need a general solution for this special assignment in parens
 		 */
@@ -313,13 +284,28 @@ public class AbilityRefChoiceSet implements
 			}
 		}
 
-		List<CategorizedAbilitySelection> returnList = new ArrayList<CategorizedAbilitySelection>(
+		List<CNAbilitySelection> returnList = new ArrayList<CNAbilitySelection>(
 				availableList.size());
 		for (String s : availableList)
 		{
-			returnList.add(new CategorizedAbilitySelection(category, pcability, nature, s));
+			returnList.add(new CNAbilitySelection(new CNAbility(category,
+				ability, nature), s));
 		}
 		return returnList;
+	}
+
+	private <T> List<String> getAvailableList(final PlayerCharacter aPC,
+		ChooseInformation<T> chooseInfo)
+	{
+		final List<String> availableList = new ArrayList<String>();
+		Collection<? extends T> tempAvailList = chooseInfo.getSet(aPC);
+		// chooseInfo may have sent us back weaponprofs, abilities or
+		// strings, so we have to do a conversion here
+		for (T o : tempAvailList)
+		{
+			availableList.add(chooseInfo.encodeChoice(o));
+		}
+		return availableList;
 	}
 
 	/**

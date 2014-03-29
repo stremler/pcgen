@@ -48,6 +48,7 @@ import pcgen.cdom.base.Constants;
 import pcgen.cdom.enumeration.ListKey;
 import pcgen.cdom.enumeration.ObjectKey;
 import pcgen.cdom.enumeration.StringKey;
+import pcgen.core.AbilityCategory;
 import pcgen.core.Equipment;
 import pcgen.core.Globals;
 import pcgen.core.PCClass;
@@ -59,6 +60,7 @@ import pcgen.core.Skill;
 import pcgen.core.character.CharacterSpell;
 import pcgen.core.character.Follower;
 import pcgen.core.display.CharacterDisplay;
+import pcgen.core.display.SkillDisplay;
 import pcgen.core.utils.CoreUtility;
 import pcgen.io.exporttoken.AbilityListToken;
 import pcgen.io.exporttoken.AbilityToken;
@@ -74,6 +76,7 @@ import pcgen.io.exporttoken.Token;
 import pcgen.io.exporttoken.TotalToken;
 import pcgen.io.exporttoken.WeaponToken;
 import pcgen.io.exporttoken.WeaponhToken;
+import pcgen.io.freemarker.EquipSetLoopDirective;
 import pcgen.io.freemarker.LoopDirective;
 import pcgen.io.freemarker.PCBooleanFunction;
 import pcgen.io.freemarker.PCStringDirective;
@@ -81,7 +84,7 @@ import pcgen.io.freemarker.PCVarFunction;
 import pcgen.system.PluginLoader;
 import pcgen.util.Delta;
 import pcgen.util.Logging;
-import pcgen.util.enumeration.Visibility;
+import pcgen.util.enumeration.View;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
@@ -316,6 +319,7 @@ public final class ExportHandler
 			cfg.setSharedVariable("pcvar", new PCVarFunction());
 			cfg.setSharedVariable("pcboolean", new PCBooleanFunction());
 			cfg.setSharedVariable("loop", new LoopDirective());
+			cfg.setSharedVariable("equipsetloop", new EquipSetLoopDirective());
 			cfg.setSharedVariable("pc", aPC);
 			
 			// data-model
@@ -698,7 +702,7 @@ public final class ExportHandler
 		if (expr1.startsWith("HASFEAT:"))
 		{
 			expr1 = expr1.substring(8).trim();
-			return (aPC.getFeatNamed(expr1) != null);
+			return (aPC.hasAbilityKeyed(AbilityCategory.FEAT, expr1));
 		}
 
 		// Deal with HASSA:
@@ -749,7 +753,7 @@ public final class ExportHandler
 			if (fString.length() > 5)
 			{
 				final int i = Integer.parseInt(fString.substring(5));
-				final List<Skill> pcSkills = aPC.getSkillListInOutputOrder();
+				final List<Skill> pcSkills = SkillDisplay.getSkillListInOutputOrder(aPC);
 
 				if (i <= (pcSkills.size() - 1))
 				{
@@ -835,8 +839,12 @@ public final class ExportHandler
 		}
 		catch (IOException ignore)
 		{
-			Logging.debugPrint(
-				"Could not flush output buffer in evaluateExpression", ignore);
+			if (Logging.isDebugMode())
+			{
+				Logging.debugPrint(
+					"Could not flush output buffer in evaluateExpression",
+					ignore);
+			}
 		}
 
 		String leftString = sLeftWriter.toString();
@@ -2310,8 +2318,7 @@ public final class ExportHandler
 			}
 
 			final PCTemplate template = tList.get(index);
-			if (template.getSafe(ObjectKey.VISIBILITY) != Visibility.DEFAULT
-				&& template.getSafe(ObjectKey.VISIBILITY) != Visibility.OUTPUT_ONLY)
+			if (!template.getSafe(ObjectKey.VISIBILITY).isVisibleTo(View.VISIBLE_EXPORT))
 			{
 				canWrite = false;
 			}
@@ -3677,8 +3684,12 @@ public final class ExportHandler
 				}
 				catch (IOException ignore)
 				{
-					Logging.debugPrint(
-						"Couldn't close file in ExportHandler::write", ignore);
+					if (Logging.isDebugMode())
+					{
+						Logging.debugPrint(
+							"Couldn't close file in ExportHandler::write",
+							ignore);
+					}
 				}
 			}
 		}

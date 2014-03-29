@@ -32,6 +32,7 @@ import java.util.Set;
 import pcgen.base.formula.Formula;
 import pcgen.cdom.base.CDOMObject;
 import pcgen.cdom.base.ChooseInformation;
+import pcgen.cdom.content.CNAbility;
 import pcgen.cdom.enumeration.FormulaKey;
 import pcgen.cdom.enumeration.ObjectKey;
 import pcgen.cdom.reference.CDOMSingleRef;
@@ -62,8 +63,6 @@ public class ChooserUtilities
 	 *            the list of things not already chosen
 	 * @param selectedList
 	 *            the list of things already chosen
-	 * @param process
-	 *            if false do not process the choice, just poplate the lists
 	 * @param aPC
 	 *            the PC that owns the Ability
 	 * @param addIt
@@ -76,9 +75,8 @@ public class ChooserUtilities
 	 *         routine to build the list of choices without processing them.
 	 */
 	public static final boolean modChoices(final CDOMObject aPObject,
-		List availableList, final List selectedList, final boolean process,
-		final PlayerCharacter aPC, final boolean addIt,
-		final AbilityCategory category)
+		List availableList, final List selectedList, final PlayerCharacter aPC,
+		final boolean addIt, final AbilityCategory category)
 	{
 		availableList.clear();
 		selectedList.clear();
@@ -96,11 +94,6 @@ public class ChooserUtilities
 		{
 			modifyAvailChoicesForAbilityCategory(availableList, category,
 				(Ability) aPObject);
-		}
-
-		if (!process)
-		{
-			return false;
 		}
 
 		if (availableList.size() > 0 || selectedList.size() > 0)
@@ -147,18 +140,16 @@ public class ChooserUtilities
 				cat = category;
 			}
 			aMan.setController(new AbilityChooseController(a, cat, aPC, aMan));
-			for (Ability ab : aPC.getAllAbilities())
+			List<CNAbility> abilities = aPC.getMatchingCNAbilities(a);
+			for (CNAbility cna : abilities)
 			{
-				if (ab.getKeyName().equals(a.getKeyName()))
-				{
-					reservedList.addAll(aPC.getAssociationList(ab));
-				}
+				reservedList.addAll(aPC.getAssociationList(cna));
 			}
 		}
 		else if (aPObject instanceof Skill)
 		{
 			Skill s = (Skill) aPObject;
-			aMan.setController(new SkillChooseController(s, aPC, aMan));
+			aMan.setController(new SkillChooseController(s, aPC));
 		}
 		return aMan;
 	}

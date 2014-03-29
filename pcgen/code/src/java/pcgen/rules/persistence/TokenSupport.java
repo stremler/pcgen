@@ -59,15 +59,30 @@ public class TokenSupport
 		{
 			for (CDOMToken<T> token : tokenList)
 			{
-				ParseResult parse = token.parseToken(context, derivative, argument);
+				ParseResult parse;
+				try
+				{
+					parse = token.parseToken(context, derivative, argument);
+				}
+				catch (IllegalArgumentException e)
+				{
+					Logging.addParseMessage(
+						Logging.LST_ERROR,
+						"Token generated an IllegalArgumentException: "
+							+ e.getLocalizedMessage());
+					parse = new ParseResult.Fail("Token processing failed");
+				}
 				// Need to add messages as there may be warnings.
 				parse.addMessagesToLog();
 				if (parse.passed())
 				{
 					return true;
 				}
-				Logging.addParseMessage(Logging.LST_INFO,
-					"Failed in parsing typeStr: " + typeStr + " " + argument);
+				if (Logging.isLoggable(Logging.LST_INFO))
+				{
+					Logging.addParseMessage(Logging.LST_INFO,
+						"Failed in parsing typeStr: " + typeStr + " " + argument);
+				}
 			}
 		}
 		if (typeStr.startsWith(" "))

@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -43,6 +44,7 @@ import pcgen.base.lang.StringUtil;
 import pcgen.cdom.base.CDOMObject;
 import pcgen.cdom.base.CDOMReference;
 import pcgen.cdom.base.ChooseInformation;
+import pcgen.cdom.content.CNAbility;
 import pcgen.cdom.content.HitDie;
 import pcgen.cdom.content.LevelCommandFactory;
 import pcgen.cdom.enumeration.AspectName;
@@ -56,9 +58,9 @@ import pcgen.cdom.enumeration.RaceSubType;
 import pcgen.cdom.enumeration.RaceType;
 import pcgen.cdom.enumeration.SourceFormat;
 import pcgen.cdom.enumeration.StringKey;
+import pcgen.cdom.helper.Aspect;
 import pcgen.cdom.reference.ReferenceUtilities;
 import pcgen.core.Ability;
-import pcgen.core.AbilityCategory;
 import pcgen.core.BenefitFormatting;
 import pcgen.core.BonusManager.TempBonusInfo;
 import pcgen.core.Deity;
@@ -134,7 +136,7 @@ public class Gui2InfoFactory implements InfoFactory
 	/** A default return value for an invalid request. */
 	private static final String EMPTY_STRING = ""; //$NON-NLS-1$
 	private static NumberFormat ADJ_FMT = new DecimalFormat("+0;-0"); //$NON-NLS-1$
-	private static NumberFormat COST_FMT = new DecimalFormat("#,##0.#"); //$NON-NLS-1$
+	private static NumberFormat COST_FMT = new DecimalFormat("#,##0.##"); //$NON-NLS-1$
 
 	/** Constant for 2 spaces in HTML */
 	public static final String TWO_SPACES = " &nbsp;"; //$NON-NLS-1$
@@ -217,7 +219,7 @@ public class Gui2InfoFactory implements InfoFactory
 
 			infoText.appendLineBreak();
 			infoText.appendI18nFormattedElement("in_InfoDescription", //$NON-NLS-1$
-				DescriptionFormatting.piDescSubString(pc, race));
+				DescriptionFormatting.piWrapDesc(race, pc.getDescription(race), false));
 
 			LevelCommandFactory levelCommandFactory =
 					race.get(ObjectKey.MONSTER_CLASS);
@@ -498,7 +500,14 @@ public class Gui2InfoFactory implements InfoFactory
 
 		infoText.appendLineBreak();
 		infoText.appendI18nFormattedElement("in_InfoDescription", //$NON-NLS-1$
-			DescriptionFormatting.piDescSubString(pc, ability));
+			getDescription(abilityFacade));
+
+		/*
+		 * TODO this is probably a problem in that it is doing a target (all
+		 * associations for an ability, not related to the current CNAbility
+		 * selected in the UI)
+		 */
+		List<CNAbility> wrappedAbility = pc.getMatchingCNAbilities(ability);
 
 		if (ability.getSafeSizeOfMapFor(MapKey.ASPECT) > 0)
 		{
@@ -510,19 +519,20 @@ public class Gui2InfoFactory implements InfoFactory
 				{
 					buff.append(", ");
 				}
-				buff.append(ability.printAspect(pc, key));
+				//Assert here that the actual text displayed is not critical
+				buff.append(Aspect.printAspect(pc, key, wrappedAbility));
 			}
 			infoText.appendLineBreak();
 			infoText.appendI18nFormattedElement("Ability.Info.Aspects", //$NON-NLS-1$
 				buff.toString());
 		}
 		
-		final String bene = BenefitFormatting.getBenefits(pc, ability);
+		final String bene = BenefitFormatting.getBenefits(pc, wrappedAbility);
 		if (bene != null && bene.length() > 0)
 		{
 			infoText.appendLineBreak();
 			infoText.appendI18nFormattedElement("Ability.Info.Benefit", //$NON-NLS-1$
-				BenefitFormatting.getBenefits(pc, ability));
+				BenefitFormatting.getBenefits(pc, wrappedAbility));
 		}
 
 		infoText.appendLineBreak();
@@ -560,7 +570,7 @@ public class Gui2InfoFactory implements InfoFactory
 
 			infoText
 				.appendI18nFormattedElement(
-					"in_InfoDescription", DescriptionFormatting.piDescSubString(pc, aDeity)); //$NON-NLS-1$
+					"in_InfoDescription", DescriptionFormatting.piWrapDesc(aDeity, pc.getDescription(aDeity), false)); //$NON-NLS-1$
 
 			aString = getPantheons(aDeity);
 			if (aString != null)
@@ -1258,7 +1268,7 @@ public class Gui2InfoFactory implements InfoFactory
 	@Override
 	public String getHTMLInfo(TempBonusFacade tempBonusFacade)
 	{
-		if (tempBonusFacade == null || !(tempBonusFacade instanceof TempBonusFacade))
+		if (tempBonusFacade == null)
 		{
 			return EMPTY_STRING;
 		}
@@ -1309,27 +1319,7 @@ public class Gui2InfoFactory implements InfoFactory
 				}
 				first = false;
 				String adj = ADJ_FMT.format(bonusObj.resolve(pc, "")); //$NON-NLS-1$
-				String bonusDesc = bonusObj.getTypeOfBonus() + " " + bonusObj.getBonusInfo(); //$NON-NLS-1$
-				if ("STAT".equals(bonusObj.getTypeOfBonus())) //$NON-NLS-1$
-				{
-					final PCStat pcstat = Globals.getContext().ref
-							.getAbbreviatedObject(PCStat.class, bonusObj.getBonusInfo());
-					if (pcstat != null)
-					{
-						bonusDesc = pcstat.getName();
-					}
-				}
-				else if ("LOCKEDSTAT".equals(bonusObj.getTypeOfBonus())) //$NON-NLS-1$
-				{
-					final PCStat pcstat = Globals.getContext().ref
-							.getAbbreviatedObject(PCStat.class, bonusObj.getBonusInfo());
-					if (pcstat != null)
-					{
-						bonusDesc = pcstat.getName() + " (locked)";
-					}
-				}
-				
-				bonusValues.append(adj + " " + bonusDesc);  //$NON-NLS-1$
+				bonusValues.append(adj + " " + bonusObj.getDescription());  //$NON-NLS-1$
 			}
 			if (bonusValues.length() > 0)
 			{
@@ -1357,9 +1347,10 @@ public class Gui2InfoFactory implements InfoFactory
 		String aString = originObj.getSafe(StringKey.TEMP_DESCRIPTION);
 		if (StringUtils.isEmpty(aString) && originObj instanceof PObject)
 		{
+			Spell sp = (Spell) originObj;
 			aString =
-					DescriptionFormatting.piDescSubString(pc,
-						(PObject) originObj);
+					DescriptionFormatting.piWrapDesc(sp, pc.getDescription(sp),
+						false);
 		}
 		if (aString.length() > 0)
 		{
@@ -1930,7 +1921,14 @@ public class Gui2InfoFactory implements InfoFactory
 
 		try
 		{
-			return DescriptionFormatting.piDescSubString(pc, (Ability) ability);
+			Ability a = (Ability) ability;
+			/*
+			 * TODO this is probably a problem in that it is doing a target (all
+			 * associations for an ability, not related to the current CNAbility
+			 * selected in the UI)
+			 */
+			List<CNAbility> wrappedAbility = pc.getMatchingCNAbilities(a);
+			return DescriptionFormatting.piWrapDesc(a, pc.getDescription(wrappedAbility), false);
 		}
 		catch (Exception e)
 		{
@@ -1986,6 +1984,23 @@ public class Gui2InfoFactory implements InfoFactory
 	}
 
 	/**
+	 * Get a display string of the deity's favored weapons.
+	 * @param deityFacade The deity to be output.
+	 * @return The comma separated list of weapons.
+	 */
+	public String getFavoredWeapons(DeityFacade deityFacade)
+	{
+		if (deityFacade == null || !(deityFacade instanceof Deity))
+		{
+			return EMPTY_STRING;
+		}
+		Deity deity = (Deity) deityFacade;
+		List<CDOMReference<WeaponProf>> wpnList =
+				deity.getSafeListFor(ListKey.DEITYWEAPON);
+		return ReferenceUtilities.joinLstFormat(wpnList, ",");
+	}
+	
+	/**
 	 * {@inheritDoc}
 	 */
 	@Override
@@ -1997,44 +2012,42 @@ public class Gui2InfoFactory implements InfoFactory
 		}
 		final Ability ability = (Ability) abilityFacade;
 		final StringBuilder result = new StringBuilder();
-		AbilityCategory cat = (AbilityCategory) ability.getCDOMCategory();
-		
-		List<Ability> targetAbilities = new ArrayList<Ability>();
-		targetAbilities.add(ability);
-		final List<Ability> abilities = pc.getAggregateAbilityList(cat);
-		for (final Ability ab : abilities)
-		{
-			if (ability.equals(ab) && ability != ab)
-			{
-				targetAbilities.add(ab);
-			}
-		}
-		
+
+		Collection<CNAbility> targetAbilities = pc.getMatchingCNAbilities(ability);
 		if (ability.getSafe(ObjectKey.MULTIPLE_ALLOWED))
 		{
-			List<String> choices = new ArrayList<String>();
-			for (Ability ab : targetAbilities)
-			{
-				ChooseInformation<?> chooseInfo =
-						ab.get(ObjectKey.CHOOSE_INFO);
-
-				if (chooseInfo != null)
-				{
-					choices.add(chooseInfo.getDisplay(pc, ab)
-						.toString());
-				}
-				else
-				{
-					choices.addAll(pc
-						.getExpandedAssociations(ab));
-				}
-			}
-
-			result.append(StringUtil.joinToStringBuilder(choices, ","));
+			ChooseInformation<?> chooseInfo =
+					ability.get(ObjectKey.CHOOSE_INFO);
+			processAbilities(result, targetAbilities, chooseInfo);
 		}
 		return result.toString();
 	}
 
+	private <T> void processAbilities(final StringBuilder result,
+		Collection<CNAbility> targetAbilities, ChooseInformation<T> chooseInfo)
+	{
+		if (chooseInfo == null)
+		{
+			return;
+		}
+
+		List<T> choices = new ArrayList<T>();
+		for (CNAbility ab : targetAbilities)
+		{
+			List<? extends T> sel =
+					(List<? extends T>) pc.getDetailedAssociations(ab);
+			if (sel != null)
+			{
+				choices.addAll(sel);
+			}
+		}
+
+		String choiceInfo = chooseInfo.composeDisplay(choices).toString();
+		if (choiceInfo.length() > 0)
+		{
+			result.append(choiceInfo);
+		}
+	}
 
 	/**
 	 * {@inheritDoc}

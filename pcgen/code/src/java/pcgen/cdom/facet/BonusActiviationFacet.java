@@ -21,8 +21,11 @@ import pcgen.cdom.base.CDOMObject;
 import pcgen.cdom.enumeration.CharID;
 import pcgen.cdom.facet.event.DataFacetChangeEvent;
 import pcgen.cdom.facet.event.DataFacetChangeListener;
+import pcgen.cdom.facet.model.CompanionModFacet;
 import pcgen.cdom.facet.model.DeityFacet;
+import pcgen.cdom.facet.model.DomainFacet;
 import pcgen.cdom.facet.model.RaceFacet;
+import pcgen.cdom.facet.model.SkillFacet;
 import pcgen.cdom.facet.model.TemplateFacet;
 import pcgen.core.PlayerCharacter;
 
@@ -33,14 +36,20 @@ import pcgen.core.PlayerCharacter;
  * @author Thomas Parker (thpr [at] yahoo.com)
  */
 public class BonusActiviationFacet implements
-		DataFacetChangeListener<CDOMObject>
+		DataFacetChangeListener<CharID, CDOMObject>
 {
 	private final PlayerCharacterTrackingFacet trackingFacet = FacetLibrary
 		.getFacet(PlayerCharacterTrackingFacet.class);
 
 	private RaceFacet raceFacet;
 
+	private CompanionModFacet companionModFacet;
+
 	private DeityFacet deityFacet;
+
+	private DomainFacet domainFacet;
+
+	private SkillFacet skillFacet;
 
 	private TemplateFacet templateFacet;
 
@@ -59,7 +68,7 @@ public class BonusActiviationFacet implements
 	 * @see pcgen.cdom.facet.event.DataFacetChangeListener#dataAdded(pcgen.cdom.facet.event.DataFacetChangeEvent)
 	 */
 	@Override
-	public void dataAdded(DataFacetChangeEvent<CDOMObject> dfce)
+	public void dataAdded(DataFacetChangeEvent<CharID, CDOMObject> dfce)
 	{
 		CharID id = dfce.getCharID();
 		PlayerCharacter aPC = trackingFacet.getPC(id);
@@ -82,7 +91,7 @@ public class BonusActiviationFacet implements
 	 * @see pcgen.cdom.facet.event.DataFacetChangeListener#dataAdded(pcgen.cdom.facet.event.DataFacetChangeEvent)
 	 */
 	@Override
-	public void dataRemoved(DataFacetChangeEvent<CDOMObject> dfce)
+	public void dataRemoved(DataFacetChangeEvent<CharID, CDOMObject> dfce)
 	{
 		/*
 		 * Nothing for now?
@@ -97,9 +106,24 @@ public class BonusActiviationFacet implements
 		this.raceFacet = raceFacet;
 	}
 
+	public void setCompanionModFacet(CompanionModFacet companionModFacet)
+	{
+		this.companionModFacet = companionModFacet;
+	}
+
 	public void setDeityFacet(DeityFacet deityFacet)
 	{
 		this.deityFacet = deityFacet;
+	}
+
+	public void setDomainFacet(DomainFacet domainFacet)
+	{
+		this.domainFacet = domainFacet;
+	}
+
+	public void setSkillFacet(SkillFacet skillFacet)
+	{
+		this.skillFacet = skillFacet;
 	}
 
 	public void setTemplateFacet(TemplateFacet templateFacet)
@@ -116,7 +140,10 @@ public class BonusActiviationFacet implements
 	public void init()
 	{
 		raceFacet.addDataFacetChangeListener(1000, this);
+		companionModFacet.addDataFacetChangeListener(1000, this);
 		deityFacet.addDataFacetChangeListener(1000, this);
+		domainFacet.addDataFacetChangeListener(1000, this);
+		skillFacet.addDataFacetChangeListener(1000, this);
 		templateFacet.addDataFacetChangeListener(1000, this);
 	}
 }

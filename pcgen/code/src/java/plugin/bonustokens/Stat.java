@@ -26,6 +26,7 @@
 package plugin.bonustokens;
 
 import pcgen.cdom.base.Constants;
+import pcgen.core.Globals;
 import pcgen.core.PCClass;
 import pcgen.core.PCStat;
 import pcgen.core.bonus.BonusObj;
@@ -52,8 +53,8 @@ public final class Stat extends BonusObj
 			}
 		}
 
-		if (token.startsWith(Constants.LST_CAST_EQUAL)
-			|| token.startsWith(Constants.LST_CAST_DOT))
+		if (token.startsWith("CAST=")
+			|| token.startsWith("CAST."))
 		{
 			PCStat stat = context.ref.getAbbreviatedObject(
 				PCStat.class,
@@ -152,4 +153,18 @@ public final class Stat extends BonusObj
 	{
 		return "STAT";
 	}
+
+	@Override
+	public String getDescription()
+	{
+		final PCStat pcstat =
+				Globals.getContext().ref.getAbbreviatedObject(PCStat.class,
+					getBonusInfo());
+		if (pcstat != null)
+		{
+			return pcstat.getName();
+		}
+		return super.getDescription();
+	}	
+	
 }

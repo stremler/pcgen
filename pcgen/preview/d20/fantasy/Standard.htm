@@ -435,6 +435,19 @@ $Date$
      <td width="20" align="center" class="sign"></td>
      <td class="ab"><b>&nbsp;BASE ATTACK BONUS&nbsp;</b></td>
      <td width="94" class="border10cb">|ATTACK.MELEE|</td>
+|IIF(VAR.ENCUMBERANCE>0)|
+     <td width="20" align="center" class="sign"></td>
+     <td class="ab"><b>&nbsp;ENCUMBRANCE&nbsp;</b></td>
+|ENDIF|
+|IIF(VAR.ENCUMBERANCE:1)|
+     <td width="94" class="border10cb">Medium</td>
+|ENDIF|
+|IIF(VAR.ENCUMBERANCE:2)|
+     <td width="94" class="border10cb">Heavy</td>
+|ENDIF|
+|IIF(VAR.ENCUMBERANCE:3)|
+     <td width="94" class="border10cb">Overloaded</td>
+|ENDIF|
    </tr>
     <tr>
      <td align="center" width="50" class="sign"></td>
@@ -1431,7 +1444,7 @@ Immune
       <td valign="top" width="70%" class="border10">
 |FOR.0,COUNT[EQTYPE.Coin],1,\EQTYPE.Coin.%.NAME\: \EQTYPE.Coin.%.QTY\, ,<br/>,1|
 |FOR.0,COUNT[EQTYPE.Gem],1,\EQTYPE.Gem.%.QTY\x\EQTYPE.Gem.%.NAME\ (\EQTYPE.Gem.%.COST\) , ,<br/>,1|
-<span class="notes">|MISC.FUNDS| Unspent Funds = |GOLD|</span></td>
+<span class="notes">|MISC.FUNDS| Unspent Funds = |GOLD.TRUNC|</span></td>
      </tr>
     </table>
 <!-- STOP Money Table -->

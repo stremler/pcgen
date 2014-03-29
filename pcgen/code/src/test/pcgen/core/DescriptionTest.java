@@ -26,13 +26,23 @@
  */
 package pcgen.core;
 
+import java.util.Collections;
+import java.util.List;
+
 import pcgen.AbstractCharacterTestCase;
+import pcgen.cdom.base.CDOMObject;
 import pcgen.cdom.base.Constants;
 import pcgen.cdom.base.FormulaFactory;
+import pcgen.cdom.content.CNAbility;
+import pcgen.cdom.enumeration.ListKey;
+import pcgen.cdom.enumeration.Nature;
 import pcgen.cdom.enumeration.StringKey;
 import pcgen.cdom.enumeration.VariableKey;
+import pcgen.core.chooser.ChoiceManagerList;
+import pcgen.core.chooser.ChooserUtilities;
 import pcgen.core.prereq.Prerequisite;
 import pcgen.persistence.lst.prereq.PreParserFactory;
+import pcgen.util.TestHelper;
 
 /**
  * This class tests the handling of DESC fields in PCGen
@@ -54,8 +64,10 @@ public class DescriptionTest extends AbstractCharacterTestCase
 	 */
 	public void testEmptyDesc()
 	{
+		final Ability dummy =
+				TestHelper.makeAbility("dummy", AbilityCategory.FEAT, "Foo");
 		final Description desc = new Description(Constants.EMPTY_STRING);
-		assertTrue(desc.getDescription(this.getCharacter(), null).equals(""));
+		assertTrue(desc.getDescription(this.getCharacter(), Collections.singletonList(new CNAbility(AbilityCategory.FEAT, dummy, Nature.NORMAL))).equals(""));
 	}
 
 	/**
@@ -64,9 +76,11 @@ public class DescriptionTest extends AbstractCharacterTestCase
 	 */
 	public void testSimpleDesc()
 	{
+		final Ability dummy =
+				TestHelper.makeAbility("dummy", AbilityCategory.FEAT, "Foo");
 		final String simpleDesc = "This is a test";
 		final Description desc = new Description(simpleDesc);
-		assertTrue(desc.getDescription(getCharacter(), null).equals(simpleDesc));
+		assertTrue(desc.getDescription(getCharacter(), Collections.singletonList(new CNAbility(AbilityCategory.FEAT, dummy, Nature.NORMAL))).equals(simpleDesc));
 	}
 
 	/**
@@ -75,6 +89,8 @@ public class DescriptionTest extends AbstractCharacterTestCase
 	 */
 	public void testPreReqs() throws Exception
 	{
+		final Ability dummy =
+				TestHelper.makeAbility("dummy", AbilityCategory.FEAT, "Foo");
 		final String simpleDesc = "This is a test";
 		final Description desc = new Description(simpleDesc);
 
@@ -82,14 +98,14 @@ public class DescriptionTest extends AbstractCharacterTestCase
 
 		final Prerequisite prereqNE = factory.parse("PRETEMPLATE:1,KEY_Natural Lycanthrope");
 		desc.addPrerequisite(prereqNE);
-		is(desc.getDescription(getCharacter(), null), strEq(""));
+		is(desc.getDescription(getCharacter(), Collections.singletonList(new CNAbility(AbilityCategory.FEAT, dummy, Nature.NORMAL))), strEq(""));
 
 		PCTemplate template = new PCTemplate();
 		template.setName("Natural Lycanthrope");
 		template.put(StringKey.KEY_NAME, "KEY_Natural Lycanthrope");
 		Globals.getContext().ref.importObject(template);
 		getCharacter().addTemplate(template);
-		is(desc.getDescription(getCharacter(), null), strEq(simpleDesc));
+		is(desc.getDescription(getCharacter(), Collections.singletonList(new CNAbility(AbilityCategory.FEAT, dummy, Nature.NORMAL))), strEq(simpleDesc));
 	}
 
 	/**
@@ -97,9 +113,11 @@ public class DescriptionTest extends AbstractCharacterTestCase
 	 */
 	public void testSimpleReplacement()
 	{
+		final Ability dummy =
+				TestHelper.makeAbility("dummy", AbilityCategory.FEAT, "Foo");
 		final Description desc = new Description("%1");
 		desc.addVariable("\"Variable\"");
-		assertTrue(desc.getDescription(getCharacter(), null).equals("Variable"));
+		assertTrue(desc.getDescription(getCharacter(), Collections.singletonList(new CNAbility(AbilityCategory.FEAT, dummy, Nature.NORMAL))).equals("Variable"));
 	}
 
 	/**
@@ -107,12 +125,13 @@ public class DescriptionTest extends AbstractCharacterTestCase
 	 */
 	public void testSimpleNameReplacement()
 	{
-		final PObject pobj = new PObject();
+		final PCTemplate pobj = new PCTemplate();
 		pobj.setName("PObject");
 
 		final Description desc = new Description("%1");
 		desc.addVariable("%NAME");
-		assertTrue(desc.getDescription(getCharacter(), pobj).equals("PObject"));
+		pobj.addToListFor(ListKey.DESCRIPTION, desc);
+		assertTrue(getCharacter().getDescription(pobj).equals("PObject"));
 	}
 
 	/**
@@ -126,10 +145,11 @@ public class DescriptionTest extends AbstractCharacterTestCase
 
 		final Description desc = new Description("%1");
 		desc.addVariable("TestVar");
-		assertTrue(desc.getDescription(getCharacter(), dummy).equals("0"));
+		dummy.addToListFor(ListKey.DESCRIPTION, desc);
+		assertTrue(getCharacter().getDescription(dummy).equals("0"));
 
 		getCharacter().setRace(dummy);
-		assertTrue(desc.getDescription(getCharacter(), dummy).equals("2"));
+		assertTrue(getCharacter().getDescription(dummy).equals("2"));
 	}
 
 	/**
@@ -137,15 +157,18 @@ public class DescriptionTest extends AbstractCharacterTestCase
 	 */
 	public void testSimpleChoiceReplacement()
 	{
-		final PObject pobj = new PObject();
+		final PCTemplate pobj = new PCTemplate();
+		Globals.getContext().unconditionallyProcess(pobj, "CHOOSE", "LANG|ALL");
+		Globals.getContext().ref.constructCDOMObject(Language.class, "Foo");
 
 		final Description desc = new Description("%1");
 		desc.addVariable("%CHOICE");
+		pobj.addToListFor(ListKey.DESCRIPTION, desc);
 		PlayerCharacter pc = getCharacter();
-		assertTrue(desc.getDescription(pc, pobj).equals(""));
+		assertTrue(getCharacter().getDescription(pobj).equals(""));
 
-		pc.addAssociation(pobj, "Foo");
-		assertTrue(desc.getDescription(pc, pobj).equals("Foo"));
+		add(ChooserUtilities.getChoiceManager(pobj, pc), pc, pobj, "Foo");
+		assertTrue(getCharacter().getDescription(pobj).equals("Foo"));
 	}
 
 	/**
@@ -153,15 +176,19 @@ public class DescriptionTest extends AbstractCharacterTestCase
 	 */
 	public void testSimpleListReplacement()
 	{
-		final PObject pobj = new PObject();
+		final Domain pobj = new Domain();
+		Globals.getContext().unconditionallyProcess(pobj, "CHOOSE", "LANG|ALL");
+		Globals.getContext().ref.constructCDOMObject(Language.class, "Foo");
 
 		final Description desc = new Description("%1");
 		desc.addVariable("%LIST");
+		pobj.addToListFor(ListKey.DESCRIPTION, desc);
 		PlayerCharacter pc = getCharacter();
-		assertTrue(desc.getDescription(pc, pobj).equals(""));
+		assertTrue(getCharacter().getDescription(pobj).equals(""));
 
-		pc.addAssociation(pobj, "Foo");
-		assertTrue(desc.getDescription(pc, pobj).equals("Foo"));
+		add(ChooserUtilities.getChoiceManager(pobj, pc), pc, pobj, "Foo");
+		
+		assertTrue(getCharacter().getDescription(pobj).equals("Foo"));
 	}
 
 	/**
@@ -169,10 +196,10 @@ public class DescriptionTest extends AbstractCharacterTestCase
 	 */
 	public void testEmptyReplacement()
 	{
-		final PObject pobj = new PObject();
+		final Deity pobj = new Deity();
 
 		final Description desc = new Description("%1");
-		assertTrue(desc.getDescription(getCharacter(), pobj).equals(""));
+		assertTrue(getCharacter().getDescription(pobj).equals(""));
 	}
 
 	/**
@@ -180,15 +207,18 @@ public class DescriptionTest extends AbstractCharacterTestCase
 	 */
 	public void testExtraVariables()
 	{
-		final PObject pobj = new PObject();
+		final Race pobj = new Race();
+		Globals.getContext().unconditionallyProcess(pobj, "CHOOSE", "LANG|ALL");
+		Globals.getContext().ref.constructCDOMObject(Language.class, "Foo");
 
 		final Description desc = new Description("Testing");
 		desc.addVariable("%LIST");
+		pobj.addToListFor(ListKey.DESCRIPTION, desc);
 		PlayerCharacter pc = getCharacter();
-		assertTrue(desc.getDescription(pc, pobj).equals("Testing"));
+		assertTrue(getCharacter().getDescription(pobj).equals("Testing"));
 
-		pc.addAssociation(pobj, "Foo");
-		assertTrue(desc.getDescription(pc, pobj).equals("Testing"));
+		add(ChooserUtilities.getChoiceManager(pobj, pc), pc, pobj, "Foo");
+		assertTrue(getCharacter().getDescription(pobj).equals("Testing"));
 	}
 
 	/**
@@ -196,27 +226,47 @@ public class DescriptionTest extends AbstractCharacterTestCase
 	 */
 	public void testComplexVariableReplacement()
 	{
-		final Race dummy = new Race();
+		final Ability dummy = new Ability();
+		Globals.getContext().unconditionallyProcess(dummy, "CATEGORY", "FEAT");
+		Globals.getContext().unconditionallyProcess(dummy, "CHOOSE", "LANG|ALL");
+		Globals.getContext().unconditionallyProcess(dummy, "MULT", "YES");
+		Globals.getContext().ref.constructCDOMObject(Language.class, "Associated 1");
+		Globals.getContext().ref.constructCDOMObject(Language.class, "Associated 2");
 		dummy.put(VariableKey.getConstant("TestVar"), FormulaFactory
 				.getFormulaFor(2));
+		Globals.getContext().resolveReferences(null);
 		PlayerCharacter pc = getCharacter();
-		pc.addAssociation(dummy, "Associated 1");
-		pc.addAssociation(dummy, "Associated 2");
 
 		final Description desc = new Description("%1 test %3 %2");
 		desc.addVariable("TestVar");
-		assertEquals("0 test  ", desc.getDescription(pc, dummy));
+		dummy.addToListFor(ListKey.DESCRIPTION, desc);
+		List<CNAbility> wrappedDummy = Collections.singletonList(new CNAbility(AbilityCategory.FEAT, dummy, Nature.NORMAL));
+		assertEquals("0 test  ", desc.getDescription(pc, wrappedDummy));
 
-		pc.setRace(dummy);
-		assertEquals("2 test  ", desc.getDescription(pc, dummy));
+		AbilityCategory category = AbilityCategory.FEAT;
+
+		Ability pcAbility = pc.addAbilityNeedCheck(category, dummy);
+		AbilityUtilities.finaliseAbility(pcAbility, "Associated 1", pc, category);
+		AbilityUtilities.finaliseAbility(pcAbility, "Associated 2", pc, category);
+		assertEquals("2 test  ", desc.getDescription(pc, wrappedDummy));
 
 		desc.addVariable("%CHOICE");
-		assertEquals("2 test  Associated 1", desc
-			.getDescription(pc, dummy));
+		pcAbility.addToListFor(ListKey.DESCRIPTION, desc);
+		List<CNAbility> wrappedPCA = Collections.singletonList(new CNAbility(AbilityCategory.FEAT, pcAbility, Nature.NORMAL));
+		assertEquals("2 test  Associated 1",
+			desc.getDescription(pc, wrappedPCA));
 
 		desc.addVariable("%LIST");
 		assertEquals("Replacement of %LIST failed",
-			"2 test Associated 1 and Associated 2 Associated 1", desc
-				.getDescription(pc, dummy));
+			"2 test Associated 1 and Associated 2 Associated 1",
+			desc.getDescription(pc, wrappedPCA));
 	}
+
+	private static <T> void add(ChoiceManagerList<T> aMan, PlayerCharacter pc,
+		CDOMObject obj, String choice)
+	{
+		T sel = aMan.decodeChoice(choice);
+		aMan.applyChoice(pc, obj, sel);
+	}
+
 }

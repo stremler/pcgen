@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
-import pcgen.base.lang.StringUtil;
 import pcgen.cdom.enumeration.AssociationListKey;
 import pcgen.cdom.enumeration.GroupingState;
 import pcgen.cdom.enumeration.ListKey;
@@ -31,7 +30,7 @@ import pcgen.core.chooser.UserInputManager;
 import pcgen.rules.context.LoadContext;
 
 public class UserChooseInformation implements ChooseInformation<String>,
-		PersistentChoiceActor<String>
+		Chooser<String>
 {
 	
 	private static final ClassIdentity<String> STRING_INFO = BasicClassIdentity
@@ -87,10 +86,9 @@ public class UserChooseInformation implements ChooseInformation<String>,
 	}
 
 	@Override
-	public CharSequence getDisplay(PlayerCharacter pc, CDOMObject owner)
+	public CharSequence composeDisplay(Collection<? extends String> collection)
 	{
-		return StringUtil.joinToStringBuilder(pc.getExpandedAssociations(owner),
-			", ");
+		return ChooseInformationUtilities.buildEncodedString(this, collection);
 	}
 
 	@Override
@@ -98,7 +96,6 @@ public class UserChooseInformation implements ChooseInformation<String>,
 		String choice)
 	{
 		pc.addAssoc(owner, getListKey(), choice);
-		pc.addAssociation(owner, choice);
 	}
 
 	@Override
@@ -133,7 +130,6 @@ public class UserChooseInformation implements ChooseInformation<String>,
 	public void removeChoice(PlayerCharacter pc, CDOMObject owner, String choice)
 	{
 		pc.removeAssoc(owner, getListKey(), choice);
-		pc.removeAssociation(owner, choice);
 		List<ChooseSelectionActor<?>> actors =
 				owner.getListFor(ListKey.NEW_CHOOSE_ACTOR);
 		if (actors != null)
@@ -146,13 +142,13 @@ public class UserChooseInformation implements ChooseInformation<String>,
 	}
 
 	@Override
-	public PersistentChoiceActor<String> getChoiceActor()
+	public Chooser<String> getChoiceActor()
 	{
 		return this;
 	}
 
 	@Override
-	public void setChoiceActor(ChoiceActor<String> actor)
+	public void setChoiceActor(Chooser<String> actor)
 	{
 		// ignore
 	}

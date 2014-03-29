@@ -28,8 +28,9 @@ import java.util.List;
 import java.util.Set;
 
 import pcgen.cdom.base.CDOMObject;
+import pcgen.cdom.base.ChooseInformation;
+import pcgen.cdom.enumeration.ObjectKey;
 import pcgen.core.Ability;
-import pcgen.core.AbilityCategory;
 import pcgen.core.Globals;
 import pcgen.core.Language;
 import pcgen.core.PObject;
@@ -114,17 +115,21 @@ public final class LanguageChooserFacadeImpl implements LanguageChooserFacade
 	 */
 	private void buildBonusLangList()
 	{
-		List<Language> availLangs = new ArrayList<Language>();
-		List<Language> selLangs = new ArrayList<Language>();
-		
-		Ability a = Globals.getContext().ref
-			.silentlyGetConstructedCDOMObject(Ability.class,
-					AbilityCategory.LANGBONUS, "*LANGBONUS");
+		Ability a = theCharacter.getBonusLanguageAbility().getAbility();
 
-		ChooserUtilities.modChoices(a, availLangs,
-			selLangs, false, theCharacter, false,
-				AbilityCategory.LANGBONUS);
-		
+		List<Language> availLangs = new ArrayList<Language>();
+		ChooseInformation<Language> chooseInfo =
+				(ChooseInformation<Language>) a.get(ObjectKey.CHOOSE_INFO);
+		availLangs.addAll(chooseInfo.getSet(theCharacter));
+
+		List<? extends Language> selLangs =
+				chooseInfo.getChoiceActor().getCurrentlySelected(a,
+					theCharacter);
+		if (selLangs == null)
+		{
+			selLangs = Collections.emptyList();
+		}
+
 		availLangs.removeAll(charDisplay.getLanguageSet());
 		refreshLangListContents(availLangs, availableList);
 		refreshLangListContents(selLangs, selectedList);
@@ -150,10 +155,13 @@ public final class LanguageChooserFacadeImpl implements LanguageChooserFacade
 	private void buildObjectLangList()
 	{
 		final List<Language> availLangs = new ArrayList<Language>();
-		final List<Language> selLangs  = new ArrayList<Language>();
+		ChooseInformation<Language> chooseInfo =
+				(ChooseInformation<Language>) source.get(ObjectKey.CHOOSE_INFO);
+		availLangs.addAll(chooseInfo.getSet(theCharacter));
 
-		ChooserUtilities.modChoices(source, availLangs,
-			selLangs, false, theCharacter, false, null);
+		final List<? extends Language> selLangs =
+				chooseInfo.getChoiceActor().getCurrentlySelected(source,
+					theCharacter);
 		
 		Set<Language> languageSet = charDisplay.getLanguageSet();
 		availLangs.removeAll(languageSet);
@@ -187,7 +195,7 @@ public final class LanguageChooserFacadeImpl implements LanguageChooserFacade
 	 * @param langList The source list of languages
 	 * @param langListFacade The list facade to be populated
 	 */
-	private void refreshLangListContents(List<Language> langList, DefaultListFacade<LanguageFacade> langListFacade)
+	private void refreshLangListContents(List<? extends Language> langList, DefaultListFacade<LanguageFacade> langListFacade)
 	{
 		Collections.sort(langList);
 		langListFacade.clearContents();

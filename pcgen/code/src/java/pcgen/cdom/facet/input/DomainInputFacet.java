@@ -20,11 +20,11 @@ package pcgen.cdom.facet.input;
 import java.util.ArrayList;
 import java.util.List;
 
-import pcgen.cdom.content.SourcedSelection;
 import pcgen.cdom.enumeration.CharID;
+import pcgen.cdom.facet.DomainSelectionFacet;
 import pcgen.cdom.facet.FacetLibrary;
 import pcgen.cdom.facet.PlayerCharacterTrackingFacet;
-import pcgen.cdom.facet.model.DomainSelectionFacet;
+import pcgen.cdom.facet.model.DomainFacet;
 import pcgen.cdom.helper.ClassSource;
 import pcgen.core.Domain;
 import pcgen.core.PlayerCharacter;
@@ -39,6 +39,8 @@ import pcgen.core.chooser.ChooserUtilities;
 public class DomainInputFacet 
 {
 
+	private DomainFacet domainFacet;
+
 	private DomainSelectionFacet domainSelectionFacet;
 
 	private final PlayerCharacterTrackingFacet trackingFacet = FacetLibrary
@@ -46,9 +48,9 @@ public class DomainInputFacet
 
 	public boolean add(CharID id, Domain obj, ClassSource source)
 	{
-		if (ChooseActivation.hasChooseToken(obj))
+		PlayerCharacter pc = trackingFacet.getPC(id);
+		if (pc.isAllowInteraction() && ChooseActivation.hasNewChooseToken(obj))
 		{
-			PlayerCharacter pc = trackingFacet.getPC(id);
 			ChoiceManagerList<?> aMan =
 					ChooserUtilities.getChoiceManager(obj, pc);
 			return processChoice(id, pc, obj, aMan, source);
@@ -94,7 +96,7 @@ public class DomainInputFacet
 		ClassSource source)
 	{
 		PlayerCharacter pc = trackingFacet.getPC(id);
-		if (ChooseActivation.hasChooseToken(obj))
+		if (ChooseActivation.hasNewChooseToken(obj))
 		{
 			ChoiceManagerList<?> aMan =
 					ChooserUtilities.getChoiceManager(obj, pc);
@@ -107,7 +109,7 @@ public class DomainInputFacet
 					int closeloc = string.lastIndexOf(')');
 					string = string.substring(openloc + 1, closeloc);
 				}
-				processImport(id, pc, obj, aMan, string, source);
+				processImport(id, obj, aMan, string, source);
 			}
 		}
 		else
@@ -116,22 +118,36 @@ public class DomainInputFacet
 		}
 	}
 
-	private <T> void processImport(CharID id, PlayerCharacter pc, Domain obj,
+	private <T> void processImport(CharID id, Domain obj,
 		ChoiceManagerList<T> aMan, String choice, ClassSource source)
 	{
 		directSet(id, obj, aMan.decodeChoice(choice), source);
 	}
 
-	private <T> void directSet(CharID id, Domain obj, T sel,
+	public <T> void directSet(CharID id, Domain obj, T sel,
 		ClassSource source)
 	{
-		domainSelectionFacet.add(id,
-			SourcedSelection.getSelection(obj, sel, source), obj);
+		domainFacet.add(id, obj, source);
+		if (sel != null)
+		{
+			domainSelectionFacet.set(id, obj, sel);
+		}
 	}
 
 	public void remove(CharID id, Domain obj)
 	{
-		domainSelectionFacet.removeAll(id, obj);
+		PlayerCharacter pc = trackingFacet.getPC(id);
+		/*
+		 * TODO This order of operations differs from Race and Template - is
+		 * there a reason selection is first here and second there? Arguably
+		 * this is correct since directSet is doing the selection last, so
+		 * first-in first-out implies avoiding that issue
+		 */
+		if (pc.isAllowInteraction())
+		{
+			domainSelectionFacet.remove(id, obj);
+		}
+		domainFacet.remove(id, obj);
 	}
 
 	public void setDomainSelectionFacet(
@@ -140,4 +156,8 @@ public class DomainInputFacet
 		this.domainSelectionFacet = domainSelectionFacet;
 	}
 
+	public void setDomainFacet(DomainFacet domainFacet)
+	{
+		this.domainFacet = domainFacet;
+	}
 }

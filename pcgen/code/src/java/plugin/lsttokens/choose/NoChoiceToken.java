@@ -23,11 +23,10 @@ import java.util.List;
 
 import pcgen.cdom.base.BasicClassIdentity;
 import pcgen.cdom.base.CDOMObject;
-import pcgen.cdom.base.ChoiceActor;
 import pcgen.cdom.base.ChooseInformation;
 import pcgen.cdom.base.ChooseSelectionActor;
+import pcgen.cdom.base.Chooser;
 import pcgen.cdom.base.ClassIdentity;
-import pcgen.cdom.base.PersistentChoiceActor;
 import pcgen.cdom.enumeration.AssociationListKey;
 import pcgen.cdom.enumeration.GroupingState;
 import pcgen.cdom.enumeration.ListKey;
@@ -37,13 +36,16 @@ import pcgen.core.chooser.ChoiceManagerList;
 import pcgen.core.chooser.NoChoiceManager;
 import pcgen.rules.context.LoadContext;
 import pcgen.rules.persistence.token.CDOMSecondaryToken;
+import pcgen.rules.persistence.token.DeferredToken;
 import pcgen.rules.persistence.token.ParseResult;
+import pcgen.util.Logging;
 
 /**
  * New chooser plugin, handles no Choice.
  */
 public class NoChoiceToken implements CDOMSecondaryToken<CDOMObject>,
-		ChooseInformation<String>, PersistentChoiceActor<String>
+		ChooseInformation<String>, Chooser<String>,
+		DeferredToken<CDOMObject>
 {
 
 	private static final ClassIdentity<String> STRING_INFO = BasicClassIdentity
@@ -127,7 +129,7 @@ public class NoChoiceToken implements CDOMSecondaryToken<CDOMObject>,
 	@Override
 	public Collection<String> getSet(PlayerCharacter pc)
 	{
-		return Collections.singletonList("NOCHOICE");
+		return Collections.singletonList("");
 	}
 
 	@Override
@@ -149,13 +151,13 @@ public class NoChoiceToken implements CDOMSecondaryToken<CDOMObject>,
 	}
 
 	@Override
-	public PersistentChoiceActor<String> getChoiceActor()
+	public Chooser<String> getChoiceActor()
 	{
 		return this;
 	}
 
 	@Override
-	public void setChoiceActor(ChoiceActor<String> ca)
+	public void setChoiceActor(Chooser<String> ca)
 	{
 		// ignore
 	}
@@ -182,7 +184,6 @@ public class NoChoiceToken implements CDOMSecondaryToken<CDOMObject>,
 	public void removeChoice(PlayerCharacter pc, CDOMObject owner, String choice)
 	{
 		pc.removeAssoc(owner, getListKey(), "");
-		pc.removeAssociation(owner, "");
 		List<ChooseSelectionActor<?>> actors =
 				owner.getListFor(ListKey.NEW_CHOOSE_ACTOR);
 		if (actors != null)
@@ -199,7 +200,6 @@ public class NoChoiceToken implements CDOMSecondaryToken<CDOMObject>,
 		String choice)
 	{
 		pc.addAssoc(owner, getListKey(), "");
-		pc.addAssociation(owner, "");
 		List<ChooseSelectionActor<?>> actors =
 				owner.getListFor(ListKey.NEW_CHOOSE_ACTOR);
 		if (actors != null)
@@ -224,18 +224,34 @@ public class NoChoiceToken implements CDOMSecondaryToken<CDOMObject>,
 	}
 
 	@Override
-	public CharSequence getDisplay(PlayerCharacter pc, CDOMObject owner)
+	public CharSequence composeDisplay(Collection<? extends String> collection)
 	{
-		StringBuilder sb = new StringBuilder();
-		List<String> list =
-				pc.getAssocList(owner, getListKey());
-		int count = (list == null) ? 0 : list.size();
+		StringBuilder sb = new StringBuilder(5);
+		int count = (collection == null) ? 0 : collection.size();
 		if (count > 1)
 		{
 			sb.append(count);
 			sb.append("x");
 		}
 		return sb;
+	}
+
+	public boolean process(LoadContext context, CDOMObject obj)
+	{
+		ChooseInformation<?> ci = obj.get(ObjectKey.CHOOSE_INFO);
+		if ((ci == this) && !obj.getSafe(ObjectKey.STACKS))
+		{
+			Logging
+				.errorPrint("CHOOSE:NOCHOICE requires both MULT:YES and STACK:YES, was STACK:NO on "
+					+ obj.getClass().getSimpleName() + " " + obj.getKeyName());
+			return false;
+		}
+		return true;
+	}
+
+	public Class<CDOMObject> getDeferredTokenClass()
+	{
+		return CDOMObject.class;
 	}
 
 }

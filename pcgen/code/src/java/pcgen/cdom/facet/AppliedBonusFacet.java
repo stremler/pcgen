@@ -33,9 +33,11 @@ import pcgen.core.bonus.BonusObj;
  * @author Tom Parker (thpr [at] yahoo.com)
  */
 public class AppliedBonusFacet extends AbstractListFacet<BonusObj> implements
-		DataFacetChangeListener<CDOMObject>
+		DataFacetChangeListener<CharID, CDOMObject>
 {
 	private AddedBonusFacet addedBonusFacet;
+
+	private SaveableBonusFacet saveableBonusFacet;
 
 	private PrerequisiteFacet prerequisiteFacet;
 
@@ -56,12 +58,13 @@ public class AppliedBonusFacet extends AbstractListFacet<BonusObj> implements
 	 * @see pcgen.cdom.facet.event.DataFacetChangeListener#dataAdded(pcgen.cdom.facet.event.DataFacetChangeEvent)
 	 */
 	@Override
-	public void dataAdded(DataFacetChangeEvent<CDOMObject> dfce)
+	public void dataAdded(DataFacetChangeEvent<CharID, CDOMObject> dfce)
 	{
 		CharID id = dfce.getCharID();
 		CDOMObject cdo = dfce.getCDOMObject();
 		processAdd(id, cdo, cdo.getSafeListFor(ListKey.BONUS));
 		processAdd(id, cdo, addedBonusFacet.getSet(id, cdo));
+		processAdd(id, cdo, saveableBonusFacet.getSet(id, cdo));
 	}
 
 	private void processAdd(CharID id, CDOMObject cdo,
@@ -82,16 +85,16 @@ public class AppliedBonusFacet extends AbstractListFacet<BonusObj> implements
 	}
 
 	@Override
-	public void dataRemoved(DataFacetChangeEvent<CDOMObject> dfce)
+	public void dataRemoved(DataFacetChangeEvent<CharID, CDOMObject> dfce)
 	{
 		CharID id = dfce.getCharID();
 		CDOMObject cdo = dfce.getCDOMObject();
-		processRemove(id, cdo, cdo.getSafeListFor(ListKey.BONUS));
-		processRemove(id, cdo, addedBonusFacet.getSet(id, cdo));
+		processRemove(id, cdo.getSafeListFor(ListKey.BONUS));
+		processRemove(id, addedBonusFacet.getSet(id, cdo));
+		processRemove(id, saveableBonusFacet.getSet(id, cdo));
 	}
 
-	private void processRemove(CharID id, CDOMObject cdo,
-			List<? extends BonusObj> bonusList)
+	private void processRemove(CharID id, List<? extends BonusObj> bonusList)
 	{
 		for (BonusObj bonus : bonusList)
 		{
@@ -102,6 +105,11 @@ public class AppliedBonusFacet extends AbstractListFacet<BonusObj> implements
 	public void setAddedBonusFacet(AddedBonusFacet addedBonusFacet)
 	{
 		this.addedBonusFacet = addedBonusFacet;
+	}
+
+	public void setSaveableBonusFacet(SaveableBonusFacet saveableBonusFacet)
+	{
+		this.saveableBonusFacet = saveableBonusFacet;
 	}
 
 	public void setPrerequisiteFacet(PrerequisiteFacet prerequisiteFacet)

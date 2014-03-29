@@ -998,7 +998,7 @@ public final class GameMode implements Comparable<Object>, GameModeFacade
 	 */
 	public void addClassType(final String aString)
 	{
-		if (".CLEAR".equals(aString))
+		if (Constants.LST_DOT_CLEAR.equals(aString))
 		{
 			classTypeList = null;
 
@@ -1083,7 +1083,7 @@ public final class GameMode implements Comparable<Object>, GameModeFacade
 	 */
 	public void addDeityList(final String argDeityLine)
 	{
-		if (".CLEAR".equals(argDeityLine))
+		if (Constants.LST_DOT_CLEAR.equals(argDeityLine))
 		{
 			defaultDeityList = null;
 
@@ -2133,7 +2133,7 @@ public final class GameMode implements Comparable<Object>, GameModeFacade
 	}
 
 	/**
-	 * Add the dispaly text for a stat.
+	 * Add the display text for a stat.
 	 * @param statValue
 	 * @param statText
 	 */

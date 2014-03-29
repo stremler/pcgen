@@ -63,8 +63,6 @@ public abstract class BonusObj extends ConcretePrereqObject implements Serializa
 	private String stringRepresentation = null;
 	private String tokenSource          = null;
 
-	private boolean saveToPCG = true;
-
 	/** An enum for the possible stacking modifiers a bonus can have */
 	public enum StackType {
 		/** This bonus will follow the normal stacking rules. */
@@ -438,7 +436,12 @@ public abstract class BonusObj extends ConcretePrereqObject implements Serializa
 		{
 			dependMap.put("NAME|STAT", "1");
 		}
-
+		if (aString.indexOf("MODEQUIPMAXDEX") >= 0)
+		{
+			dependMap.put("MAXDEX", "1");
+		}
+		
+		
 		// First whack out all the () pairs to find variable names
 		while (aString.lastIndexOf('(') >= 0)
 		{
@@ -599,16 +602,6 @@ public abstract class BonusObj extends ConcretePrereqObject implements Serializa
 		return super.hashCode();
 	}
 
-	public void setSaveToPCG(boolean b)
-	{
-		saveToPCG = b;
-	}
-	
-	public boolean saveToPCG()
-	{
-		return saveToPCG;
-	}
-
 	/*
 	 * This makes an editor a bit more difficult, but since CHOOSE is an early
 	 * target of 5.17, this probably isn't a big deal.
@@ -623,6 +616,11 @@ public abstract class BonusObj extends ConcretePrereqObject implements Serializa
 	public String getLSTformat()
 	{
 		return originalString;
+	}
+
+	public String getDescription()
+	{
+		return getTypeOfBonus() + " " + getBonusInfo(); //$NON-NLS-1$
 	}
 	
 }

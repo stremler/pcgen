@@ -31,26 +31,27 @@ public enum Visibility
 	 * Determine if this visibility can be seen in the supplied view level.
 	 * 
 	 * @param view The view level.
-	 * @param isExporting Is the visibility being detemerined for an export function
+	 * @param isExporting Is the visibility being determined for an export function
 	 * @return true if the visibility can be viewed, false if not.
 	 */
-	public boolean isVisibleTo(View view, boolean isExporting)
+	public boolean isVisibleTo(View view)
 	{
 		switch (view)
 		{
 			case ALL:
 				return true;
 
-			case HIDDEN:
+			case HIDDEN_DISPLAY:
+				return (this == Visibility.HIDDEN || this == Visibility.OUTPUT_ONLY);
+
+			case HIDDEN_EXPORT:
 				return (this == Visibility.HIDDEN || this == Visibility.DISPLAY_ONLY);
 
-			case VISIBLE:
-			default:
-				if (isExporting)
-				{
-					return (this == Visibility.DEFAULT || this == Visibility.OUTPUT_ONLY);
-				}
+			case VISIBLE_EXPORT:
+				return (this == Visibility.DEFAULT || this == Visibility.OUTPUT_ONLY);
 				
+			case VISIBLE_DISPLAY:
+			default:
 				return (this == Visibility.DEFAULT || this == Visibility.DISPLAY_ONLY);
 		}
 		/*

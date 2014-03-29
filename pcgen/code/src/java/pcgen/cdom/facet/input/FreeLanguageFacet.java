@@ -17,15 +17,21 @@
  */
 package pcgen.cdom.facet.input;
 
+import pcgen.cdom.enumeration.CharID;
 import pcgen.cdom.facet.base.AbstractSourcedListFacet;
 import pcgen.cdom.facet.model.LanguageFacet;
+import pcgen.cdom.meta.CorePerspective;
+import pcgen.cdom.meta.FacetBehavior;
+import pcgen.cdom.meta.CorePerspectiveDB;
+import pcgen.cdom.meta.PerspectiveLocation;
 import pcgen.core.Language;
 
 /**
  * FreeLanguageFacet is a Facet that tracks the Languages that have been granted
  * to a Player Character for free.
  */
-public class FreeLanguageFacet extends AbstractSourcedListFacet<Language>
+public class FreeLanguageFacet extends AbstractSourcedListFacet<CharID, Language>
+		implements PerspectiveLocation
 {
 
 	private LanguageFacet languageFacet;
@@ -38,5 +44,12 @@ public class FreeLanguageFacet extends AbstractSourcedListFacet<Language>
 	public void init()
 	{
 		addDataFacetChangeListener(languageFacet);
+		CorePerspectiveDB.register(CorePerspective.LANGUAGE, FacetBehavior.INPUT, this);
+	}
+
+	@Override
+	public String getIdentity()
+	{
+		return "CHOOSE:LANGAUTO";
 	}
 }

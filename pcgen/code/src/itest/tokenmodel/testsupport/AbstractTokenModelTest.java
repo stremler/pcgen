@@ -18,11 +18,8 @@
 package tokenmodel.testsupport;
 
 import junit.framework.TestCase;
-import pcgen.cdom.base.CDOMObject;
 import pcgen.cdom.base.FormulaFactory;
 import pcgen.cdom.base.Loadable;
-import pcgen.cdom.content.Selection;
-import pcgen.cdom.content.SourcedSelection;
 import pcgen.cdom.enumeration.CharID;
 import pcgen.cdom.enumeration.FormulaKey;
 import pcgen.cdom.enumeration.ObjectKey;
@@ -30,6 +27,8 @@ import pcgen.cdom.enumeration.StringKey;
 import pcgen.cdom.enumeration.VariableKey;
 import pcgen.cdom.facet.DirectAbilityFacet;
 import pcgen.cdom.facet.FacetLibrary;
+import pcgen.cdom.facet.input.RaceInputFacet;
+import pcgen.cdom.facet.input.TemplateInputFacet;
 import pcgen.cdom.facet.model.ActiveEqModFacet;
 import pcgen.cdom.facet.model.AlignmentFacet;
 import pcgen.cdom.facet.model.BioSetFacet;
@@ -41,12 +40,10 @@ import pcgen.cdom.facet.model.DeityFacet;
 import pcgen.cdom.facet.model.DomainFacet;
 import pcgen.cdom.facet.model.ExpandedCampaignFacet;
 import pcgen.cdom.facet.model.LanguageFacet;
-import pcgen.cdom.facet.model.RaceSelectionFacet;
 import pcgen.cdom.facet.model.SizeFacet;
 import pcgen.cdom.facet.model.SkillFacet;
 import pcgen.cdom.facet.model.StatFacet;
 import pcgen.cdom.facet.model.TemplateFacet;
-import pcgen.cdom.facet.model.TemplateSelectionFacet;
 import pcgen.cdom.facet.model.WeaponProfFacet;
 import pcgen.core.AbilityCategory;
 import pcgen.core.GameMode;
@@ -102,11 +99,11 @@ public abstract class AbstractTokenModelTest extends TestCase
 		return context.ref.constructCDOMObject(cl, key);
 	}
 
-	private static final MultToken ABILITY_MULT_TOKEN =
+	protected static final MultToken ABILITY_MULT_TOKEN =
 			new plugin.lsttokens.ability.MultToken();
 	protected static final plugin.lsttokens.ChooseLst CHOOSE_TOKEN =
 			new plugin.lsttokens.ChooseLst();
-	private static final plugin.lsttokens.choose.LangToken CHOOSE_LANG_TOKEN =
+	protected static final plugin.lsttokens.choose.LangToken CHOOSE_LANG_TOKEN =
 			new plugin.lsttokens.choose.LangToken();
 	private static final VisibleToken ABILITY_VISIBLE_TOKEN =
 			new plugin.lsttokens.ability.VisibleToken();
@@ -130,6 +127,7 @@ public abstract class AbstractTokenModelTest extends TestCase
 		context.resolveDeferredTokens();
 		assertTrue(context.ref.resolveReferences(null));
 		context.resolvePostDeferredTokens();
+		context.loadCampaignFacets();
 		pc = new PlayerCharacter();
 		id = pc.getCharID();
 	}
@@ -170,12 +168,12 @@ public abstract class AbstractTokenModelTest extends TestCase
 	protected DomainFacet domainFacet;
 	protected ExpandedCampaignFacet expandedCampaignFacet;
 	protected LanguageFacet languageFacet;
-	protected RaceSelectionFacet raceFacet;
+	protected RaceInputFacet raceFacet;
 	protected SizeFacet sizeFacet;
 	protected SkillFacet skillFacet;
 	protected StatFacet statFacet;
 	protected TemplateFacet templateConsolidationFacet;
-	protected TemplateSelectionFacet templateFacet;
+	protected TemplateInputFacet templateInputFacet;
 	protected WeaponProfFacet weaponProfFacet;
 
 	protected void setUpContext() throws PersistenceLayerException
@@ -193,6 +191,7 @@ public abstract class AbstractTokenModelTest extends TestCase
 		TokenRegistration.register(LANGBONUS_PRIM);
 		TokenRegistration.register(PC_QUAL);
 		TokenRegistration.register(getToken());
+		TokenRegistration.register(plugin.bonustokens.Feat.class);
 
 		directAbilityFacet = FacetLibrary.getFacet(DirectAbilityFacet.class);
 		activeEqModFacet = FacetLibrary.getFacet(ActiveEqModFacet.class);
@@ -207,11 +206,11 @@ public abstract class AbstractTokenModelTest extends TestCase
 		expandedCampaignFacet =
 				FacetLibrary.getFacet(ExpandedCampaignFacet.class);
 		languageFacet = FacetLibrary.getFacet(LanguageFacet.class);
-		raceFacet = FacetLibrary.getFacet(RaceSelectionFacet.class);
+		raceFacet = FacetLibrary.getFacet(RaceInputFacet.class);
 		sizeFacet = FacetLibrary.getFacet(SizeFacet.class);
 		skillFacet = FacetLibrary.getFacet(SkillFacet.class);
 		statFacet = FacetLibrary.getFacet(StatFacet.class);
-		templateFacet = FacetLibrary.getFacet(TemplateSelectionFacet.class);
+		templateInputFacet = FacetLibrary.getFacet(TemplateInputFacet.class);
 		templateConsolidationFacet = FacetLibrary.getFacet(TemplateFacet.class);
 		weaponProfFacet = FacetLibrary.getFacet(WeaponProfFacet.class);
 
@@ -270,7 +269,7 @@ public abstract class AbstractTokenModelTest extends TestCase
 		tiny = createSize("Tiny");
 		small = createSize("Small");
 		medium = createSize("Medium");
-		medium.put(ObjectKey.IS_DEFAULT_SIZE, true);
+		medium.put(ObjectKey.IS_DEFAULT_SIZE, Boolean.TRUE);
 		large = createSize("Large");
 		huge = createSize("Huge");
 		gargantuan = createSize("Gargantuan");
@@ -327,14 +326,9 @@ public abstract class AbstractTokenModelTest extends TestCase
 	
 	public abstract CDOMToken<?> getToken();
 
-	protected <T extends CDOMObject> Selection<T, ?> getSelectionObject(T obj)
+	protected Object getAssoc()
 	{
-		return new Selection<T, Object>(obj, null);
-	}
-
-	protected <T extends CDOMObject, ST> SourcedSelection<T, ?, ST> getSourcedSelectionObject(T obj, ST source)
-	{
-		return new SourcedSelection<T, Object, ST>(obj, null, source);
+		return null;
 	}
 
 }

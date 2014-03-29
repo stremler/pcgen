@@ -33,7 +33,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -47,7 +46,6 @@ import pcgen.cdom.base.FormulaFactory;
 import pcgen.cdom.content.LevelCommandFactory;
 import pcgen.cdom.enumeration.IntegerKey;
 import pcgen.cdom.enumeration.ListKey;
-import pcgen.cdom.enumeration.Nature;
 import pcgen.cdom.enumeration.ObjectKey;
 import pcgen.cdom.enumeration.StringKey;
 import pcgen.cdom.enumeration.Type;
@@ -74,6 +72,7 @@ import pcgen.util.Logging;
 import pcgen.util.TestHelper;
 import pcgen.util.chooser.ChooserFactory;
 import pcgen.util.chooser.RandomChooser;
+import pcgen.util.enumeration.View;
 import pcgen.util.enumeration.Visibility;
 
 /**
@@ -104,7 +103,6 @@ public class PlayerCharacterTest extends AbstractCharacterTestCase
 	private Domain luckDomain;
 	private Spell luckDomainLvl1Spell;
 	private Spell luckDomainLvl2Spell;
-	private Spell luckDomainLvl3Spell;
 	
 	/**
 	 * Run the tests.
@@ -263,7 +261,7 @@ public class PlayerCharacterTest extends AbstractCharacterTestCase
 		
 		luckDomainLvl1Spell = TestHelper.makeSpell("true strike");
 		luckDomainLvl2Spell = TestHelper.makeSpell("aid");
-		luckDomainLvl3Spell = TestHelper.makeSpell("protection from energy");
+		TestHelper.makeSpell("protection from energy");
 		context
 			.unconditionallyProcess(
 				luckDomain,
@@ -505,7 +503,7 @@ public class PlayerCharacterTest extends AbstractCharacterTestCase
 		is((int) character.getRemainingFeatPoints(true), eq(2), "Start with 2 feats");
 		try
 		{
-			AbilityUtilities.modAbility(character, toughness, null, AbilityCategory.FEAT);
+			AbstractCharacterTestCase.applyAbility(character, AbilityCategory.FEAT, toughness, "");
 			is((int) character.getRemainingFeatPoints(true), eq(1), "Only 1 feat used");
 		}
 		catch (HeadlessException e)
@@ -678,14 +676,14 @@ public class PlayerCharacterTest extends AbstractCharacterTestCase
 		assertEquals("Full skill list should have all 3 skills", 3, skillList
 			.size());
 
-		skillList = pc.getDisplay().getPartialSkillList(Visibility.DISPLAY_ONLY);
+		skillList = pc.getDisplay().getPartialSkillList(View.VISIBLE_DISPLAY);
 		assertEquals("GUI skill list should have 2 skills", 2, skillList.size());
 
-		skillList = pc.getDisplay().getPartialSkillList(Visibility.OUTPUT_ONLY);
+		skillList = pc.getDisplay().getPartialSkillList(View.VISIBLE_EXPORT);
 		assertEquals("Output skill list should have 2 skills", 2, skillList
 			.size());
 
-		skillList = pc.getDisplay().getPartialSkillList(Visibility.DEFAULT);
+		skillList = pc.getDisplay().getPartialSkillList(View.ALL);
 		assertEquals("Full skill list should have 3 skills", 3, skillList
 			.size());
 
@@ -902,81 +900,6 @@ public class PlayerCharacterTest extends AbstractCharacterTestCase
 		}
 	}
 
-	/**
-	 * Tests getting a map of sets of abilities
-	 */
-	public void testGetAbilitiesSet()
-	{
-		verbose = true;
-		Logging.errorPrint("--- Start Get Abilities Set Test ---");
-	
-		PCClass arClass = null;
-
-		
-		// do so setup that is specific to testing this method
-		arClass = new PCClass();
-		arClass.setName("AbilityRichClass");
-		arClass.put(StringKey.SPELLTYPE, "ARCANE");
-	
-		LoadContext context = Globals.getContext();
-		context.ref.importObject(arClass);
-	
-		TestHelper.makeAbilityFromString(
-			"TestARc01\tCATEGORY:FEAT\tMULT:YES\tSTACK:YES\tVISIBLE:YES\tCHOOSE:NOCHOICE");
-		TestHelper.makeAbilityFromString(
-			"TestARc02\tCATEGORY:FEAT\tMULT:YES\tSTACK:YES\tVISIBLE:YES\tCHOOSE:NOCHOICE");
-		TestHelper.makeAbilityFromString(
-			"TestARc03\tCATEGORY:FEAT\tMULT:YES\tSTACK:YES\tVISIBLE:YES\tCHOOSE:NOCHOICE");
-		TestHelper.makeAbilityFromString(
-			"TestARc04\tCATEGORY:FEAT\tMULT:YES\tSTACK:YES\tVISIBLE:YES\tCHOOSE:NOCHOICE");
-		TestHelper.makeAbilityFromString(
-			"TestARc05\tCATEGORY:FEAT\tMULT:YES\tSTACK:YES\tVISIBLE:YES\tCHOOSE:NOCHOICE");
-	
-		PCClassLevel lvl1 = arClass.getOriginalClassLevel(1);
-		context.unconditionallyProcess(lvl1, "ABILITY", "FEAT|NORMAL|TestARc01");
-		context.unconditionallyProcess(lvl1, "ABILITY", "FEAT|AUTOMATIC|TestARc02");
-		context.unconditionallyProcess(arClass.getOriginalClassLevel(2), "ABILITY", "FEAT|VIRTUAL|TestARc03");
-		PCClassLevel lvl3 = arClass.getOriginalClassLevel(3);
-		context.unconditionallyProcess(lvl3, "ABILITY", "FEAT|AUTOMATIC|TestARc04");
-		context.unconditionallyProcess(lvl3, "ABILITY", "FEAT|AUTOMATIC|TestARc05");
-		readyToRun();
-		
-		final PlayerCharacter pc = new PlayerCharacter();
-	
-		HashMap<Nature, Set<Ability>> map;
-	
-		pc.setRace(human);
-	
-		pc.incrementClassLevel(1, arClass, true);
-
-		map = pc.getAbilitiesSet();
-
-		assertEquals(map.get(Nature.NORMAL).size(),    1);//"First Level human with class AbilityRichClass has 1 normal feat");
-		assertEquals(map.get(Nature.AUTOMATIC).size(), 1);// "First Level human with class AbilityRichClass has 1 automatic feat");
-		assertEquals(map.get(Nature.VIRTUAL).size(),   0);// "First Level human with class AbilityRichClass has 0 virtual feats");
-	
-		pc.incrementClassLevel(1, arClass, true);
-		
-		map = pc.getAbilitiesSet();
-		
-		assertEquals(map.get(Nature.NORMAL).size(),    1);//, "Second Level human with class AbilityRichClass has 1 normal feat");
-		assertEquals(map.get(Nature.AUTOMATIC).size(), 1);//, "Second Level human with class AbilityRichClass has 1 automatic feat");
-		assertEquals(map.get(Nature.VIRTUAL).size(),   1);//, "Second Level human with class AbilityRichClass has 1 virtual feat");
-	
-		pc.incrementClassLevel(1, arClass, true);
-		
-		map = pc.getAbilitiesSet();
-		
-		assertEquals(map.get(Nature.NORMAL).size(),    1);//, "Third Level human with class AbilityRichClass has 1 normal feat");
-		assertEquals(map.get(Nature.AUTOMATIC).size(), 3);//, "Third Level human with class AbilityRichClass has 3 automatic feats");
-		assertEquals(map.get(Nature.VIRTUAL).size(),   1);//, "Third Level human with class AbilityRichClass has 1 virtual feat");
-		
-		GameMode gm = SettingsHandler.getGame();
-		AbilityCategory ac = gm.getAbilityCategory("FEAT");
-		Logging.errorPrint("Real abilities: " + pc.getAbilityList(ac, Nature.NORMAL).size());
-	
-	}
-
 	public void testIsNonAbility()
 	{
 		readyToRun();
@@ -1031,17 +954,17 @@ public class PlayerCharacterTest extends AbstractCharacterTestCase
 		
 		try
 		{
-			AbilityUtilities.modAbility(pc, toughness, null, AbilityCategory.FEAT);
+			AbstractCharacterTestCase.applyAbility(pc, AbilityCategory.FEAT, toughness, "");
 			//pc.calcActiveBonuses();
 			assertEquals("Check application of single bonus", base+3, pc.getTotalBonusTo(
 				"HP", "CURRENTMAX"));
-			AbilityUtilities.modAbility(pc, toughness, null, AbilityCategory.FEAT);
+			AbstractCharacterTestCase.applyAbility(pc, AbilityCategory.FEAT, toughness, "");
 			pc.calcActiveBonuses();
 			assertEquals("Check application of second bonus", base+6, pc.getTotalBonusTo(
 				"HP", "CURRENTMAX"));
 
-			AbilityUtilities.modAbility(pc, toughness, "Toughness",
-					specialFeatCat);
+			AbstractCharacterTestCase.applyAbility(pc, specialFeatCat, toughness,
+					"Toughness");
 			pc.calcActiveBonuses();
 			assertEquals(
 				"Check application of third bonus in different catgeory",
@@ -1083,9 +1006,9 @@ public class PlayerCharacterTest extends AbstractCharacterTestCase
 		readyToRun();
 		pc.setRace(human);
 		assertEquals("PC should now have a race of human", human, pc.getRace());
-		assertNotNull("Character should have the first feat", pc.getAbilityMatching(resToAcid));
-		assertNotNull("Character should have the second feat", pc.getAbilityMatching(resToAcidOutputVirt));
-		assertNotNull("Character should have the third feat", pc.getAbilityMatching(resToAcidOutputAuto));
+		assertFalse("Character should have the first feat", pc.getMatchingCNAbilities(resToAcid).isEmpty());
+		assertFalse("Character should have the second feat", pc.getMatchingCNAbilities(resToAcidOutputVirt).isEmpty());
+		assertFalse("Character should have the third feat", pc.getMatchingCNAbilities(resToAcidOutputAuto).isEmpty());
 		
 	}
 	
@@ -1106,7 +1029,7 @@ public class PlayerCharacterTest extends AbstractCharacterTestCase
 		assertEquals("Before bonus, no temp no equip", 0, pc.getPartialStatBonusFor(str, false, false));
 		assertEquals("Before bonus, temp no equip", 0, pc.getPartialStatBonusFor(str, true, false));
 
-		AbilityUtilities.modAbility(pc, strBonusAbility, "Strength power up", AbilityCategory.FEAT);
+		AbstractCharacterTestCase.applyAbility(pc, AbilityCategory.FEAT, strBonusAbility, null);
 		pc.calcActiveBonuses();
 
 		assertEquals("After bonus, no temp no equip", 2, pc.getPartialStatBonusFor(str, false, false));
@@ -1176,9 +1099,12 @@ public class PlayerCharacterTest extends AbstractCharacterTestCase
 		Ability resToAcid =
 				TestHelper.makeAbility("Swelter",
 					AbilityCategory.FEAT.getKeyName(), "Foo");
+		LoadContext context = Globals.getContext();
+		context.unconditionallyProcess(resToAcid, "MULT", "YES");
+		context.unconditionallyProcess(resToAcid, "STACK", "YES");
+		context.unconditionallyProcess(resToAcid, "CHOOSE", "NOCHOICE");
 		PCTemplate template = TestHelper.makeTemplate("TemplateVirt"); 
 		PCTemplate templateNorm = TestHelper.makeTemplate("TemplateNorm"); 
-		LoadContext context = Globals.getContext();
 		context.ref.importObject(resToAcid);
 		context.unconditionallyProcess(human, "ABILITY", "FEAT|AUTOMATIC|KEY_Swelter");
 		context.unconditionallyProcess(template, "ABILITY", "FEAT|VIRTUAL|KEY_Swelter");
@@ -1186,23 +1112,20 @@ public class PlayerCharacterTest extends AbstractCharacterTestCase
 		readyToRun();
 		PlayerCharacter pc = getCharacter();
 		
-		List<Ability> abList = pc.getAggregateAbilityList(AbilityCategory.FEAT);
+		List<Ability> abList = pc.getAggregateAbilityListNoDuplicates(AbilityCategory.FEAT);
 		assertEquals(0, abList.size());
 
 		pc.setRace(human);
 		abList = pc.getAggregateAbilityListNoDuplicates(AbilityCategory.FEAT);
 		assertEquals(1, abList.size());
-		assertEquals(Nature.AUTOMATIC, pc.getAbilityNature(abList.get(0)));
 		
 		pc.addTemplate(template);
 		abList = pc.getAggregateAbilityListNoDuplicates(AbilityCategory.FEAT);
 		assertEquals(1, abList.size());
-		assertEquals(Nature.VIRTUAL, pc.getAbilityNature(abList.get(0)));
 		
 		pc.addTemplate(templateNorm);
 		abList = pc.getAggregateAbilityListNoDuplicates(AbilityCategory.FEAT);
 		assertEquals(1, abList.size());
-		assertEquals(Nature.NORMAL, pc.getAbilityNature(abList.get(0)));
 	}
 
 	/**

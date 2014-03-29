@@ -22,7 +22,7 @@ ABILITYCATEGORY:Summoner Class Ability		VISIBLE:QUALIFY	EDITABLE:NO			EDITPOOL:N
 ABILITYCATEGORY:Witch Class Ability			VISIBLE:QUALIFY	EDITABLE:NO			EDITPOOL:NO						CATEGORY:Special Ability	TYPE:WitchClassAbility		PLURAL:Witch Class Abilities		DISPLAYLOCATION:Class Abilities
 ABILITYCATEGORY:Antipaladin Class Ability		VISIBLE:QUALIFY	EDITABLE:NO			EDITPOOL:NO						CATEGORY:Special Ability	TYPE:AntipaladinClassAbility	PLURAL:Antipaladin Class Abilities	DISPLAYLOCATION:Class Abilities
 
-
+ABILITYCATEGORY:Wizard Focused School		VISIBLE:QUALIFY	EDITABLE:YES		EDITPOOL:NO						CATEGORY:Archetype		TYPE:WizardFocusedSchool							DISPLAYLOCATION:Class Abilities
 
 
 # Alchemist
@@ -58,6 +58,10 @@ ABILITYCATEGORY:Soothsayer Revelation		VISIBLE:NO		EDITABLE:YES		EDITPOOL:YES	FR
 ABILITYCATEGORY:Oracle Maneuver Mastery		VISIBLE:QUALIFY	EDITABLE:YES		EDITPOOL:YES	FRACTIONALPOOL:NO		CATEGORY:Special Ability	TYPE:OracleManeuverMastery			PLURAL:Oracle Maneuver Masteries	DISPLAYLOCATION:Class Abilities
 ABILITYCATEGORY:Oracle Weapon Mastery		VISIBLE:QUALIFY	EDITABLE:YES		EDITPOOL:YES	FRACTIONALPOOL:NO		CATEGORY:FEAT			TYPE:OracleWeaponMastery			PLURAL:Oracle Weapon Masteries	DISPLAYLOCATION:Class Abilities
 ABILITYCATEGORY:Oracle Spell Choice			VISIBLE:QUALIFY	EDITABLE:YES		EDITPOOL:YES	FRACTIONALPOOL:NO		CATEGORY:Special Ability	TYPE:OracleSpellChoice				PLURAL:Oracle Spell Choices		DISPLAYLOCATION:Class Abilities
+
+# Summoner Aspect Choices
+ABILITYCATEGORY:Summoner Aspect			VISIBLE:QUALIFY	EDITABLE:YES		EDITPOOL:YES	FRACTIONALPOOL:NO		CATEGORY:Special Ability	TYPE:SummonerAspect		PLURAL:Summoner Aspects			DISPLAYLOCATION:Class Abilities
+ABILITYCATEGORY:Summoner Greater Aspect		VISIBLE:QUALIFY	EDITABLE:YES		EDITPOOL:YES	FRACTIONALPOOL:NO		CATEGORY:Special Ability	TYPE:SummonerGreaterAspect	PLURAL:Summoner Greater Aspects	DISPLAYLOCATION:Class Abilities
 
 ###Block: Witch Ability Categories
 # Ability Category		Visible		Editable or Static?	Change Pool?	Fractional values?	Category of Object		Type of Object	Plural description for UI	Display Location
@@ -168,7 +172,7 @@ ABILITYCATEGORY:Oracle Favored Bonus Spell				VISIBLE:QUALIFY	EDITABLE:YES		EDIT
 
 # Traits Sub Selections
 ABILITYCATEGORY:Campaign Trait Choice					VISIBLE:QUALIFY	EDITABLE:YES		EDITPOOL:YES	FRACTIONALPOOL:NO		CATEGORY:Special Ability	TYPE:TraitCampaignChoice													PLURAL:Campaign Trait Choices						DISPLAYLOCATION:Traits
-ABILITYCATEGORY:Adoptive Race							VISIBLE:QUALIFY	EDITABLE:YES		EDITPOOL:YES	FRACTIONALPOOL:NO		CATEGORY:Special Ability	TYPE:AdoptiveRace															PLURAL:Adotive Races							DISPLAYLOCATION:Traits
+ABILITYCATEGORY:Adoptive Race							VISIBLE:QUALIFY	EDITABLE:YES		EDITPOOL:YES	FRACTIONALPOOL:NO		CATEGORY:Special Ability	TYPE:AdoptiveRace															PLURAL:Adoptive Races							DISPLAYLOCATION:Traits
 ABILITYCATEGORY:Dwarf Race Trait						VISIBLE:QUALIFY	EDITABLE:YES		EDITPOOL:YES	FRACTIONALPOOL:NO		CATEGORY:Special Ability	TYPE:DwarfTrait															PLURAL:Dwarf Race Traits						DISPLAYLOCATION:Traits
 ABILITYCATEGORY:Elf Race Trait						VISIBLE:QUALIFY	EDITABLE:YES		EDITPOOL:YES	FRACTIONALPOOL:NO		CATEGORY:Special Ability	TYPE:ElfTrait															PLURAL:Elf Race Traits							DISPLAYLOCATION:Traits
 ABILITYCATEGORY:Gnome Race Trait						VISIBLE:QUALIFY	EDITABLE:YES		EDITPOOL:YES	FRACTIONALPOOL:NO		CATEGORY:Special Ability	TYPE:GnomeTrait															PLURAL:Gnome Race Traits						DISPLAYLOCATION:Traits
@@ -227,3 +231,10 @@ ABILITYCATEGORY:Cavalier Mount Choice			VISIBLE:QUALIFY	EDITABLE:YES		EDITPOOL:N
 ABILITYCATEGORY:Elemental Fist Choice			VISIBLE:QUALIFY	EDITABLE:YES		EDITPOOL:NO						CATEGORY:Internal			TYPE:ElementalFistChoice																		DISPLAYLOCATION:Feats
 
 ABILITYCATEGORY:Additional Language				VISIBLE:QUALIFY	EDITABLE:YES		EDITPOOL:YES	FRACTIONALPOOL:NO		CATEGORY:Internal								ABILITYLIST:Additional Language Selection			PLURAL:Additional Languages				DISPLAYLOCATION:Racial Abilities
+
+ABILITYCATEGORY:Two-Handed Fighter Weapon Training I		VISIBLE:QUALIFY	EDITABLE:YES		EDITPOOL:YES	FRACTIONALPOOL:NO		CATEGORY:Special Ability	TYPE:TwoHandedWeaponTraining1		PLURAL:Two-Handed Fighter Weapon Training I		DISPLAYLOCATION:Class Abilities
+ABILITYCATEGORY:Two-Handed Fighter Weapon Training II		VISIBLE:QUALIFY	EDITABLE:YES		EDITPOOL:YES	FRACTIONALPOOL:NO		CATEGORY:Special Ability	TYPE:TwoHandedWeaponTraining2		PLURAL:Two-Handed Fighter Weapon Training II		DISPLAYLOCATION:Class Abilities
+ABILITYCATEGORY:Two-Handed Fighter Weapon Training III	VISIBLE:QUALIFY	EDITABLE:YES		EDITPOOL:YES	FRACTIONALPOOL:NO		CATEGORY:Special Ability	TYPE:TwoHandedWeaponTraining3		PLURAL:Two-Handed Fighter Weapon Training III		DISPLAYLOCATION:Class Abilities
+ABILITYCATEGORY:Two-Handed Fighter Weapon Training IV		VISIBLE:QUALIFY	EDITABLE:YES		EDITPOOL:YES	FRACTIONALPOOL:NO		CATEGORY:Special Ability	TYPE:TwoHandedWeaponTraining4		PLURAL:Two-Handed Fighter Weapon Training IV		DISPLAYLOCATION:Class Abilities
+
+

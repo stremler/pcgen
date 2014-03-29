@@ -168,7 +168,7 @@ public class NPCGenerator
 			{
 				if ( skill.getSafe(ObjectKey.VISIBILITY) == Visibility.DEFAULT )
 				{
-					if (aPC.isClassSkill(skill, aClass))
+					if (aPC.isClassSkill(aClass, skill))
 					{
 						WeightedCollection.add(new SkillChoice(skill.getKeyName()), 8);
 					}
@@ -366,7 +366,10 @@ public class NPCGenerator
 				// We will leave the feat because we may qualify later.
 				continue;
 			}
-			AbilityUtilities.modAbility(aPC, ability, null, AbilityCategory.FEAT);
+			Ability pcAbility =
+					aPC.addAbilityNeedCheck(AbilityCategory.FEAT,
+						ability);
+			AbilityUtilities.finaliseAbility(pcAbility, null, aPC, AbilityCategory.FEAT);
 		}
 	}
 

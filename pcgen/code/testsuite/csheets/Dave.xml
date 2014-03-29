@@ -709,6 +709,57 @@ BIO
 			<exclusive_total>10</exclusive_total>
 		</skill>
 		<skill>
+			<name>Test96d</name>
+			<ranks>0.0</ranks>
+			<mod>0<!-- Mods from abilities, equipment, etc -->
+			</mod>
+			<skill_mod>0</skill_mod>
+			<ability_mod>0<!-- Mod from the key ability -->
+			</ability_mod>
+			<misc_mod>0<!-- This is a calc value of TOTAL-RANK-ABMOD -->
+			</misc_mod>
+			<ability></ability>
+			<synergy>Test96d</synergy>
+			<untrained>Y</untrained>
+			<exclusive>N</exclusive>
+			<trained_total>0</trained_total>
+			<exclusive_total>0</exclusive_total>
+		</skill>
+		<skill>
+			<name>Test96g</name>
+			<ranks>0.0</ranks>
+			<mod>-1<!-- Mods from abilities, equipment, etc -->
+			</mod>
+			<skill_mod>-1</skill_mod>
+			<ability_mod>-1<!-- Mod from the key ability -->
+			</ability_mod>
+			<misc_mod>0<!-- This is a calc value of TOTAL-RANK-ABMOD -->
+			</misc_mod>
+			<ability>STR</ability>
+			<synergy>Test96g</synergy>
+			<untrained>Y</untrained>
+			<exclusive>N</exclusive>
+			<trained_total>-1</trained_total>
+			<exclusive_total>-1</exclusive_total>
+		</skill>
+		<skill>
+			<name>Test96h</name>
+			<ranks>0.0</ranks>
+			<mod>0<!-- Mods from abilities, equipment, etc -->
+			</mod>
+			<skill_mod>0</skill_mod>
+			<ability_mod>0<!-- Mod from the key ability -->
+			</ability_mod>
+			<misc_mod>0<!-- This is a calc value of TOTAL-RANK-ABMOD -->
+			</misc_mod>
+			<ability></ability>
+			<synergy>Test96h</synergy>
+			<untrained>Y</untrained>
+			<exclusive>N</exclusive>
+			<trained_total>0</trained_total>
+			<exclusive_total>0</exclusive_total>
+		</skill>
+		<skill>
 			<name>Uber Scripting from five ranks in Test Coding Script</name>
 			<ranks>0.0</ranks>
 			<mod>-1<!-- Mods from abilities, equipment, etc -->
@@ -881,7 +932,7 @@ BIO
 		</total>
 		<equipmentsets>
 
-      <equipmentset name="">
+      <equipmentset name="Default Set">
 			</equipmentset>
 
       </equipmentsets>
@@ -965,10 +1016,10 @@ BIO
 			<virtual>F</virtual>
 		</feat>
 		<feat>
-			<name>Choose Feat Selection (ChooseSelection_NoStackNoChoiceFeat, ChooseSelection_Naturally Something (comment), ChooseSelection_NoStackChoiceFeat(Ride), ChooseSelection_NoChooseFeat)</name>
+			<name>Choose Feat Selection (ChooseSelection_Naturally Something (comment), ChooseSelection_NoChooseFeat, ChooseSelection_NoStackChoiceFeat (Ride), ChooseSelection_NoStackNoChoiceFeat)</name>
 			<description></description>
 			<type>TEST45</type>
-			<associated>ChooseSelection_NoStackNoChoiceFeat,ChooseSelection_Naturally Something (comment),ChooseSelection_NoStackChoiceFeat(Ride),ChooseSelection_NoChooseFeat</associated>
+			<associated>ChooseSelection_Naturally Something (comment),ChooseSelection_NoChooseFeat,ChooseSelection_NoStackChoiceFeat (Ride),ChooseSelection_NoStackNoChoiceFeat</associated>
 			<count>4</count>
 			<auto>F</auto>
 			<hidden>F</hidden>
@@ -1016,10 +1067,10 @@ BIO
 		</feat>
 		<!-- Auto feats -->
 		<feat>
-			<name>AutoFeat_GivingThingy (AutoFeat_NoStackNoChoiceFeat, AutoFeat_NoStackChoiceFeat(Ride), AutoFeat_Naturally Something (comment), AutoFeat_NoChooseFeat)</name>
+			<name>AutoFeat_GivingThingy (AutoFeat_Naturally Something (comment), AutoFeat_NoChooseFeat, AutoFeat_NoStackChoiceFeat (Ride), AutoFeat_NoStackNoChoiceFeat)</name>
 			<description></description>
 			<type>TEST48</type>
-			<associated>AutoFeat_NoStackNoChoiceFeat,AutoFeat_NoStackChoiceFeat(Ride),AutoFeat_Naturally Something (comment),AutoFeat_NoChooseFeat</associated>
+			<associated>AutoFeat_Naturally Something (comment),AutoFeat_NoChooseFeat,AutoFeat_NoStackChoiceFeat (Ride),AutoFeat_NoStackNoChoiceFeat</associated>
 			<count>4</count>
 			<auto>T</auto>
 			<hidden>F</hidden>
@@ -1136,10 +1187,10 @@ BIO
 			<virtual>F</virtual>
 		</feat>
 		<feat>
-			<name>GivingThingyAuto (NoChooseFeatAuto, NoStackNoChoiceFeatAuto, NoStackChoiceFeatAuto(Ride), Naturally Something Auto (comment))</name>
+			<name>GivingThingyAuto (Naturally Something Auto (comment), NoChooseFeatAuto, NoStackChoiceFeatAuto (Ride), NoStackNoChoiceFeatAuto)</name>
 			<description></description>
 			<type>TEST46</type>
-			<associated>NoChooseFeatAuto,NoStackNoChoiceFeatAuto,NoStackChoiceFeatAuto(Ride),Naturally Something Auto (comment)</associated>
+			<associated>Naturally Something Auto (comment),NoChooseFeatAuto,NoStackChoiceFeatAuto (Ride),NoStackNoChoiceFeatAuto</associated>
 			<count>4</count>
 			<auto>T</auto>
 			<hidden>F</hidden>
@@ -1227,10 +1278,10 @@ BIO
 		</feat>
 		<!-- Virtual Feats -->
 		<feat>
-			<name>GivingThingy (NoStackNoChoiceFeat, NoChooseFeat, NoStackChoiceFeat(Ride), Naturally Something (comment))</name>
+			<name>GivingThingy (Naturally Something (comment), NoChooseFeat, NoStackChoiceFeat (Ride), NoStackNoChoiceFeat)</name>
 			<description></description>
 			<type>TEST47</type>
-			<associated>NoStackNoChoiceFeat,NoChooseFeat,NoStackChoiceFeat(Ride),Naturally Something (comment)</associated>
+			<associated>Naturally Something (comment),NoChooseFeat,NoStackChoiceFeat (Ride),NoStackNoChoiceFeat</associated>
 			<count>4</count>
 			<auto>F</auto>
 			<hidden>F</hidden>

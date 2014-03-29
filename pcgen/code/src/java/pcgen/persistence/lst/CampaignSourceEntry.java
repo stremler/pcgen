@@ -135,7 +135,8 @@ public class CampaignSourceEntry implements SourceEntry
 
 		public URI getURI()
 		{
-			return getPathURI(u, s);
+			URI uri = getNonNormalizedPathURI(u, s);
+			return uri.normalize();
 		}
 		
         @Override
@@ -278,7 +279,7 @@ public class CampaignSourceEntry implements SourceEntry
 	 * @return String containing the converted absolute path or URL
 	 *         (as appropriate)
 	 */
-	private static URI getPathURI(URI pccPath, String basePath)
+	private static URI getNonNormalizedPathURI(URI pccPath, String basePath)
 	{
 		if (basePath.length() <= 0)
 		{
@@ -512,8 +513,10 @@ public class CampaignSourceEntry implements SourceEntry
 				}
 				else
 				{
-					Logging.errorPrint("Invalid Suffix: " + inExString
-						+ " on Campaign Source: '" + value + "' in " + sourceUri);
+					Logging.errorPrint("Invalid Suffix (must have "
+						+ "'(INCLUDE' '(EXCLUDE' or a PRExxx immediately "
+						+ "following the pipe (no spaces).  Found: '" + inExString
+						+ "' on Campaign Source: '" + value + "' in " + sourceUri);
 					return null;
 				}
 			}
@@ -585,9 +588,9 @@ public class CampaignSourceEntry implements SourceEntry
 		if (bracketLevel > 0)
 		{
 			Logging
-				.errorPrint("Found Suffix in Campaign Source with missing closing parenthesis: "
+				.errorPrint("Suffix in Campaign Source with missing closing parenthesis, Found: '"
 					+ suffix
-					+ " on Campaign Source: '"
+					+ "' on Campaign Source: '"
 					+ value
 					+ "' in "
 					+ sourceUri);
@@ -622,9 +625,9 @@ public class CampaignSourceEntry implements SourceEntry
 				String lstString =
 						prereqWriter.getPrerequisiteString(displayList,
 							Constants.TAB);
-				Logging.log(Logging.LST_ERROR, "Prereq " + prereq.getKind()
-					+ " is not supported in PCC files. Prereq was " + lstString
-					+ " in " + sourceUri + ". Prereq will be ignored.");
+				Logging.log(Logging.LST_ERROR, "Prereq '" + prereq.getKind()
+					+ "' is not supported in PCC files. Prereq was '" + lstString
+					+ "' in " + sourceUri + ". Prereq will be ignored.");
 			}
 			else
 			{

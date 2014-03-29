@@ -23,7 +23,8 @@ import pcgen.cdom.base.CDOMObject;
 import pcgen.cdom.base.CategorizedChooseInformation;
 import pcgen.cdom.base.ChooseInformation;
 import pcgen.cdom.base.ChooseSelectionActor;
-import pcgen.cdom.base.PersistentChoiceActor;
+import pcgen.cdom.base.Chooser;
+import pcgen.cdom.base.Constants;
 import pcgen.cdom.base.PrimitiveChoiceSet;
 import pcgen.cdom.base.PrimitiveCollection;
 import pcgen.cdom.choiceset.CollectionToChoiceSet;
@@ -33,7 +34,6 @@ import pcgen.cdom.enumeration.ObjectKey;
 import pcgen.cdom.reference.ReferenceManufacturer;
 import pcgen.core.Ability;
 import pcgen.core.AbilityCategory;
-import pcgen.core.Globals;
 import pcgen.core.PlayerCharacter;
 import pcgen.rules.context.LoadContext;
 import pcgen.rules.persistence.token.AbstractTokenWithSeparator;
@@ -45,7 +45,7 @@ import pcgen.rules.persistence.token.ParseResult;
  * New chooser plugin, handles feats.
  */
 public class FeatToken extends AbstractTokenWithSeparator<CDOMObject> implements
-		CDOMSecondaryToken<CDOMObject>, PersistentChoiceActor<Ability>
+		CDOMSecondaryToken<CDOMObject>, Chooser<Ability>
 {
 
 	@Override
@@ -84,7 +84,7 @@ public class FeatToken extends AbstractTokenWithSeparator<CDOMObject> implements
 				activeValue = value.substring(0, pipeLoc);
 				if (title == null || title.length() == 0)
 				{
-					return new ParseResult.Fail(getParentToken() + ":"
+					return new ParseResult.Fail(getParentToken() + Constants.COLON
 						+ getTokenName() + " had TITLE= but no title: " + value, context);
 				}
 			}
@@ -142,7 +142,7 @@ public class FeatToken extends AbstractTokenWithSeparator<CDOMObject> implements
 		if (!tc.getGroupingState().isValid())
 		{
 			context.addWriteMessage("Invalid combination of objects"
-					+ " was used in: " + getParentToken() + ":"
+					+ " was used in: " + getParentToken() + Constants.COLON
 					+ getTokenName());
 			return null;
 		}
@@ -177,7 +177,6 @@ public class FeatToken extends AbstractTokenWithSeparator<CDOMObject> implements
 				ca.removeChoice(owner, choice, pc);
 			}
 		}
-		pc.removeAssociation(owner, encodeChoice(choice));
 	}
 
 	@Override
@@ -185,7 +184,6 @@ public class FeatToken extends AbstractTokenWithSeparator<CDOMObject> implements
 			Ability choice)
 	{
 		pc.addAssoc(owner, getListKey(), choice);
-		pc.addAssociation(owner, encodeChoice(choice));
 		List<ChooseSelectionActor<?>> actors = owner
 				.getListFor(ListKey.NEW_CHOOSE_ACTOR);
 		if (actors != null)
@@ -249,7 +247,7 @@ public class FeatToken extends AbstractTokenWithSeparator<CDOMObject> implements
 	@Override
 	public Ability decodeChoice(LoadContext context, String s)
 	{
-		return Globals.getContext().ref.silentlyGetConstructedCDOMObject(
+		return context.ref.silentlyGetConstructedCDOMObject(
 				Ability.class, AbilityCategory.FEAT, s);
 	}
 

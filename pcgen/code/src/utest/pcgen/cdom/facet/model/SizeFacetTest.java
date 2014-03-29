@@ -27,6 +27,7 @@ import org.junit.Test;
 
 import pcgen.cdom.base.FormulaFactory;
 import pcgen.cdom.enumeration.CharID;
+import pcgen.cdom.enumeration.DataSetID;
 import pcgen.cdom.enumeration.FormulaKey;
 import pcgen.cdom.enumeration.ListKey;
 import pcgen.cdom.enumeration.ObjectKey;
@@ -39,6 +40,7 @@ import pcgen.cdom.facet.model.TemplateFacet;
 import pcgen.core.Globals;
 import pcgen.core.PCTemplate;
 import pcgen.core.Race;
+import pcgen.core.SettingsHandler;
 import pcgen.core.SizeAdjustment;
 import pcgen.rules.context.ReferenceContext;
 
@@ -65,8 +67,9 @@ public class SizeFacetTest extends TestCase
 	public void setUp() throws Exception
 	{
 		super.setUp();
-		id = CharID.getID();
-		altid = CharID.getID();
+		DataSetID cid = DataSetID.getID();
+		id = CharID.getID(cid);
+		altid = CharID.getID(cid);
 		facet = getMockFacet();
 		facet.setRaceFacet(rfacet);
 		facet.setTemplateFacet(tfacet);
@@ -79,6 +82,7 @@ public class SizeFacetTest extends TestCase
 	{
 		if (!staticDone)
 		{
+			SettingsHandler.getGame().clearLoadContext();
 			ReferenceContext ref = Globals.getContext().ref;
 			t = ref.constructCDOMObject(SizeAdjustment.class, "Tiny");
 			ref.registerAbbreviation(t, "T");

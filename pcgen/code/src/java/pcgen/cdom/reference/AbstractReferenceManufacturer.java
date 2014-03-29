@@ -333,19 +333,19 @@ public abstract class AbstractReferenceManufacturer<T extends Loadable>
 			for (Map.Entry<FixedStringList, WeakReference<CDOMGroupRef<T>>> me : typeReferences
 					.entrySet())
 			{
-				boolean typeOkay = true;
-				for (String type : me.getKey())
+				CDOMGroupRef<T> trt = me.getValue().get();
+				if (trt != null)
 				{
-					if (!obj.isType(type))
+					boolean typeOkay = true;
+					for (String type : me.getKey())
 					{
-						typeOkay = false;
-						break;
+						if (!obj.isType(type))
+						{
+							typeOkay = false;
+							break;
+						}
 					}
-				}
-				if (typeOkay)
-				{
-					CDOMGroupRef<T> trt = me.getValue().get();
-					if (trt != null)
+					if (typeOkay)
 					{
 						trt.addResolution(obj);
 					}
@@ -537,9 +537,12 @@ public abstract class AbstractReferenceManufacturer<T extends Loadable>
 		String oldKey = item.getKeyName();
 		if (oldKey.equalsIgnoreCase(key))
 		{
-			Logging.debugPrint("Worthless Key change encountered: "
+			if (Logging.isDebugMode())
+			{
+				Logging.debugPrint("Worthless Key change encountered: "
 					+ item.getDisplayName() + " " + oldKey);
-			Logging.reportSource(Logging.DEBUG, item.getSourceURI());
+				Logging.reportSource(Logging.DEBUG, item.getSourceURI());
+			}
 		}
 		forgetObject(item);
 		addObject(item, key);
@@ -658,47 +661,31 @@ public abstract class AbstractReferenceManufacturer<T extends Loadable>
 		try
 		{
 			Integer.parseInt(val);
-			throw new IllegalArgumentException(val);
+			throw new IllegalArgumentException("A number cannot be a valid single item: " + val);
 		}
 		catch (NumberFormatException nfe)
 		{
 			// ok
 		}
-		if (val.startsWith("TYPE"))
+		if (val.contains("="))
 		{
-			throw new IllegalArgumentException(val);
+			throw new IllegalArgumentException("= cannot be a in valid single item (perhaps something like TYPE= is not supported in this token?): " + val);
 		}
 		if (val.equalsIgnoreCase("ANY"))
 		{
-			throw new IllegalArgumentException(val);
+			throw new IllegalArgumentException("Any cannot be a valid single item (not supported in this token?)");
 		}
 		if (val.equalsIgnoreCase("ALL"))
 		{
-			throw new IllegalArgumentException(val);
+			throw new IllegalArgumentException("All cannot be a valid single item (not supported in this token?)");
 		}
-		if (val.startsWith("PRE"))
+		if (val.contains(":"))
 		{
-			throw new IllegalArgumentException(val);
+			throw new IllegalArgumentException(": cannot exist in a valid single item (did you try to use a PRE where it is not supported?) " + val);
 		}
-		if (val.startsWith("CHOOSE"))
+		if (val.equalsIgnoreCase("%LIST"))
 		{
-			throw new IllegalArgumentException(val);
-		}
-		if (val.startsWith("TIMES="))
-		{
-			throw new IllegalArgumentException(val);
-		}
-		if (val.startsWith("TIMEUNIT="))
-		{
-			throw new IllegalArgumentException(val);
-		}
-		if (val.startsWith("CASTERLEVEL="))
-		{
-			throw new IllegalArgumentException(val);
-		}
-		if (val.equals("%LIST"))
-		{
-			throw new IllegalArgumentException(val);
+			throw new IllegalArgumentException("%LIST cannot be a valid single item (not supported in this token?)");
 		}
 
 		WeakReference<CDOMSingleRef<T>> wr = referenced.get(val);
@@ -768,6 +755,10 @@ public abstract class AbstractReferenceManufacturer<T extends Loadable>
 
 	private boolean validateNames()
 	{
+		if (!Logging.isLoggable(Logging.LST_WARNING))
+		{
+			return true;
+		}
 		for (String key : active.getKeySet())
 		{
 			T value = active.get(key);

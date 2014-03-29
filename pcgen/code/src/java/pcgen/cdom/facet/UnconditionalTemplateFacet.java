@@ -17,12 +17,8 @@
  */
 package pcgen.cdom.facet;
 
-import pcgen.cdom.content.Selection;
 import pcgen.cdom.facet.base.AbstractListFacet;
-import pcgen.cdom.facet.event.DataFacetChangeEvent;
-import pcgen.cdom.facet.event.DataFacetChangeListener;
 import pcgen.cdom.facet.model.TemplateFacet;
-import pcgen.cdom.facet.model.TemplateSelectionFacet;
 import pcgen.core.PCTemplate;
 
 /**
@@ -30,36 +26,12 @@ import pcgen.core.PCTemplate;
  * been granted to a Player Character.
  */
 public class UnconditionalTemplateFacet extends AbstractListFacet<PCTemplate>
-		implements DataFacetChangeListener<Selection<PCTemplate, ?>>
 {
-	//TODO I don't like that this is a bridge :( -- thpr
-
-	private TemplateSelectionFacet templateSelectionFacet;
-
 	private TemplateFacet templateFacet;
-
-	public void setTemplateSelectionFacet(
-		TemplateSelectionFacet templateSelectionFacet)
-	{
-		this.templateSelectionFacet = templateSelectionFacet;
-	}
 
 	public void init()
 	{
-		templateSelectionFacet.addDataFacetChangeListener(this);
 		addDataFacetChangeListener(templateFacet);
-	}
-
-	@Override
-	public void dataAdded(DataFacetChangeEvent<Selection<PCTemplate, ?>> dfce)
-	{
-		add(dfce.getCharID(), dfce.getCDOMObject().getObject());
-	}
-
-	@Override
-	public void dataRemoved(DataFacetChangeEvent<Selection<PCTemplate, ?>> dfce)
-	{
-		remove(dfce.getCharID(), dfce.getCDOMObject().getObject());
 	}
 
 	public void setTemplateFacet(TemplateFacet templateFacet)

@@ -19,7 +19,6 @@ package plugin.lsttokens.add;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -36,7 +35,6 @@ import pcgen.cdom.base.SelectableSet;
 import pcgen.cdom.base.TransitionChoice;
 import pcgen.cdom.choiceset.ReferenceChoiceSet;
 import pcgen.cdom.enumeration.ListKey;
-import pcgen.core.Globals;
 import pcgen.core.PlayerCharacter;
 import pcgen.core.Skill;
 import pcgen.core.analysis.SkillRankControl;
@@ -67,7 +65,7 @@ public class SkillToken extends AbstractToken implements
 
 	private String getFullName()
 	{
-		return getParentToken() + ":" + getTokenName();
+		return getParentToken() + Constants.COLON + getTokenName();
 	}
 
 	@Override
@@ -226,8 +224,7 @@ public class SkillToken extends AbstractToken implements
 	@Override
 	public Skill decodeChoice(LoadContext context, String s)
 	{
-		return Globals.getContext().ref.silentlyGetConstructedCDOMObject(
-				SKILL_CLASS, s);
+		return context.ref.silentlyGetConstructedCDOMObject(SKILL_CLASS, s);
 	}
 
 	@Override
@@ -247,11 +244,5 @@ public class SkillToken extends AbstractToken implements
 	{
 		pc.addSkill(choice);
 		SkillRankControl.modRanks(-1.0, null, true, pc, choice);
-	}
-
-	@Override
-	public List<Skill> getCurrentlySelected(CDOMObject owner, PlayerCharacter pc)
-	{
-		return Collections.emptyList();
 	}
 }

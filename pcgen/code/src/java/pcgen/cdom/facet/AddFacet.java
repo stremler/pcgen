@@ -22,6 +22,7 @@ import pcgen.cdom.base.CDOMObjectUtilities;
 import pcgen.cdom.enumeration.CharID;
 import pcgen.cdom.facet.event.DataFacetChangeEvent;
 import pcgen.cdom.facet.event.DataFacetChangeListener;
+import pcgen.cdom.facet.model.ClassLevelFacet;
 import pcgen.cdom.facet.model.DeityFacet;
 import pcgen.cdom.facet.model.DomainFacet;
 import pcgen.cdom.facet.model.RaceFacet;
@@ -33,7 +34,7 @@ import pcgen.core.PlayerCharacter;
  * 
  * @author Thomas Parker (thpr [at] yahoo.com)
  */
-public class AddFacet implements DataFacetChangeListener<CDOMObject>
+public class AddFacet implements DataFacetChangeListener<CharID, CDOMObject>
 {
 	private final PlayerCharacterTrackingFacet trackingFacet = FacetLibrary
 		.getFacet(PlayerCharacterTrackingFacet.class);
@@ -45,6 +46,8 @@ public class AddFacet implements DataFacetChangeListener<CDOMObject>
 	private TemplateFacet templateFacet;
 
 	private DomainFacet domainFacet;
+
+	private ClassLevelFacet classLevelFacet;
 
 	/**
 	 * Drives the necessary selections for ADD tokens on a Player Character.
@@ -60,7 +63,7 @@ public class AddFacet implements DataFacetChangeListener<CDOMObject>
 	 * @see pcgen.cdom.facet.event.DataFacetChangeListener#dataAdded(pcgen.cdom.facet.event.DataFacetChangeEvent)
 	 */
 	@Override
-	public void dataAdded(DataFacetChangeEvent<CDOMObject> dfce)
+	public void dataAdded(DataFacetChangeEvent<CharID, CDOMObject> dfce)
 	{
 		CharID id = dfce.getCharID();
 		PlayerCharacter aPC = trackingFacet.getPC(id);
@@ -84,7 +87,7 @@ public class AddFacet implements DataFacetChangeListener<CDOMObject>
 	 * @see pcgen.cdom.facet.event.DataFacetChangeListener#dataAdded(pcgen.cdom.facet.event.DataFacetChangeEvent)
 	 */
 	@Override
-	public void dataRemoved(DataFacetChangeEvent<CDOMObject> dfce)
+	public void dataRemoved(DataFacetChangeEvent<CharID, CDOMObject> dfce)
 	{
 		CharID id = dfce.getCharID();
 		PlayerCharacter aPC = trackingFacet.getPC(id);
@@ -114,6 +117,11 @@ public class AddFacet implements DataFacetChangeListener<CDOMObject>
 		this.domainFacet = domainFacet;
 	}
 
+	public void setClassLevelFacet(ClassLevelFacet classLevelFacet)
+	{
+		this.classLevelFacet = classLevelFacet;
+	}
+
 	/**
 	 * Initializes the connections for AddFacet to other facets.
 	 * 
@@ -126,5 +134,6 @@ public class AddFacet implements DataFacetChangeListener<CDOMObject>
 		deityFacet.addDataFacetChangeListener(this);
 		templateFacet.addDataFacetChangeListener(this);
 		domainFacet.addDataFacetChangeListener(this);
+		classLevelFacet.addDataFacetChangeListener(this);
 	}
 }

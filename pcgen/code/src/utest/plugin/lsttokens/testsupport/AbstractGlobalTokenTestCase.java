@@ -91,11 +91,11 @@ public abstract class AbstractGlobalTokenTestCase extends TestCase
 		TokenLibrary.addToTokenMap(tok);
 	}
 
-	public static void addBonus(String name, Class<? extends BonusObj> clazz)
+	public static void addBonus(Class<? extends BonusObj> clazz)
 	{
 		try
 		{
-			TokenLibrary.addBonusClass(clazz, name);
+			TokenLibrary.addBonusClass(clazz);
 		}
 		catch (InstantiationException e)
 		{
@@ -207,8 +207,20 @@ public abstract class AbstractGlobalTokenTestCase extends TestCase
 
 	public boolean parse(String str) throws PersistenceLayerException
 	{
-		ParseResult pr = getToken()
-				.parseToken(primaryContext, primaryProf, str);
+		ParseResult pr;
+		try
+		{
+			pr = getToken().parseToken(primaryContext, primaryProf, str);
+		}
+		catch (IllegalArgumentException e)
+		{
+			Logging.addParseMessage(
+				Logging.LST_ERROR,
+				"Token generated an IllegalArgumentException: "
+					+ e.getLocalizedMessage());
+			pr = new ParseResult.Fail("Token processing failed");
+		}
+
 		if (pr.passed())
 		{
 			primaryContext.commit();

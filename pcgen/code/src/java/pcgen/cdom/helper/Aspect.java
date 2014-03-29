@@ -23,14 +23,16 @@
 package pcgen.cdom.helper;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import pcgen.base.lang.StringUtil;
 import pcgen.cdom.base.ConcretePrereqObject;
 import pcgen.cdom.base.Constants;
+import pcgen.cdom.content.CNAbility;
 import pcgen.cdom.enumeration.AspectName;
+import pcgen.cdom.enumeration.MapKey;
 import pcgen.core.Ability;
-import pcgen.core.AbilityCategory;
 import pcgen.core.PlayerCharacter;
 import pcgen.io.EntityEncoder;
 import pcgen.persistence.lst.output.prereq.PrerequisiteWriter;
@@ -67,9 +69,7 @@ public class Aspect extends ConcretePrereqObject
 	private List<String> theVariables = null;
 	
 	private static final String VAR_NAME = "%NAME"; //$NON-NLS-1$
-	private static final String VAR_CHOICE = "%CHOICE"; //$NON-NLS-1$
 	private static final String VAR_LIST = "%LIST"; //$NON-NLS-1$
-	private static final String VAR_FEATS = "%FEAT="; //$NON-NLS-1$
 	
 	private static final String VAR_MARKER = "$$VAR:"; //$NON-NLS-1$
 	
@@ -242,19 +242,17 @@ public class Aspect extends ConcretePrereqObject
 	 * 
 	 * @return The fully substituted description string.
 	 */
-	public String getAspectText( final PlayerCharacter aPC, Ability theOwner )
+	public String getAspectText(final PlayerCharacter aPC,
+		List<CNAbility> abilities)
 	{
 		final StringBuilder buf = new StringBuilder();
 		
-		if (theOwner != null)
+		if ((abilities == null) || (abilities.size() == 0))
 		{
-			Ability pcAbility = aPC.getAbilityMatching(theOwner);
-			if (pcAbility != null)
-			{
-				theOwner = pcAbility;
-			}
+			return "";
 		}
-		if(!qualifies(aPC, theOwner))
+		Ability sampleAbilityObject = abilities.get(0).getAbility();
+		if(!qualifies(aPC, sampleAbilityObject))
 		{
 			return "";
 		}
@@ -271,64 +269,29 @@ public class Aspect extends ConcretePrereqObject
 				final String var = theVariables.get(ind - 1);
 				if ( var.equals(VAR_NAME) )
 				{
-					if ( theOwner != null )
-					{
-						buf.append(theOwner.getOutputName());
-					}
-				}
-				else if ( var.equals(VAR_CHOICE) )
-				{
-					if (theOwner != null && aPC.hasAssociations(theOwner))
-					{
-						buf.append(aPC.getFirstAssociation(theOwner));
-					}
+					buf.append(sampleAbilityObject.getOutputName());
 				}
 				else if ( var.equals(VAR_LIST) )
 				{
-					if ( theOwner != null )
+					List<String> assocList = new ArrayList<String>();
+					for (CNAbility cna : abilities)
 					{
-						List<String> assocList = aPC.getExpandedAssociations(theOwner);
-						String joinString;
-						if (assocList.size() == 2)
-						{
-							joinString = " and ";
-						}
-						else
-						{
-							joinString = ", ";
-						}
-		                buf.append(StringUtil.joinToStringBuilder(aPC
-								.getExpandedAssociations(theOwner),
-								joinString));
+						assocList.addAll(aPC.getAssociationList(cna));
 					}
-				}
-				else if ( var.startsWith(VAR_FEATS) )
-				{
-					final String featName = var.substring(VAR_FEATS.length());
-					if (featName.startsWith("TYPE=") || featName.startsWith("TYPE."))
+					String joinString;
+					if (assocList.size() == 2)
 					{
-						final List<Ability> feats = aPC.getAggregateAbilityList(AbilityCategory.FEAT);
-						boolean first = true;
-						for ( final Ability feat : feats )
-						{
-							if (feat.isType(featName.substring(5)))
-							{
-								if (!first)
-								{
-									buf.append(Constants.COMMA).append(' ');
-								}
-								buf.append(aPC.getDescription(feat));
-								first = false;
-							}
-						}
+						joinString = " and ";
 					}
 					else
 					{
-						final Ability feat = aPC.getAbilityKeyed(AbilityCategory.FEAT, featName);
-						buf.append(aPC.getDescription(feat));
+						joinString = ", ";
 					}
+					Collections.sort(assocList);
+					buf.append(StringUtil.joinToStringBuilder(assocList,
+						joinString));
 				}
-				else if ( var.startsWith("\"") ) //$NON-NLS-1$
+					else if ( var.startsWith("\"") ) //$NON-NLS-1$
 				{
 					buf.append(var.substring(1, var.length() - 1));
 				}
@@ -419,5 +382,57 @@ public class Aspect extends ConcretePrereqObject
 		}
 		return theComponents.equals(other.theComponents)
 			&& (theVariables == null || theVariables.equals(other.theVariables));
+	}
+
+	public static String printAspect(PlayerCharacter pc, AspectName key,
+		List<CNAbility> abilities, boolean printName)
+	{
+		if (abilities.size() == 0)
+		{
+			return "";
+		}
+		Ability sampleAbilityObject = abilities.get(0).getAbility();
+		StringBuilder buff = new StringBuilder();
+		List<Aspect> aspects = sampleAbilityObject.get(MapKey.ASPECT, key);
+		Aspect aspect = lastPassingAspect(aspects, pc, sampleAbilityObject);
+		if (aspect != null)
+		{
+			if (printName)
+			{
+				buff.append(aspect.getName()).append(": ");
+			}
+			buff.append(aspect.getAspectText(pc, abilities));
+		}
+		return buff.toString();
+	}
+
+	public static String printAspect(PlayerCharacter pc, AspectName key,
+		List<CNAbility> abilities)
+	{
+		return printAspect(pc, key, abilities, true);
+	}
+
+	public static String printAspectValue(PlayerCharacter pc, AspectName key,
+		List<CNAbility> abilities)
+	{
+		return printAspect(pc, key, abilities, false);
+	}
+
+	public static Aspect lastPassingAspect(List<Aspect> aspects,
+		PlayerCharacter pc, Ability a)
+	{
+		Aspect retAspect = null;
+		if (aspects != null)
+		{
+			for (int i = 0; i < aspects.size(); i++)
+			{
+				Aspect testAspect = aspects.get(i);
+				if (testAspect.qualifies(pc, a))
+				{
+					retAspect = testAspect;
+				}
+			}
+		}
+		return retAspect;
 	}
 }

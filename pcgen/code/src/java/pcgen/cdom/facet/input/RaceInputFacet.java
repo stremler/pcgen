@@ -20,11 +20,11 @@ package pcgen.cdom.facet.input;
 import java.util.ArrayList;
 import java.util.List;
 
-import pcgen.cdom.content.Selection;
 import pcgen.cdom.enumeration.CharID;
 import pcgen.cdom.facet.FacetLibrary;
 import pcgen.cdom.facet.PlayerCharacterTrackingFacet;
-import pcgen.cdom.facet.model.RaceSelectionFacet;
+import pcgen.cdom.facet.RaceSelectionFacet;
+import pcgen.cdom.facet.model.RaceFacet;
 import pcgen.core.PlayerCharacter;
 import pcgen.core.Race;
 import pcgen.core.analysis.ChooseActivation;
@@ -42,11 +42,13 @@ public class RaceInputFacet
 
 	private RaceSelectionFacet raceSelectionFacet;
 
+	private RaceFacet raceFacet;
+
 	public boolean set(CharID id, Race race)
 	{
-		if (ChooseActivation.hasChooseToken(race))
+		PlayerCharacter pc = trackingFacet.getPC(id);
+		if (pc.isAllowInteraction() && ChooseActivation.hasNewChooseToken(race))
 		{
-			PlayerCharacter pc = trackingFacet.getPC(id);
 			ChoiceManagerList<?> aMan =
 					ChooserUtilities.getChoiceManager(race, pc);
 			return processChoice(id, pc, race, aMan);
@@ -90,11 +92,11 @@ public class RaceInputFacet
 	public void importSelection(CharID id, Race race, String choice)
 	{
 		PlayerCharacter pc = trackingFacet.getPC(id);
-		if (ChooseActivation.hasChooseToken(race))
+		if (ChooseActivation.hasNewChooseToken(race))
 		{
 			ChoiceManagerList<?> aMan =
 					ChooserUtilities.getChoiceManager(race, pc);
-			processImport(id, pc, race, aMan, choice);
+			processImport(id, race, aMan, choice);
 		}
 		else
 		{
@@ -102,20 +104,38 @@ public class RaceInputFacet
 		}
 	}
 
-	private <T> void processImport(CharID id, PlayerCharacter pc, Race race,
+	private <T> void processImport(CharID id, Race race,
 		ChoiceManagerList<T> aMan, String choice)
 	{
 		directSet(id, race, aMan.decodeChoice(choice));
 	}
 
-	private <T> boolean directSet(CharID id, Race race, T sel)
+	public <T> boolean directSet(CharID id, Race race, T sel)
 	{
-		return raceSelectionFacet.set(id, new Selection<Race, T>(race, sel));
+		Race old = raceFacet.get(id);
+		if (raceFacet.set(id, race) && (old != null))
+		{
+			PlayerCharacter pc = trackingFacet.getPC(id);
+			if (pc.isAllowInteraction())
+			{
+				raceSelectionFacet.remove(id, old);
+			}
+		}
+		if (sel != null)
+		{
+			raceSelectionFacet.set(id, race, sel);
+		}
+		return true;
 	}
 
 	public void remove(CharID id)
 	{
-		raceSelectionFacet.remove(id);
+		Race r = raceFacet.remove(id);
+		PlayerCharacter pc = trackingFacet.getPC(id);
+		if (pc.isAllowInteraction() && (r != null))
+		{
+			raceSelectionFacet.remove(id, r);
+		}
 	}
 
 	public void setRaceSelectionFacet(RaceSelectionFacet raceSelectionFacet)
@@ -123,4 +143,8 @@ public class RaceInputFacet
 		this.raceSelectionFacet = raceSelectionFacet;
 	}
 
+	public void setRaceFacet(RaceFacet raceFacet)
+	{
+		this.raceFacet = raceFacet;
+	}
 }

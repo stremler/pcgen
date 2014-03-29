@@ -19,7 +19,6 @@ package plugin.lsttokens.add;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -38,7 +37,6 @@ import pcgen.cdom.choiceset.QualifiedDecorator;
 import pcgen.cdom.choiceset.ReferenceChoiceSet;
 import pcgen.cdom.enumeration.ListKey;
 import pcgen.core.Equipment;
-import pcgen.core.Globals;
 import pcgen.core.PlayerCharacter;
 import pcgen.core.utils.ParsingSeparator;
 import pcgen.rules.context.Changes;
@@ -62,7 +60,7 @@ public class EquipToken extends AbstractNonEmptyToken<CDOMObject> implements
 
 	private String getFullName()
 	{
-		return getParentToken() + ":" + getTokenName();
+		return getParentToken() + Constants.COLON + getTokenName();
 	}
 
 	@Override
@@ -206,8 +204,7 @@ public class EquipToken extends AbstractNonEmptyToken<CDOMObject> implements
 	@Override
 	public Equipment decodeChoice(LoadContext context, String s)
 	{
-		return Globals.getContext().ref.silentlyGetConstructedCDOMObject(
-				EQUIPMENT_CLASS, s);
+		return context.ref.silentlyGetConstructedCDOMObject(EQUIPMENT_CLASS, s);
 	}
 
 	@Override
@@ -228,12 +225,5 @@ public class EquipToken extends AbstractNonEmptyToken<CDOMObject> implements
 			Equipment choice)
 	{
 		pc.removeEquipment(choice);
-	}
-
-	@Override
-	public List<Equipment> getCurrentlySelected(CDOMObject owner,
-			PlayerCharacter pc)
-	{
-		return Collections.emptyList();
 	}
 }

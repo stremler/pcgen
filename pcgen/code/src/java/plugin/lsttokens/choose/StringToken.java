@@ -26,8 +26,8 @@ import pcgen.cdom.base.BasicChooseInformation;
 import pcgen.cdom.base.CDOMObject;
 import pcgen.cdom.base.ChooseInformation;
 import pcgen.cdom.base.ChooseSelectionActor;
+import pcgen.cdom.base.Chooser;
 import pcgen.cdom.base.Constants;
-import pcgen.cdom.base.PersistentChoiceActor;
 import pcgen.cdom.choiceset.SimpleChoiceSet;
 import pcgen.cdom.enumeration.AssociationListKey;
 import pcgen.cdom.enumeration.ListKey;
@@ -41,7 +41,7 @@ import pcgen.rules.persistence.token.ParseResult;
  * New chooser plugin, handles Strings.
  */
 public class StringToken implements CDOMSecondaryToken<CDOMObject>,
-		PersistentChoiceActor<String>
+		Chooser<String>
 {
 
 	@Override
@@ -157,7 +157,6 @@ public class StringToken implements CDOMSecondaryToken<CDOMObject>,
 	public void removeChoice(PlayerCharacter pc, CDOMObject owner, String choice)
 	{
 		pc.removeAssoc(owner, getListKey(), choice);
-		pc.removeAssociation(owner, encodeChoice(choice));
 		List<ChooseSelectionActor<?>> actors =
 				owner.getListFor(ListKey.NEW_CHOOSE_ACTOR);
 		if (actors != null)
@@ -174,7 +173,6 @@ public class StringToken implements CDOMSecondaryToken<CDOMObject>,
 		String choice)
 	{
 		pc.addAssoc(owner, getListKey(), choice);
-		pc.addAssociation(owner, encodeChoice(choice));
 		List<ChooseSelectionActor<?>> actors =
 				owner.getListFor(ListKey.NEW_CHOOSE_ACTOR);
 		if (actors != null)

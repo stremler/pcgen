@@ -20,11 +20,11 @@ package pcgen.cdom.facet.input;
 import java.util.ArrayList;
 import java.util.List;
 
-import pcgen.cdom.content.Selection;
 import pcgen.cdom.enumeration.CharID;
 import pcgen.cdom.facet.FacetLibrary;
 import pcgen.cdom.facet.PlayerCharacterTrackingFacet;
-import pcgen.cdom.facet.model.TemplateSelectionFacet;
+import pcgen.cdom.facet.TemplateSelectionFacet;
+import pcgen.cdom.facet.UnconditionalTemplateFacet;
 import pcgen.core.PCTemplate;
 import pcgen.core.PlayerCharacter;
 import pcgen.core.analysis.ChooseActivation;
@@ -39,15 +39,17 @@ public class TemplateInputFacet
 {
 
 	private TemplateSelectionFacet templateSelectionFacet;
+	
+	private UnconditionalTemplateFacet unconditionalTemplateFacet;
 
 	private final PlayerCharacterTrackingFacet trackingFacet = FacetLibrary
 		.getFacet(PlayerCharacterTrackingFacet.class);
 
 	public boolean add(CharID id, PCTemplate obj)
 	{
-		if (ChooseActivation.hasNewChooseToken(obj))
+		PlayerCharacter pc = trackingFacet.getPC(id);
+		if (pc.isAllowInteraction() && ChooseActivation.hasNewChooseToken(obj))
 		{
-			PlayerCharacter pc = trackingFacet.getPC(id);
 			ChoiceManagerList<?> aMan =
 					ChooserUtilities.getChoiceManager(obj, pc);
 			return processChoice(id, pc, obj, aMan);
@@ -96,7 +98,7 @@ public class TemplateInputFacet
 		{
 			ChoiceManagerList<?> aMan =
 					ChooserUtilities.getChoiceManager(obj, pc);
-			processImport(id, pc, obj, aMan, choice);
+			processImport(id, obj, aMan, choice);
 		}
 		else
 		{
@@ -104,28 +106,41 @@ public class TemplateInputFacet
 		}
 	}
 
-	private <T> void processImport(CharID id, PlayerCharacter pc,
-		PCTemplate obj, ChoiceManagerList<T> aMan, String choice)
+	private <T> void processImport(CharID id, PCTemplate obj,
+		ChoiceManagerList<T> aMan, String choice)
 	{
 		directAdd(id, obj, aMan.decodeChoice(choice));
 	}
 
-	private <T> void directAdd(CharID id, PCTemplate obj, T sel)
+	public <T> void directAdd(CharID id, PCTemplate obj, T sel)
 	{
-		Selection<PCTemplate, T> rs =
-				new Selection<PCTemplate, T>(obj, sel);
-		templateSelectionFacet.add(id, rs, obj);
+		unconditionalTemplateFacet.add(id, obj);
+		if (sel != null)
+		{
+			templateSelectionFacet.set(id, obj, sel);
+		}
 	}
 
 	public void remove(CharID id, PCTemplate obj)
 	{
-		templateSelectionFacet.removeAll(id, obj);
+		unconditionalTemplateFacet.remove(id, obj);
+		PlayerCharacter pc = trackingFacet.getPC(id);
+		if (pc.isAllowInteraction())
+		{
+			templateSelectionFacet.remove(id, obj);
+		}
 	}
 
 	public void setTemplateSelectionFacet(
 		TemplateSelectionFacet templateSelectionFacet)
 	{
 		this.templateSelectionFacet = templateSelectionFacet;
+	}
+
+	public void setUnconditionalTemplateFacet(
+		UnconditionalTemplateFacet unconditionalTemplateFacet)
+	{
+		this.unconditionalTemplateFacet = unconditionalTemplateFacet;
 	}
 
 }

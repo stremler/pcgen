@@ -226,13 +226,13 @@ public class SkillRankControl
 
 		if (!aPC.isImporting())
 		{
-			if (ChooseActivation.hasChooseToken(sk))
+			if (ChooseActivation.hasNewChooseToken(sk))
 			{
 				if (!CoreUtility.doublesEqual(rankChange, 0)
 						&& !CoreUtility.doublesEqual(curRank, (int) newRank))
 				{
 					ChooserUtilities.modChoices(sk, new ArrayList<Language>(),
-							new ArrayList<Language>(), true, aPC, true, null);
+							new ArrayList<Language>(), aPC, true, null);
 					aPC.setDirty(true);
 					int selectedLanguages = aPC
 							.getSelectCorrectedAssociationCount(sk);
@@ -338,7 +338,7 @@ public class SkillRankControl
 		// Remove a rank from each skill with max ranks at the old level (now above max ranks)
 		for (Skill skill : pc.getSkillSet())
 		{
-			if (!skill.getSafe(ObjectKey.VISIBILITY).isVisibleTo(View.VISIBLE, false))
+			if (!skill.getSafe(ObjectKey.VISIBILITY).isVisibleTo(View.VISIBLE_DISPLAY))
 			{
 				continue;
 			}
@@ -348,7 +348,10 @@ public class SkillRankControl
 			double rankMod = maxRanks - getTotalRank(pc, skill);
 			if (rankMod < 0)
 			{
-				Logging.log(Logging.INFO, "Removing " + (rankMod*-1) + " ranks from " + skill);
+				if (Logging.isLoggable(Logging.INFO))
+				{
+					Logging.log(Logging.INFO, "Removing " + (rankMod*-1) + " ranks from " + skill);
+				}
 				String err = modRanks(rankMod, classBeingLevelledDown, true, pc, skill);
 				if (StringUtils.isBlank(err))
 				{

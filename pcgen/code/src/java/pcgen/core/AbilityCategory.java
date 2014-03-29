@@ -98,7 +98,6 @@ public class AbilityCategory implements Category<Ability>, Loadable,
 	/** A constant used to refer to the &quot;Feat&quot; category. */
 	public static final AbilityCategory FEAT = new AbilityCategory("FEAT", "in_feat"); //$NON-NLS-1$ //$NON-NLS-2$
 	public static final AbilityCategory LANGBONUS = new AbilityCategory("*LANGBONUS"); //$NON-NLS-1$
-	public static final AbilityCategory WEAPONBONUS = new AbilityCategory("*WEAPONBONUS"); //$NON-NLS-1$
 	public static final AbilityCategory ANY = new AbilityCategory("ANY"); //$NON-NLS-1$
 	
 	static
@@ -108,7 +107,6 @@ public class AbilityCategory implements Category<Ability>, Loadable,
 		FEAT.setInternal(true);
 		LANGBONUS.setPoolFormula(FormulaFactory.getFormulaFor("BONUSLANG"));
 		LANGBONUS.setInternal(true);
-		WEAPONBONUS.setInternal(true);
 	}
 
 	/**
@@ -377,9 +375,9 @@ public class AbilityCategory implements Category<Ability>, Loadable,
 	 * 
 	 * @return <tt>true</tt> if these abilities should be displayed.
 	 */
-	public boolean isVisible()
+	public boolean isVisibleTo(View v)
 	{
-		return isVisible(null);
+		return isVisibleTo(null, v);
 	}
 	
 	/**
@@ -389,15 +387,15 @@ public class AbilityCategory implements Category<Ability>, Loadable,
 	 * @param pc The character to be tested.
 	 * @return <tt>true</tt> if these abilities should be displayed.
 	 */
-	public boolean isVisible(PlayerCharacter pc)
+	public boolean isVisibleTo(PlayerCharacter pc, View v)
 	{
 		if (visibility.equals(Visibility.QUALIFY))
 		{
 			return (pc == null)
 					|| pc.getTotalAbilityPool(this).floatValue() != 0.0
-					|| !pc.getAggregateVisibleAbilityList(this).isEmpty();
+					|| pc.hasAbilityVisibleTo(this, v);
 		}
-		return visibility.isVisibleTo(View.VISIBLE, false);
+		return visibility.isVisibleTo(v);
 	}
 	
 	/**

@@ -1247,7 +1247,7 @@ BIO
 		</total>
 		<equipmentsets>
 
-      <equipmentset name="">
+      <equipmentset name="Default Set">
 		<item>
 					<name>Outfit (Explorer&#39;s)</name>
 					<carried>1.0</carried>
@@ -1455,16 +1455,6 @@ BIO
 		<feat>
 			<name>Shield Proficiency</name>
 			<description>You can use a shield and take only the standard penalties.</description>
-			<type>GENERAL</type>
-			<associated></associated>
-			<count>0</count>
-			<auto>T</auto>
-			<hidden>F</hidden>
-			<virtual>F</virtual>
-		</feat>
-		<feat>
-			<name>Simple Weapon Proficiency</name>
-			<description>You make attack rolls with simple weapons normally.</description>
 			<type>GENERAL</type>
 			<associated></associated>
 			<count>0</count>

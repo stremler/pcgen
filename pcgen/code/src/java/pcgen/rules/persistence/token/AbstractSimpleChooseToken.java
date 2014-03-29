@@ -26,9 +26,9 @@ import pcgen.cdom.base.BasicChooseInformation;
 import pcgen.cdom.base.CDOMObject;
 import pcgen.cdom.base.ChooseInformation;
 import pcgen.cdom.base.ChooseSelectionActor;
+import pcgen.cdom.base.Chooser;
 import pcgen.cdom.base.Constants;
 import pcgen.cdom.base.Loadable;
-import pcgen.cdom.base.PersistentChoiceActor;
 import pcgen.cdom.base.PrimitiveChoiceSet;
 import pcgen.cdom.base.PrimitiveCollection;
 import pcgen.cdom.choiceset.CollectionToChoiceSet;
@@ -38,14 +38,13 @@ import pcgen.cdom.enumeration.ObjectKey;
 import pcgen.cdom.primitive.CompoundOrPrimitive;
 import pcgen.cdom.reference.CDOMGroupRef;
 import pcgen.cdom.reference.SelectionCreator;
-import pcgen.core.Globals;
 import pcgen.core.PlayerCharacter;
 import pcgen.rules.context.LoadContext;
 import pcgen.rules.persistence.ChoiceSetLoadUtilities;
 
 public abstract class AbstractSimpleChooseToken<T extends Loadable> extends
 		AbstractTokenWithSeparator<CDOMObject> implements
-		CDOMSecondaryToken<CDOMObject>, PersistentChoiceActor<T>
+		CDOMSecondaryToken<CDOMObject>, Chooser<T>
 {
 	@Override
 	public String getParentToken()
@@ -221,7 +220,6 @@ public abstract class AbstractSimpleChooseToken<T extends Loadable> extends
 	public void removeChoice(PlayerCharacter pc, CDOMObject owner, T choice)
 	{
 		pc.removeAssoc(owner, getListKey(), choice);
-		pc.removeAssociation(owner, encodeChoice(choice));
 		List<ChooseSelectionActor<?>> actors =
 				owner.getListFor(ListKey.NEW_CHOOSE_ACTOR);
 		if (actors != null)
@@ -237,7 +235,6 @@ public abstract class AbstractSimpleChooseToken<T extends Loadable> extends
 	public void restoreChoice(PlayerCharacter pc, CDOMObject owner, T choice)
 	{
 		pc.addAssoc(owner, getListKey(), choice);
-		pc.addAssociation(owner, encodeChoice(choice));
 		List<ChooseSelectionActor<?>> actors =
 				owner.getListFor(ListKey.NEW_CHOOSE_ACTOR);
 		if (actors != null)
@@ -268,7 +265,7 @@ public abstract class AbstractSimpleChooseToken<T extends Loadable> extends
 	@Override
 	public T decodeChoice(LoadContext context, String s)
 	{
-		return Globals.getContext().ref.silentlyGetConstructedCDOMObject(
+		return context.ref.silentlyGetConstructedCDOMObject(
 			getChooseClass(), s);
 	}
 

@@ -30,6 +30,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,15 +41,17 @@ import java.util.TreeSet;
 import org.apache.commons.lang.StringUtils;
 
 import pcgen.base.lang.StringUtil;
-import pcgen.base.util.FixedStringList;
+import pcgen.base.util.WrappedMapSet;
 import pcgen.cdom.base.CDOMList;
 import pcgen.cdom.base.CDOMListObject;
 import pcgen.cdom.base.CDOMObject;
 import pcgen.cdom.base.CDOMReference;
+import pcgen.cdom.base.Category;
 import pcgen.cdom.base.Constants;
 import pcgen.cdom.base.PersistentTransitionChoice;
 import pcgen.cdom.base.SelectableSet;
 import pcgen.cdom.base.TransitionChoice;
+import pcgen.cdom.content.CNAbility;
 import pcgen.cdom.enumeration.AssociationKey;
 import pcgen.cdom.enumeration.AssociationListKey;
 import pcgen.cdom.enumeration.BiographyField;
@@ -56,7 +60,7 @@ import pcgen.cdom.enumeration.Nature;
 import pcgen.cdom.enumeration.ObjectKey;
 import pcgen.cdom.enumeration.SkillFilter;
 import pcgen.cdom.enumeration.StringKey;
-import pcgen.cdom.helper.CategorizedAbilitySelection;
+import pcgen.cdom.helper.CNAbilitySelection;
 import pcgen.cdom.helper.ClassSource;
 import pcgen.cdom.inst.PCClassLevel;
 import pcgen.cdom.list.ClassSpellList;
@@ -91,14 +95,13 @@ import pcgen.core.character.EquipSet;
 import pcgen.core.character.Follower;
 import pcgen.core.character.SpellBook;
 import pcgen.core.character.SpellInfo;
+import pcgen.core.display.BonusDisplay;
 import pcgen.core.display.CharacterDisplay;
 import pcgen.core.facade.CampaignFacade;
 import pcgen.core.pclevelinfo.PCLevelInfo;
 import pcgen.core.pclevelinfo.PCLevelInfoStat;
 import pcgen.core.spell.Spell;
-import pcgen.persistence.PersistenceManager;
 import pcgen.system.PCGenPropBundle;
-import pcgen.system.PCGenSettings;
 import pcgen.util.FileHelper;
 import pcgen.util.Logging;
 import pcgen.util.StringPClassUtil;
@@ -485,24 +488,17 @@ public final class PCGVer2Creator implements IOConstants
 	private void appendCampaignLine(StringBuilder buffer)
 	{
 		String del = Constants.EMPTY_STRING;
-		Collection<? extends CampaignFacade> campList;
 		if (campaigns != null)
 		{
-			campList = campaigns;
+			for (CampaignFacade campaign : campaigns)
+			{
+				buffer.append(del);
+				buffer.append(TAG_CAMPAIGN).append(':');
+				buffer.append(campaign.getKeyName());
+				del = "|"; //$NON-NLS-1$
+			}
+			buffer.append(LINE_SEP);
 		}
-		else
-		{
-			campList = PersistenceManager.getInstance().getLoadedCampaigns();
-		}
-		for (CampaignFacade campaign : campList)
-		{
-			buffer.append(del);
-			buffer.append(TAG_CAMPAIGN).append(':');
-			buffer.append(campaign.getKeyName());
-			del = "|"; //$NON-NLS-1$
-		}
-
-		buffer.append(LINE_SEP);
 	}
 
 	/**
@@ -870,23 +866,17 @@ public final class PCGVer2Creator implements IOConstants
 				}
 			}
 
-			for (BonusObj save : thePC.getAddedBonusList(pcClass))
+			for (BonusObj save : thePC.getSaveableBonusList(pcClass))
 			{
-				if (save.saveToPCG())
-				{
-					specials.put(key, "BONUS|" + save);
-				}
+				specials.put(key, "BONUS|" + save);
 			}
 			for (int i = 1; i <= charDisplay.getLevel(pcClass); i++)
 			{
 				key = pcClass.getKeyName() + TAG_SAVE + (i - 1);
 				PCClassLevel pcl = charDisplay.getActiveClassLevel(pcClass, i);
-				for (BonusObj save : thePC.getAddedBonusList(pcl))
+				for (BonusObj save : thePC.getSaveableBonusList(pcl))
 				{
-					if (save.saveToPCG())
-					{
-						specials.put(key, "BONUS|" + save);
-					}
+					specials.put(key, "BONUS|" + save);
 				}
 			}
 		}
@@ -1263,7 +1253,9 @@ public final class PCGVer2Creator implements IOConstants
 
 	private void appendEquipmentLines(StringBuilder buffer)
 	{
-		for (final Equipment eq : thePC.getEquipmentMasterList())
+		List<Equipment> eqsorted = thePC.getEquipmentMasterList();
+		Collections.sort(eqsorted);
+		for (final Equipment eq : eqsorted)
 		{
 			buffer.append(TAG_EQUIPNAME).append(':');
 			buffer.append(EntityEncoder.encode(eq.getName()));
@@ -1389,83 +1381,42 @@ public final class PCGVer2Creator implements IOConstants
 				getGameMode().getAllAbilityCategories());
 		categories.add(AbilityCategory.LANGBONUS);
 		
+		Collections.sort(categories, new Comparator<AbilityCategory>() {
+			@Override
+			public int compare(AbilityCategory  a, AbilityCategory  b)
+			{
+				return  a.getKeyName().compareTo(b.getKeyName());
+			}
+		});
+		
+		Collection<Ability> virtSave = new WrappedMapSet<Ability>(IdentityHashMap.class);
+		virtSave.addAll(thePC.getSaveAbilities());
+
 		for (final AbilityCategory cat : categories)
 		{
-			final List<Ability> abilitiesToSave =
-					new ArrayList<Ability>(thePC.getAbilityList(cat, Nature.NORMAL));
-			for (final Ability vability : thePC.getAbilityList(cat, Nature.VIRTUAL))
+			final List<CNAbility> normalAbilitiesToSave =
+					new ArrayList<CNAbility>(thePC.getPoolAbilities(cat, Nature.NORMAL));
+			final List<CNAbility> virtualAbilitiesToSave = new ArrayList<CNAbility>();
+			for (final CNAbility vability : thePC.getPoolAbilities(cat, Nature.VIRTUAL))
 			{
-				Boolean needsSaving = thePC.getAssoc(vability, AssociationKey.NEEDS_SAVING);
-				if (needsSaving != null && needsSaving)
+				if (virtSave.contains(vability.getAbility()))
 				{
-					abilitiesToSave.add(vability);
+					virtualAbilitiesToSave.add(vability);
 				}
 			}
+			
 			// ABILITY:FEAT|NORMAL|Feat Key|APPLIEDTO:xxx|TYPE:xxx|SAVE:xxx|DESC:xxx
-			for (final Ability ability : abilitiesToSave)
+			Collections.sort(normalAbilitiesToSave);
+			for (final CNAbility ability : normalAbilitiesToSave)
 			{
-				buffer.append(TAG_ABILITY).append(TAG_END);
-				buffer.append(EntityEncoder.encode(cat.getKeyName())).append(
-					TAG_SEPARATOR);
-				buffer.append(TAG_TYPE).append(TAG_END);
-				buffer
-					.append(
-						EntityEncoder.encode(thePC.getAbilityNature(cat, ability)
-							.toString())).append(TAG_SEPARATOR);
-				buffer.append(TAG_CATEGORY).append(TAG_END);
-				buffer.append(EntityEncoder.encode(ability.getCategory()))
-					.append(TAG_SEPARATOR);
-				buffer.append(TAG_MAPKEY).append(TAG_END);
-				buffer.append(EntityEncoder.encode(ability.getKeyName()))
-					.append(TAG_SEPARATOR);
-				if (ability.getSafe(ObjectKey.MULTIPLE_ALLOWED))
-				{
-					buffer.append(TAG_APPLIEDTO).append(TAG_END);
-					List<FixedStringList> assocList =
-							thePC.getDetailedAssociations(ability);
-					boolean first = true;
-					for (FixedStringList assocArray : assocList)
-					{
-						if (assocArray.size() > 1)
-						{
-							buffer.append(TAG_MULTISELECT).append(':');
-						}
-						for (String assoc : assocArray)
-						{
-							if (!first)
-							{
-								buffer.append(Constants.COMMA);
-							}
-							first = false;
-							buffer.append(EntityEncoder.encode(assoc));
-						}
-					}
-					buffer.append(TAG_SEPARATOR);
-				}
-				buffer.append(TAG_TYPE).append(TAG_END);
-				buffer.append(EntityEncoder.encode(ability.getType()));
-
-				for (final BonusObj save : thePC.getAddedBonusList(ability))
-				{
-					if (save.saveToPCG())
-					{
-						buffer.append('|');
-						buffer.append(TAG_SAVE).append(':');
-						buffer.append(EntityEncoder.encode("BONUS|" + save));
-					}
-				}
-
-				for (final Description desc : ability
-					.getSafeListFor(ListKey.DESCRIPTION))
-				{
-					buffer.append(Constants.PIPE);
-					buffer.append(TAG_DESC).append(':');
-					buffer.append(EntityEncoder.encode(desc.getPCCText()));
-				}
-
-				buffer.append(LINE_SEP);
+				writeAbilityToBuffer(buffer, ability);
 			}
-			if (!abilitiesToSave.isEmpty() || thePC.getUserPoolBonus(cat) != 0.0)
+			Collections.sort(virtualAbilitiesToSave);
+			for (final CNAbility ability : virtualAbilitiesToSave)
+			{
+				writeAbilityToBuffer(buffer, ability);
+			}
+			if (!normalAbilitiesToSave.isEmpty() || !virtualAbilitiesToSave.isEmpty() || thePC.getUserPoolBonus(cat) != 0.0)
 			{
 				buffer.append(TAG_USERPOOL).append(TAG_END);
 				buffer.append(EntityEncoder.encode(cat.getKeyName())).append(
@@ -1475,6 +1426,60 @@ public final class PCGVer2Creator implements IOConstants
 				buffer.append(LINE_SEP);
 			}
 		}
+	}
+
+	private void writeAbilityToBuffer(StringBuilder buffer, CNAbility cna)
+	{
+		Category<Ability> cat = cna.getAbilityCategory();
+		Nature nature = cna.getNature();
+		Ability ability = cna.getAbility();
+		buffer.append(TAG_ABILITY).append(TAG_END);
+		buffer.append(EntityEncoder.encode(cat.getKeyName())).append(
+			TAG_SEPARATOR);
+		buffer.append(TAG_TYPE).append(TAG_END);
+		buffer.append(EntityEncoder.encode(nature.toString())).append(
+				TAG_SEPARATOR);
+		buffer.append(TAG_CATEGORY).append(TAG_END);
+		buffer.append(EntityEncoder.encode(ability.getCategory()))
+			.append(TAG_SEPARATOR);
+		buffer.append(TAG_MAPKEY).append(TAG_END);
+		buffer.append(EntityEncoder.encode(ability.getKeyName()))
+			.append(TAG_SEPARATOR);
+		if (ability.getSafe(ObjectKey.MULTIPLE_ALLOWED))
+		{
+			buffer.append(TAG_APPLIEDTO).append(TAG_END);
+			List<String> assocList = thePC.getAssociationList(cna);
+			boolean first = true;
+			for (String assoc : assocList)
+			{
+				if (!first)
+				{
+					buffer.append(Constants.COMMA);
+				}
+				first = false;
+				buffer.append(EntityEncoder.encode(assoc));
+			}
+			buffer.append(TAG_SEPARATOR);
+		}
+		buffer.append(TAG_TYPE).append(TAG_END);
+		buffer.append(EntityEncoder.encode(ability.getType()));
+
+		for (final BonusObj save : thePC.getSaveableBonusList(ability))
+		{
+			buffer.append('|');
+			buffer.append(TAG_SAVE).append(':');
+			buffer.append(EntityEncoder.encode("BONUS|" + save));
+		}
+
+		for (final Description desc : ability
+			.getSafeListFor(ListKey.DESCRIPTION))
+		{
+			buffer.append(Constants.PIPE);
+			buffer.append(TAG_DESC).append(':');
+			buffer.append(EntityEncoder.encode(desc.getPCCText()));
+		}
+
+		buffer.append(LINE_SEP);
 	}
 
 	/*
@@ -1602,8 +1607,9 @@ public final class PCGVer2Creator implements IOConstants
 	private void appendLanguageLine(StringBuilder buffer)
 	{
 		String del = Constants.EMPTY_STRING;
-
-		for (final Language lang : charDisplay.getLanguageSet())
+		TreeSet<Language> sortedlangs = new TreeSet(charDisplay.getLanguageSet());
+		
+		for (final Language lang : sortedlangs)
 		{
 			buffer.append(del);
 			buffer.append(TAG_LANGUAGE).append(':');
@@ -1825,28 +1831,21 @@ public final class PCGVer2Creator implements IOConstants
 	{
 		buffer.append(TAG_RACE).append(':');
 		buffer.append(EntityEncoder.encode(charDisplay.getRace().getKeyName()));
-		List<FixedStringList> assocList =
-				thePC.getDetailedAssociations(charDisplay.getRace());
+		List<String> assocList =
+				thePC.getAssociationList(charDisplay.getRace());
 		if (assocList != null && !assocList.isEmpty())
 		{
 			buffer.append(TAG_SEPARATOR);
 			buffer.append(TAG_APPLIEDTO).append(TAG_END);
 			boolean first = true;
-			for (FixedStringList assocArray : assocList)
+			for (String assoc : assocList)
 			{
-				if (assocArray.size() > 1)
+				if (!first)
 				{
-					buffer.append(TAG_MULTISELECT).append(':');
+					buffer.append(Constants.COMMA);
 				}
-				for (String assoc : assocArray)
-				{
-					if (!first)
-					{
-						buffer.append(Constants.COMMA);
-					}
-					first = false;
-					buffer.append(EntityEncoder.encode(assoc));
-				}
+				first = false;
+				buffer.append(EntityEncoder.encode(assoc));
 			}
 		}
 		appendAddTokenInfo(buffer, charDisplay.getRace());
@@ -2057,7 +2056,7 @@ public final class PCGVer2Creator implements IOConstants
 							.getSkillCostForClass(skill, pcc).getCost()));
 						buffer.append('|');
 						buffer.append(TAG_CLASSSKILL).append(':');
-						buffer.append((thePC.isClassSkill(skill, pcc)) ? 'Y'
+						buffer.append((thePC.isClassSkill(pcc, skill)) ? 'Y'
 							: 'N');
 						buffer.append(']');
 					}
@@ -2288,9 +2287,18 @@ public final class PCGVer2Creator implements IOConstants
 	private void appendTempBonuses(StringBuilder buffer)
 	{
 		final List<String> trackList = new ArrayList<String>();
+		TreeSet<Map.Entry<BonusObj, BonusManager.TempBonusInfo>> sortedbonus = new TreeSet<Map.Entry<BonusObj, BonusManager.TempBonusInfo>>(
+			new Comparator<Map.Entry<BonusObj, BonusManager.TempBonusInfo>>() {
+				@Override
+				public int compare(Map.Entry<BonusObj, BonusManager.TempBonusInfo>  a, Map.Entry<BonusObj, BonusManager.TempBonusInfo>  b)
+				{
+					return  a.getKey().getBonusName().compareTo(b.getKey().getBonusName());
+				}
+		});
+		sortedbonus.addAll(thePC.getTempBonusMap().entrySet());
+		
 		//for (BonusManager.TempBonusInfo tbi : thePC.getTempBonusMap().values())
-		for (Map.Entry<BonusObj, BonusManager.TempBonusInfo> me : thePC
-				.getTempBonusMap().entrySet())
+		for (Map.Entry<BonusObj, BonusManager.TempBonusInfo> me : sortedbonus)
 		{
 			BonusObj bonus = me.getKey();
 			TempBonusInfo tbi = me.getValue();
@@ -2304,7 +2312,7 @@ public final class PCGVer2Creator implements IOConstants
 			trackList.add(outString);
 			buffer.append(outString);
 			
-			String bonusName = new BonusManager(thePC).getBonusDisplayName(bonus, tbi);
+			String bonusName = BonusDisplay.getBonusDisplayName(tbi);
 			if (thePC.getTempBonusFilters().contains(bonusName))
 			{
 				buffer.append('|');
@@ -2317,8 +2325,7 @@ public final class PCGVer2Creator implements IOConstants
 			 * Template and Target object) are written, but that ALL of the
 			 * items are written on one line.
 			 */
-			for (Map.Entry<BonusObj, BonusManager.TempBonusInfo> subme : thePC
-					.getTempBonusMap().entrySet())
+			for (Map.Entry<BonusObj, BonusManager.TempBonusInfo> subme : sortedbonus)
 			{
 				BonusObj subBonus = subme.getKey();
 				TempBonusInfo subtbi = subme.getValue();
@@ -2377,28 +2384,20 @@ public final class PCGVer2Creator implements IOConstants
 					buffer.append(']');
 				}
 			}
-			List<FixedStringList> assocList =
-					thePC.getDetailedAssociations(template);
+			List<String> assocList = thePC.getAssociationList(template);
 			if (assocList != null && !assocList.isEmpty())
 			{
 				buffer.append(TAG_SEPARATOR);
 				buffer.append(TAG_APPLIEDTO).append(TAG_END);
 				boolean first = true;
-				for (FixedStringList assocArray : assocList)
+				for (String assoc : assocList)
 				{
-					if (assocArray.size() > 1)
+					if (!first)
 					{
-						buffer.append(TAG_MULTISELECT).append(':');
+						buffer.append(Constants.COMMA);
 					}
-					for (String assoc : assocArray)
-					{
-						if (!first)
-						{
-							buffer.append(Constants.COMMA);
-						}
-						first = false;
-						buffer.append(EntityEncoder.encode(assoc));
-					}
+					first = false;
+					buffer.append(EntityEncoder.encode(assoc));
 				}
 			}
 
@@ -2488,22 +2487,6 @@ public final class PCGVer2Creator implements IOConstants
 		{
 			appendWeaponProficiencyLines(buffer, pcClass);
 		}
-
-		//
-		// Save any selected domain bonus weapons
-		//
-		for (final Domain d : charDisplay.getDomainSet())
-		{
-			appendWeaponProficiencyLines(buffer, d);
-		}
-
-		//
-		// Save any selected feat bonus weapons
-		//
-		for (final Ability feat : thePC.getAbilityList(AbilityCategory.FEAT, Nature.NORMAL))
-		{
-			appendWeaponProficiencyLines(buffer, feat);
-		}
 	}
 
 	private void appendWeaponProficiencyLines(StringBuilder buffer,
@@ -2574,8 +2557,8 @@ public final class PCGVer2Creator implements IOConstants
 		{
 			for (PCTemplate lt : rlt.getSafeListFor(ListKey.LEVEL_TEMPLATES))
 			{
-				List<CategorizedAbilitySelection> featList = thePC.getAssocList(lt,
-						AssociationListKey.TEMPLATE_FEAT);
+				List<? extends CNAbilitySelection> featList = thePC
+						.getTemplateFeatList(lt);
 				if (featList != null)
 				{
 					writeTemplateFeat(aString, lt, featList);
@@ -2584,8 +2567,8 @@ public final class PCGVer2Creator implements IOConstants
 		}
 		for (PCTemplate lt : pct.getSafeListFor(ListKey.LEVEL_TEMPLATES))
 		{
-			List<CategorizedAbilitySelection> featList = thePC.getAssocList(lt,
-					AssociationListKey.TEMPLATE_FEAT);
+			List<? extends CNAbilitySelection> featList = thePC
+					.getTemplateFeatList(lt);
 			if (featList != null)
 			{
 				writeTemplateFeat(aString, lt, featList);
@@ -2594,8 +2577,8 @@ public final class PCGVer2Creator implements IOConstants
 
 		for (PCTemplate lt : pct.getSafeListFor(ListKey.HD_TEMPLATES))
 		{
-			List<CategorizedAbilitySelection> featList = thePC.getAssocList(lt,
-					AssociationListKey.TEMPLATE_FEAT);
+			List<? extends CNAbilitySelection> featList = thePC
+					.getTemplateFeatList(lt);
 			if (featList != null)
 			{
 				writeTemplateFeat(aString, lt, featList);
@@ -2604,9 +2587,10 @@ public final class PCGVer2Creator implements IOConstants
 		return aString.toString();
 	}
 
-	private void writeTemplateFeat(StringBuilder aString, PCTemplate pct, List<CategorizedAbilitySelection> featList)
+	private void writeTemplateFeat(StringBuilder aString, PCTemplate pct,
+		List<? extends CNAbilitySelection> featList)
 	{
-		for (CategorizedAbilitySelection s : featList)
+		for (CNAbilitySelection s : featList)
 		{
 			if (aString.length() != 0)
 			{
